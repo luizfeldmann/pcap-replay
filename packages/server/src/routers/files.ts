@@ -1,10 +1,14 @@
 import { Router } from "express";
-import FilesController from "../controllers/files.js";
+import { FilesController } from "../controllers/files.js";
 
 const router = Router();
 
 router.get("/", FilesController.getFilesList.handler);
-router.post("/", FilesController.uploadFile.handler);
+router.post(
+  "/",
+  FilesController.uploadFile.middleware,
+  FilesController.uploadFile.handler,
+);
 router.get("/:id", FilesController.getFileById.handler);
 router.delete("/:id", FilesController.deleteFile.handler);
 

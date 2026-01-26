@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ReplayStatusSchema } from "./ReplayStatus";
+import { ReplayStatusSchema } from "./ReplayStatus.js";
 
 export const ReplayListItemSchema = z.object({
   id: z.string(),

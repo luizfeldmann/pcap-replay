@@ -2,5 +2,5 @@
   "watch": ["src", "../shared/src"],
   "ext": "ts,json",
   "ignore": ["src/**/*.spec.ts", "dist"],
-  "exec": "node --loader ts-node/esm -r tsconfig-paths/register src/index.ts"
+  "exec": "node --inspect --loader ts-node/esm -r tsconfig-paths/register src/index.ts"
 }

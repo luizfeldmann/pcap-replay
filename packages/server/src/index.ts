@@ -2,8 +2,9 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { configData } from "./utils/config.js";
-import Api from "./routers/api.js";
+import ApiRouter from "./routers/api.js";
 import { setupSwagger } from "./utils/swagger.js";
+import { appErrorMiddleware } from "./utils/error.js";
 
 // Main server
 const app = express();
@@ -15,10 +16,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Link to the routers
-app.use("/api", Api.router);
+app.use("/api", ApiRouter.router);
 
 // Server the documentation UI
-setupSwagger(app, Api.docs);
+setupSwagger(app, ApiRouter.docs);
+
+// *MUST BE LAST*
+// Error handling middleware
+app.use(appErrorMiddleware);
 
 // Start the server
 app.listen(configData.PORT, () => {

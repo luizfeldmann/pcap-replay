@@ -8,7 +8,9 @@ const envSchema = z.object({
     .transform((val) => parseInt(val, 10))
     .default(3000),
   //! Destination directory for file uploads
-  UPLOAD_DIR: z.string().default("uploads"),
+  UPLOAD_DIR: z.string().default("data/uploads"),
+  //! File path to the embedded database
+  DATABASE_FILE: z.string().default("data/sqlite.db"),
   //! Maximum allowable update size
   MAX_FILE_SIZE_MB: z
     .string()
@@ -23,7 +25,7 @@ const envParse = envSchema.safeParse(process.env);
 if (!envParse.success) {
   console.error(
     "Invalid environment variables: ",
-    z.treeifyError(envParse.error)
+    z.treeifyError(envParse.error),
   );
   process.exit(1);
 }
