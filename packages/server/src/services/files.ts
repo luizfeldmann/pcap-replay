@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs/promises";
 import { FileRow, FilesTable } from "../models/files.js";
 import { eq } from "drizzle-orm";
-import { ResourceNotFoundError } from "../utils/error.js";
+import { ResourceNotFoundError, UnknownError } from "../utils/error.js";
 import { configData } from "../utils/config.js";
 
 //! Transforms from a DB row to a list item DTO
@@ -37,18 +37,26 @@ const getFileInfo = async (id: string): Promise<FileListItem> => {
 const getFilePathOnDisk = (id: string) =>
   path.resolve(path.join(configData.UPLOAD_DIR, id));
 
-//! Gets the path to delete a file
-const deleteFile = (id: string) => {};
+//! Delets a file from disk
+const deleteFile = async (id: string) => {
+  // Delete from disk
+  const filePath = getFilePathOnDisk(id);
+  await fs.unlink(filePath).catch((err) => {
+    if (err.code === "ENOENT") throw new ResourceNotFoundError();
+    throw new UnknownError(err.message);
+  });
+
+  // Delete from DB
+  const numRows = await db.delete(FilesTable).where(eq(FilesTable.id, id));
+  if (!numRows.changes) throw new ResourceNotFoundError();
+};
 
 //! Gets the path to download a file
 const downloadFile = async (id: string) => {
   const filePath = getFilePathOnDisk(id);
-
-  try {
-    await fs.access(filePath);
-  } catch {
+  await fs.access(filePath).catch((err) => {
     throw new ResourceNotFoundError();
-  }
+  });
 
   const fileInfo = await getFileInfo(id);
   return {

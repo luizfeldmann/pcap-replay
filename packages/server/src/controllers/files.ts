@@ -138,8 +138,18 @@ const deleteFile = {
     parameters: [
       { in: "path", name: "id", required: true, schema: { type: "string" } },
     ],
+    responses: {
+      [StatusCodes.NO_CONTENT]: {
+        description: "Deleted",
+      },
+      default: defaultErrorResponse(),
+    },
   },
-  handler: async (req: Request, resp: Response) => {},
+  handler: async (req: Request, resp: Response) => {
+    const params = FileIdSchema.parse(req.params);
+    await FilesService.deleteFile(params.id);
+    resp.sendStatus(StatusCodes.NO_CONTENT);
+  },
 };
 
 export const FilesController = {
