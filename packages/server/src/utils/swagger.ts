@@ -1,7 +1,6 @@
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
-import { z } from "zod";
-import packagejson from "../../package.json" assert { type: "json" };
+import packagejson from "../../package.json" with { type: "json" };
 
 //! Setups swagger using the given collection of paths
 export const setupSwagger = (app: Express, paths: Record<string, any>) => {

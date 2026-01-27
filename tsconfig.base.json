@@ -6,6 +6,10 @@
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "sourceMap": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "shared": ["packages/shared/src"]
+    }
   }
 }
