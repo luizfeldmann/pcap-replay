@@ -51,7 +51,7 @@ export class UnknownError extends AppError {
     super(
       message || "Unknow error",
       StatusCodes.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_ERROR,
+      "INTERNAL_ERROR",
     );
   }
 }
@@ -61,7 +61,7 @@ export class FileSizeError extends AppError {
     super(
       "File over the allowed size",
       StatusCodes.REQUEST_TOO_LONG,
-      ErrorCode.BAD_FILE_SIZE,
+      "BAD_FILE_SIZE",
     );
   }
 }
@@ -71,7 +71,7 @@ export class FileTypeError extends AppError {
     super(
       "File type not allowed",
       StatusCodes.UNSUPPORTED_MEDIA_TYPE,
-      ErrorCode.BAD_FILE_TYPE,
+      "BAD_FILE_TYPE",
     );
   }
 }

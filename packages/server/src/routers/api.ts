@@ -1,14 +1,14 @@
 import { Router } from "express";
-import Files from "./files.js";
-import Jobs from "./jobs.js";
+import { FilesRouter } from "./files.js";
+import { JobsRouter } from "./jobs.js";
 
 const router = Router();
-router.use("/files", Files.router);
-router.use("/jobs", Jobs.router);
+router.use("/files", FilesRouter.router);
+router.use("/jobs", JobsRouter.router);
 
 const docs = {
-  ...Files.docs,
-  ...Jobs.docs,
+  ...FilesRouter.docs,
+  ...JobsRouter.docs,
 };
 
-export default { router, docs };
+export const ApiRouter = { router, docs };

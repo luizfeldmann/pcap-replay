@@ -1,9 +1,13 @@
+import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 import { FilesService } from "../services/files.js";
 import { configData } from "../utils/config.js";
 import { FileSizeError, FileTypeError, UnknownError } from "../utils/error.js";
 import path from "path";
 import multer from "multer";
+import { StatusCodes } from "http-status-codes";
+import { defaultErrorResponse, jsonResponse } from "../utils/openapi.js";
+import { FileListItemSchema } from "shared";
 
 // Helper for file uploads
 const upload = multer({
@@ -38,9 +42,14 @@ const upload = multer({
 const getFilesList = {
   docs: {
     summary: "List all files in the server",
+    responses: {
+      [StatusCodes.OK]: jsonResponse(z.array(FileListItemSchema)),
+      default: defaultErrorResponse(),
+    },
   },
   handler: async (req: Request, resp: Response) => {
-    resp.json(await FilesService.getFilesList());
+    const listItems = await FilesService.getFilesList();
+    resp.json(listItems);
   },
 };
 
@@ -61,6 +70,10 @@ const uploadFile = {
         },
       },
     },
+    responses: {
+      [StatusCodes.CREATED]: jsonResponse(FileListItemSchema),
+      default: defaultErrorResponse(),
+    },
   },
   // Error handling middleware for multer
   middleware: (req: Request, resp: Response, next: NextFunction) => {
@@ -77,13 +90,13 @@ const uploadFile = {
   handler: async (req: Request, resp: Response) => {
     if (!req.file) throw new UnknownError();
 
-    resp.json(
-      await FilesService.saveFile(
-        req.file.filename,
-        req.file.originalname,
-        req.file.size,
-      ),
+    const newItem = await FilesService.saveFile(
+      req.file.filename,
+      req.file.originalname,
+      req.file.size,
     );
+
+    resp.status(StatusCodes.CREATED).json(newItem);
   },
 };
 

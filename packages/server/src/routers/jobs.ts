@@ -1,15 +1,15 @@
 import { Router } from "express";
-import Replay from "./replay.js";
-import Forward from "./forward.js";
+import { ReplayRouter } from "./replay.js";
+import { ForwardRouter } from "./forward.js";
 
 const router = Router();
 
-router.use("/replay", Replay.router);
-router.use("/forward", Forward.router);
+router.use("/replay", ReplayRouter.router);
+router.use("/forward", ForwardRouter.router);
 
 const docs = {
-  ...Replay.docs,
-  ...Forward.docs,
+  ...ReplayRouter.docs,
+  ...ForwardRouter.docs,
 };
 
-export default { router, docs };
+export const JobsRouter = { router, docs };

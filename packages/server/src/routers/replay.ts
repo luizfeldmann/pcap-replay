@@ -4,4 +4,4 @@ const router = Router();
 
 const docs = {};
 
-export default { router, docs };
+export const ReplayRouter = { router, docs };

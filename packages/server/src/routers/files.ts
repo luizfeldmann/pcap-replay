@@ -23,4 +23,4 @@ const docs = {
   },
 };
 
-export default { router, docs };
+export const FilesRouter = { router, docs };

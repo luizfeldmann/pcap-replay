@@ -2,7 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { configData } from "./utils/config.js";
-import ApiRouter from "./routers/api.js";
+import { ApiRouter } from "./routers/api.js";
 import { setupSwagger } from "./utils/swagger.js";
 import { appErrorMiddleware } from "./utils/error.js";
 
