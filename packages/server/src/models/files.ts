@@ -1,4 +1,5 @@
 // packages/server/src/db/schema/files.ts
+import { InferSelectModel } from "drizzle-orm";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const FilesTable = sqliteTable("files", {
@@ -7,3 +8,5 @@ export const FilesTable = sqliteTable("files", {
   size: integer("size").notNull(),
   uploadedAt: integer("uploaded_at", { mode: "timestamp_ms" }).notNull(),
 });
+
+export type FileRow = InferSelectModel<typeof FilesTable>;

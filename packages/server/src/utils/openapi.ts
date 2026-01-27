@@ -16,3 +16,17 @@ export const jsonResponse = (zodSchema: z.ZodTypeAny, description = "OK") => {
 
 export const defaultErrorResponse = (description: string = "Error") =>
   jsonResponse(ErrorResponseSchema, description);
+
+export const fileDownloadResponse = (
+  description: string = "File contents",
+) => ({
+  description,
+  contents: {
+    "application/octet-stream": {
+      schema: {
+        type: "string",
+        format: "binary",
+      },
+    },
+  },
+});

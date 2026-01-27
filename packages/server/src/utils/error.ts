@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import z, { ZodError } from "zod";
 import { ErrorCode, ErrorResponse } from "shared";
 
 //! General error class
@@ -25,8 +26,8 @@ export class AppError extends Error {
   }
 
   // Responds to this request using this error code
-  respond(resp: Response): void {
-    resp.status(this.status).json(this.toResponse());
+  respond(resp: Response) {
+    return resp.status(this.status).json(this.toResponse());
   }
 }
 
@@ -46,6 +47,17 @@ export const appErrorMiddleware = (
   next(err);
 };
 
+//! Middleware to handle ZOD validations
+export const zodErrorMiddleware = (
+  err: unknown,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (err instanceof ZodError) next(new RequestValidationError(err.message));
+  else next(err);
+};
+
 export class UnknownError extends AppError {
   constructor(message?: string) {
     super(
@@ -53,6 +65,22 @@ export class UnknownError extends AppError {
       StatusCodes.INTERNAL_SERVER_ERROR,
       "INTERNAL_ERROR",
     );
+  }
+}
+
+export class RequestValidationError extends AppError {
+  constructor(message?: string) {
+    super(
+      message || "Bad request",
+      StatusCodes.BAD_REQUEST,
+      "REQUEST_VALIDATION",
+    );
+  }
+}
+
+export class ResourceNotFoundError extends AppError {
+  constructor(message?: string) {
+    super(message || "Resource not found", StatusCodes.NOT_FOUND, "NOT_FOUND");
   }
 }
 

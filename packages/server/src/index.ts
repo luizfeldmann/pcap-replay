@@ -4,7 +4,7 @@ import cors from "cors";
 import { configData } from "./utils/config.js";
 import { ApiRouter } from "./routers/api.js";
 import { setupSwagger } from "./utils/swagger.js";
-import { appErrorMiddleware } from "./utils/error.js";
+import { appErrorMiddleware, zodErrorMiddleware } from "./utils/error.js";
 
 // Main server
 const app = express();
@@ -23,6 +23,7 @@ setupSwagger(app, ApiRouter.docs);
 
 // *MUST BE LAST*
 // Error handling middleware
+app.use(zodErrorMiddleware);
 app.use(appErrorMiddleware);
 
 // Start the server

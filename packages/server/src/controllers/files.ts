@@ -6,8 +6,15 @@ import { FileSizeError, FileTypeError, UnknownError } from "../utils/error.js";
 import path from "path";
 import multer from "multer";
 import { StatusCodes } from "http-status-codes";
-import { defaultErrorResponse, jsonResponse } from "../utils/openapi.js";
+import {
+  defaultErrorResponse,
+  fileDownloadResponse,
+  jsonResponse,
+} from "../utils/openapi.js";
 import { FileListItemSchema } from "shared";
+
+// Schema for the file ID
+const FileIdSchema = FileListItemSchema.pick({ id: true });
 
 // Helper for file uploads
 const upload = multer({
@@ -107,8 +114,21 @@ const getFileById = {
     parameters: [
       { in: "path", name: "id", required: true, schema: { type: "string" } },
     ],
+    responses: {
+      [StatusCodes.OK]: fileDownloadResponse(),
+      default: defaultErrorResponse(),
+    },
   },
-  handler: async (req: Request, resp: Response) => {},
+  handler: async (req: Request, resp: Response) => {
+    // Get the file ID from the request
+    const params = FileIdSchema.parse(req.params);
+
+    // Get file info from DB
+    const { filePath, fileName } = await FilesService.downloadFile(params.id);
+
+    // Serve to client
+    resp.download(filePath, fileName);
+  },
 };
 
 // Deleting of one file
