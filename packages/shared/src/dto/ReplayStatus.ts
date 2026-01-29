@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export enum ReplayStatus {
-  STOPPED,
-  RUNNING,
-  FINISHED,
-  ERROR,
-}
+export const ReplayStatusSchema = z.enum([
+  "STOPPED",
+  "RUNNING",
+  "FINISHED",
+  "ERROR",
+]);
 
-export const ReplayStatusSchema = z.enum(ReplayStatus);
+export type ReplayStatus = z.infer<typeof ReplayStatusSchema>;
