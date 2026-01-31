@@ -84,6 +84,16 @@ export class ResourceNotFoundError extends AppError {
   }
 }
 
+export class ResourceLockedError extends AppError {
+  constructor(message?: string) {
+    super(
+      message || "Resource is locked",
+      StatusCodes.LOCKED,
+      "RESOURCE_LOCKED",
+    );
+  }
+}
+
 export class FileSizeError extends AppError {
   constructor() {
     super(

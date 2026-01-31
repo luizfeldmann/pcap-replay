@@ -25,6 +25,6 @@ export const ReplayListItemSchema = z
     startTime: z.iso.datetime().optional(),
     endTime: z.iso.datetime().optional(),
   })
-  .extend(ReplayPatchSchema.shape);
+  .extend(ReplayPostSchema.shape);
 
 export type ReplayListItem = z.infer<typeof ReplayListItemSchema>;

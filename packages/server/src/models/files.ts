@@ -1,4 +1,3 @@
-// packages/server/src/db/schema/files.ts
 import { InferSelectModel } from "drizzle-orm";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
