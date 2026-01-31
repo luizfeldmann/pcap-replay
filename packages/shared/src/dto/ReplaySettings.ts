@@ -22,10 +22,12 @@ export type PortRemap = z.infer<typeof PortRemapSchema>;
 //! Defines subnets for IP remapping
 export const AddressRemapSchema = z.union([
   z.object({
+    ip: z.literal("v4"),
     from: z.cidrv4(),
     to: z.cidrv4(),
   }),
   z.object({
+    ip: z.literal("v6"),
     from: z.cidrv6(),
     to: z.cidrv6(),
   }),
@@ -33,15 +35,18 @@ export const AddressRemapSchema = z.union([
 
 export type AddressRemap = z.infer<typeof AddressRemapSchema>;
 
-//! Defines speed settings, only one may be present
-const SpeedSettingsSchema = z.union([
+//! Defines load settings, only one may be present
+const LoadSettingsSchema = z.union([
   z.object({
-    multiplier: z.number().min(0.1).max(5.0),
+    type: z.literal("multiplier"),
+    speed: z.number().min(0.1).max(5.0),
   }),
   z.object({
+    type: z.literal("mbps"),
     dataRate: z.number().min(1).max(100),
   }),
   z.object({
+    type: z.literal("pps"),
     packetRate: z.number().min(0),
   }),
 ]);
@@ -49,18 +54,21 @@ const SpeedSettingsSchema = z.union([
 //! Defines length limitations, only one may be present
 const LengthSettingsSchema = z.union([
   z.object({
+    type: z.literal("duration"),
     maxDuration: z.number().min(1),
   }),
   z.object({
+    type: z.literal("packets"),
     maxPackets: z.number().min(1),
   }),
 ]);
 
 const RepeatSettingsSchema = z.union([
   z.object({
-    loop: z.literal(true),
+    type: z.literal("loop"),
   }),
   z.object({
+    type: z.literal("times"),
     times: z.int().min(1),
   }),
 ]);
@@ -71,7 +79,7 @@ export const ReplaySettingsSchema = z.object({
   portRemap: z.array(PortRemapSchema).optional(),
   srcRemap: z.array(AddressRemapSchema).optional(),
   dstRemap: z.array(AddressRemapSchema).optional(),
-  speed: SpeedSettingsSchema.optional(),
+  load: LoadSettingsSchema.optional(),
   limit: LengthSettingsSchema.optional(),
   repeat: RepeatSettingsSchema.optional(),
 });
