@@ -12,6 +12,7 @@ import {
   jsonResponse,
 } from "../utils/openapi.js";
 import { FileListItemSchema } from "shared";
+import { ZodOpenApiOperationObject } from "zod-openapi";
 
 // Schema for the file ID
 const FileIdSchema = FileListItemSchema.pick({ id: true });
@@ -53,7 +54,7 @@ const getFilesList = {
       [StatusCodes.OK]: jsonResponse(z.array(FileListItemSchema)),
       default: defaultErrorResponse(),
     },
-  },
+  } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {
     const listItems = await FilesService.getFilesList();
     resp.json(listItems);
@@ -81,7 +82,7 @@ const uploadFile = {
       [StatusCodes.CREATED]: jsonResponse(FileListItemSchema),
       default: defaultErrorResponse(),
     },
-  },
+  } satisfies ZodOpenApiOperationObject,
   // Error handling middleware for multer
   middleware: (req: Request, resp: Response, next: NextFunction) => {
     upload.single("file")(req, resp, (err) => {
@@ -118,7 +119,7 @@ const getFileById = {
       [StatusCodes.OK]: fileDownloadResponse(),
       default: defaultErrorResponse(),
     },
-  },
+  } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {
     // Get the file ID from the request
     const params = FileIdSchema.parse(req.params);
@@ -144,7 +145,7 @@ const deleteFile = {
       },
       default: defaultErrorResponse(),
     },
-  },
+  } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {
     const params = FileIdSchema.parse(req.params);
     await FilesService.deleteFile(params.id);

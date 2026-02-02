@@ -1,32 +1,37 @@
 import { Request, Response } from "express";
+import { ZodOpenApiOperationObject } from "zod-openapi";
 
 const getReplayJobs = {
-  docs: {},
+  docs: {
+    responses: {},
+  } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {},
 };
 
 const getSingleReplayJob = {
-  docs: {},
+  docs: {
+    responses: {},
+  } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {},
 };
 
 const createReplayJob = {
-  docs: {},
+  docs: { responses: {} } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {},
 };
 
 const modifyReplayJob = {
-  docs: {},
+  docs: { responses: {} } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {},
 };
 
 const deleteReplayJob = {
-  docs: {},
+  docs: { responses: {} } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {},
 };
 
 const commandReplayJob = {
-  docs: {},
+  docs: { responses: {} } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {},
 };
 

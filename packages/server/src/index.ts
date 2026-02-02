@@ -16,10 +16,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Link to the routers
-app.use("/api", ApiRouter.router);
+const API_PREFIX = "/api";
+app.use(API_PREFIX, ApiRouter.router);
 
 // Server the documentation UI
-setupSwagger(app, ApiRouter.docs);
+setupSwagger(app, ApiRouter.getDocs(API_PREFIX));
 
 // *MUST BE LAST*
 // Error handling middleware

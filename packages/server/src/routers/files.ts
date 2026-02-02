@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { FilesController } from "../controllers/files.js";
+import { ZodOpenApiPathsObject } from "zod-openapi";
+import { IDocumentedRouter } from "./IDocumentedRouter.js";
 
 const router = Router();
 
@@ -12,15 +14,15 @@ router.post(
 router.get("/:id", FilesController.getFileById.handler);
 router.delete("/:id", FilesController.deleteFile.handler);
 
-const docs = {
-  "/files": {
+const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
+  [`${prefix}`]: {
     get: FilesController.getFilesList.docs,
     post: FilesController.uploadFile.docs,
   },
-  "/files/{id}": {
+  [`${prefix}/{id}`]: {
     get: FilesController.getFileById.docs,
     delete: FilesController.deleteFile.docs,
   },
-};
+});
 
-export const FilesRouter = { router, docs };
+export const FilesRouter: IDocumentedRouter = { router, getDocs };

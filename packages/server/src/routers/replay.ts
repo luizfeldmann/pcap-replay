@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { ReplayController } from "../controllers/replay.js";
+import { ZodOpenApiPathsObject } from "zod-openapi";
+import { IDocumentedRouter } from "./IDocumentedRouter.js";
 
 const router = Router();
 
@@ -10,19 +12,19 @@ router.patch("/:id", ReplayController.modifyJob.handler);
 router.delete("/:id", ReplayController.deleteJob.handler);
 router.post("/:id/:command", ReplayController.statusCommand.handler);
 
-const docs = {
-  "/jobs/replay": {
+const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
+  [`${prefix}`]: {
     get: ReplayController.getAll.docs,
     post: ReplayController.createJob.docs,
   },
-  "/jobs/replay/{id}": {
+  [`${prefix}/{id}`]: {
     get: ReplayController.getSingle.docs,
     patch: ReplayController.modifyJob.docs,
-    delete: ReplayController.deleteJob,
+    delete: ReplayController.deleteJob.docs,
   },
-  "/jobs/replay/{command}": {
+  [`${prefix}/{command}`]: {
     post: ReplayController.statusCommand.docs,
   },
-};
+});
 
-export const ReplayRouter = { router, docs };
+export const ReplayRouter: IDocumentedRouter = { router, getDocs };
