@@ -14,6 +14,9 @@ import {
 import { FileListItemSchema } from "shared";
 import { ZodOpenApiOperationObject } from "zod-openapi";
 
+// Tag for API docs
+const FILES_TAG = "Files";
+
 // Schema for the file ID
 const FileIdSchema = FileListItemSchema.pick({ id: true });
 
@@ -49,6 +52,7 @@ const upload = multer({
 // Listing of all files
 const getFilesList = {
   docs: {
+    tags: [FILES_TAG],
     summary: "List all files in the server",
     responses: {
       [StatusCodes.OK]: jsonResponse(z.array(FileListItemSchema)),
@@ -64,6 +68,7 @@ const getFilesList = {
 // Uploading a new file
 const uploadFile = {
   docs: {
+    tags: [FILES_TAG],
     summary: "Upload a new file",
     requestBody: {
       required: true,
@@ -111,6 +116,7 @@ const uploadFile = {
 // Download of single file
 const getFileById = {
   docs: {
+    tags: [FILES_TAG],
     summary: "Download a file",
     parameters: [
       { in: "path", name: "id", required: true, schema: { type: "string" } },
@@ -135,6 +141,7 @@ const getFileById = {
 // Deleting of one file
 const deleteFile = {
   docs: {
+    tags: [FILES_TAG],
     summary: "Delete a file",
     parameters: [
       { in: "path", name: "id", required: true, schema: { type: "string" } },

@@ -1,4 +1,11 @@
-import { AddressRemap, PortRemap, ReplayListItem, ReplayPost } from "shared";
+import {
+  AddressRemap,
+  JobCommand,
+  PortRemap,
+  ReplayListItem,
+  ReplayPatch,
+  ReplayPost,
+} from "shared";
 import { db } from "../models/db.js";
 import {
   ReplaysTable,
@@ -175,9 +182,19 @@ const insertNew = async (post: ReplayPost): Promise<ReplayListItem> => {
   throw null;
 };
 
+const modifyItem = async (patch: ReplayPatch): Promise<ReplayListItem> => {
+  throw null;
+};
+
+const commandStatus = async (id: string, command: JobCommand) => {
+  throw null;
+};
+
 export const ReplayService = {
   getAll,
   getSingle,
   deleteSingle,
   insertNew,
+  modifyItem,
+  commandStatus,
 };

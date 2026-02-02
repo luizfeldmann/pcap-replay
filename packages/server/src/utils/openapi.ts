@@ -1,8 +1,30 @@
 import { ErrorResponseSchema } from "shared";
 import { z } from "zod";
-import { createSchema } from "zod-openapi";
+import {
+  createSchema,
+  ZodOpenApiRequestBodyObject,
+  ZodOpenApiResponseObject,
+} from "zod-openapi";
 
-export const jsonResponse = (zodSchema: z.ZodTypeAny, description = "OK") => {
+export const jsonResponse = (
+  zodSchema: z.ZodTypeAny,
+  description = "OK",
+): ZodOpenApiResponseObject => {
+  const openSchema = createSchema(zodSchema);
+  return {
+    description,
+    content: {
+      "application/json": {
+        schema: openSchema.schema,
+      },
+    },
+  };
+};
+
+export const jsonRequestBody = (
+  zodSchema: z.ZodTypeAny,
+  description = "Request body",
+): ZodOpenApiRequestBodyObject => {
   const openSchema = createSchema(zodSchema);
   return {
     description,
