@@ -129,7 +129,7 @@ const commandReplayJob = {
       },
     ],
     responses: {
-      [StatusCodes.PROCESSING]: {
+      [StatusCodes.ACCEPTED]: {
         description: "Command requested",
       },
       default: defaultErrorResponse(),
@@ -138,7 +138,7 @@ const commandReplayJob = {
   handler: async (req: Request, resp: Response) => {
     const params = JobCommandRequestSchema.parse(req.params);
     await ReplayService.commandStatus(params.id, params.command);
-    resp.sendStatus(StatusCodes.PROCESSING);
+    resp.sendStatus(StatusCodes.ACCEPTED);
   },
 };
 

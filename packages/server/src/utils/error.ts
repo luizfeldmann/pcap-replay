@@ -94,6 +94,16 @@ export class ResourceLockedError extends AppError {
   }
 }
 
+export class ConflictError extends AppError {
+  constructor(message?: string) {
+    super(
+      message || "Conflicting business logic",
+      StatusCodes.CONFLICT,
+      "CONFLICT",
+    );
+  }
+}
+
 export class FileSizeError extends AppError {
   constructor() {
     super(

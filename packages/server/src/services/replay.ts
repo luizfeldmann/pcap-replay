@@ -5,6 +5,7 @@ import {
   ReplayListItem,
   ReplayPatch,
   ReplayPost,
+  ReplayStatus,
 } from "shared";
 import { db } from "../models/db.js";
 import {
@@ -16,7 +17,14 @@ import {
   AddressRemapRow,
 } from "../models/replay.js";
 import { eq } from "drizzle-orm";
-import { ResourceLockedError, ResourceNotFoundError } from "../utils/error.js";
+import {
+  AppError,
+  ConflictError,
+  ResourceLockedError,
+  ResourceNotFoundError,
+  UnknownError,
+} from "../utils/error.js";
+import { StatusCodes } from "http-status-codes";
 
 const transformPortRemap = (portRemap: PortRemapRow): PortRemap =>
   portRemap.start === portRemap.end
@@ -38,6 +46,17 @@ const transformAddrRemap = (addrRemap: AddressRemapRow): AddressRemap => ({
   ip: addrRemap.ip,
 });
 
+const statusTransformList: {
+  [K in (typeof ReplaysTable.status.enumValues)[number]]: ReplayStatus;
+} = {
+  ERROR: "ERROR",
+  FINISHED: "FINISHED",
+  REQUEST_RUN: "RUNNING",
+  RUNNING: "RUNNING",
+  REQUEST_STOP: "STOPPED",
+  STOPPED: "STOPPED",
+};
+
 const transformListItem = (
   replayJob: ReplayRow,
   portRemaps: PortRemapRow[],
@@ -49,7 +68,7 @@ const transformListItem = (
     fileId: replayJob.file,
     name: replayJob.name,
     interface: replayJob.interface,
-    status: replayJob.status,
+    status: statusTransformList[replayJob.status],
     startTime: replayJob.startTime?.toISOString(),
     endTime: replayJob.endTime?.toISOString(),
   };
@@ -164,30 +183,175 @@ const getSingle = async (id: string): Promise<ReplayListItem> => {
 };
 
 const deleteSingle = async (id: string) => {
-  await db.transaction(async (tx) => {
-    const [job] = await db
+  await db.transaction((tx) => {
+    const job = tx
       .select({ status: ReplaysTable.status })
       .from(ReplaysTable)
-      .where(eq(ReplaysTable.id, id));
+      .where(eq(ReplaysTable.id, id))
+      .get();
 
     if (!job) throw new ResourceNotFoundError();
 
     if (job.status === "RUNNING") throw new ResourceLockedError();
 
-    await db.delete(ReplaysTable).where(eq(ReplaysTable.id, id));
+    const result = tx.delete(ReplaysTable).where(eq(ReplaysTable.id, id)).run();
+    if (!result.changes) throw new UnknownError();
   });
 };
 
 const insertNew = async (post: ReplayPost): Promise<ReplayListItem> => {
-  throw null;
+  const id = crypto.randomUUID();
+
+  // Transform the job data
+  let loop = false;
+  let repeat = null;
+
+  if (post.repeat?.type === "loop") loop = true;
+  else if (post.repeat?.type === "times") repeat = post.repeat.times;
+
+  let limitDuration = null;
+  let limitPackets = null;
+
+  if (post?.limit?.type === "duration") limitDuration = post.limit.maxDuration;
+  else if (post.limit?.type === "packets") limitPackets = post.limit.maxPackets;
+
+  let speedMultiplier = null;
+  let dataRate = null;
+  let packetRate = null;
+
+  if (post?.load?.type === "multiplier") speedMultiplier = post.load?.speed;
+  else if (post?.load?.type === "mbps") dataRate = post.load.dataRate;
+  else if (post.load?.type === "pps") packetRate = post.load.packetRate;
+
+  // Create the job itself
+  const replayJob: ReplayRow = {
+    id,
+    name: post.name,
+    file: post.fileId,
+    interface: post.interface,
+    status: "STOPPED",
+    startTime: null,
+    endTime: null,
+    loop,
+    repeat,
+    limitDuration,
+    limitPackets,
+    speedMultiplier,
+    dataRate,
+    packetRate,
+  };
+
+  // Create port remaps
+  const portRemaps: PortRemapRow[] = [];
+
+  if (post.portRemap) {
+    // In parallel, insert all port remaps in DB
+    const remapRows = post.portRemap.map((remap): PortRemapRow => {
+      // From can be a range or a single number
+      const { start, end } =
+        typeof remap.from === "number"
+          ? { start: remap.from, end: remap.from }
+          : remap.from;
+
+      // make row
+      return {
+        replayId: id,
+        start,
+        end,
+        to: remap.to,
+      };
+    });
+
+    portRemaps.push(...remapRows);
+  }
+
+  // Create address remaps
+  const remapAddrTransform = (
+    remaps: AddressRemap[],
+    direction: "src" | "dst",
+  ): AddressRemapRow[] =>
+    remaps.map((remap) => ({
+      replayId: id,
+      from: remap.from,
+      to: remap.to,
+      ip: remap.ip,
+      direction,
+    }));
+
+  const addrRemaps: AddressRemapRow[] = [];
+
+  if (post.dstRemap) {
+    const remapRows = remapAddrTransform(post.dstRemap, "dst");
+    addrRemaps.push(...remapRows);
+  }
+  if (post.srcRemap) {
+    const remapRows = remapAddrTransform(post.srcRemap, "src");
+    addrRemaps.push(...remapRows);
+  }
+
+  // Perform all the insert transactions
+  await db.transaction((tx) => {
+    tx.insert(ReplaysTable).values(replayJob).run();
+
+    addrRemaps.forEach((remap) => {
+      tx.insert(AddressRemapTable).values(remap).run();
+    });
+
+    portRemaps.forEach((remap) => {
+      tx.insert(PortRemapTable).values(remap).run();
+    });
+  });
+
+  return transformListItem(replayJob, portRemaps, addrRemaps);
 };
 
 const modifyItem = async (patch: ReplayPatch): Promise<ReplayListItem> => {
-  throw null;
+  // TODO: not implemented
+  throw new AppError(
+    "Not implemented",
+    StatusCodes.NOT_IMPLEMENTED,
+    "INTERNAL_ERROR",
+  );
 };
 
 const commandStatus = async (id: string, command: JobCommand) => {
-  throw null;
+  await db.transaction((tx) => {
+    // Find the job and its current status
+    const job = tx
+      .select({ status: ReplaysTable.status })
+      .from(ReplaysTable)
+      .where(eq(ReplaysTable.id, id))
+      .get();
+
+    if (!job) throw new ResourceNotFoundError();
+
+    switch (command) {
+      case "start":
+        // Verify it can be started
+        if (
+          job.status === "RUNNING" ||
+          job.status === "REQUEST_RUN" ||
+          job.status === "REQUEST_STOP"
+        )
+          throw new ConflictError("Cannot start from this state");
+        // Change to new state
+        tx.update(ReplaysTable)
+          .set({ status: "REQUEST_RUN" })
+          .where(eq(ReplaysTable.id, id))
+          .run();
+        break;
+      case "stop":
+        // Verify its running so it can be stopped
+        if (job.status != "RUNNING")
+          throw new ConflictError("Cannot stop because it's not running");
+        // Change to new state
+        tx.update(ReplaysTable)
+          .set({ status: "REQUEST_STOP" })
+          .where(eq(ReplaysTable.id, id))
+          .run();
+        break;
+    }
+  });
 };
 
 export const ReplayService = {

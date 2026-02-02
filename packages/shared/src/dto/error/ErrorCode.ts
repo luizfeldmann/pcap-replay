@@ -5,6 +5,7 @@ export const ErrorCodeSchema = z.enum([
   "REQUEST_VALIDATION",
   "NOT_FOUND",
   "RESOURCE_LOCKED",
+  "CONFLICT",
   "BAD_FILE_TYPE",
   "BAD_FILE_SIZE",
 ]);

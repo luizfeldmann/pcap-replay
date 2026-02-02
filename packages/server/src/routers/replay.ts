@@ -22,7 +22,7 @@ const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
     patch: ReplayController.modifyJob.docs,
     delete: ReplayController.deleteJob.docs,
   },
-  [`${prefix}/{command}`]: {
+  [`${prefix}/{id}/{command}`]: {
     post: ReplayController.statusCommand.docs,
   },
 });

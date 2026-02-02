@@ -37,7 +37,7 @@ const getFileInfo = async (id: string): Promise<FileListItem> => {
 const getFilePathOnDisk = (id: string) =>
   path.resolve(path.join(configData.UPLOAD_DIR, id));
 
-//! Delets a file from disk
+//! Deletes a file from disk
 const deleteFile = async (id: string) => {
   // Delete from disk
   const filePath = getFilePathOnDisk(id);
