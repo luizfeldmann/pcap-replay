@@ -10,6 +10,7 @@ export const ReplaysTable = sqliteTable("replays", {
     .references(() => FilesTable.id, { onDelete: "restrict" }),
   interface: text("file").notNull(),
   status: text("status", {
+    // prettier-ignore
     enum: [
       "REQUEST_STOP",
       "STOPPED",

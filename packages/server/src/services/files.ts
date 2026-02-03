@@ -23,6 +23,7 @@ const getFilesList = async (): Promise<FileListItem[]> => {
 
 //! Finds a file by it's ID in the DB
 const getFileInfo = async (id: string): Promise<FileListItem> => {
+  // prettier-ignore
   const [dbFile] = await db
     .select()
     .from(FilesTable)

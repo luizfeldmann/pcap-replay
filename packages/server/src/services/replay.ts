@@ -153,12 +153,12 @@ const getAll = async (): Promise<ReplayListItem[]> => {
   return await Promise.all(
     jobs.map(async (replayJob) => {
       const [portRemaps, addrRemaps] = await Promise.all([
-        db
-          .select()
+        // prettier-ignore
+        db.select()
           .from(PortRemapTable)
           .where(eq(PortRemapTable.replayId, replayJob.id)),
-        db
-          .select()
+        // prettier-ignore
+        db.select()
           .from(AddressRemapTable)
           .where(eq(AddressRemapTable.replayId, replayJob.id)),
       ]);
