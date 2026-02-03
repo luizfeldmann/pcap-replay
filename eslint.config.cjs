@@ -15,6 +15,18 @@ const compat = new FlatCompat({
 
 module.exports = defineConfig([
   {
+    ignores: [
+      "node_modules",
+      "**/dist",
+      "**/coverage",
+      "**/reports",
+      "**/*.d.ts",
+      "**/*.test.ts",
+      "**/*.config.ts",
+      "**/*.config.cjs",
+    ],
+  },
+  {
     languageOptions: {
       parser: tsParser,
       ecmaVersion: "latest",
@@ -22,8 +34,8 @@ module.exports = defineConfig([
 
       parserOptions: {
         project: [
-          "./packages/server/tsconfig.json",
           "./packages/shared/tsconfig.json",
+          "./packages/server/tsconfig.json",
           "./packages/ui/tsconfig.json",
         ],
 

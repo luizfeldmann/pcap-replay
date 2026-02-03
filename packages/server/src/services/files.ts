@@ -7,6 +7,17 @@ import { eq } from "drizzle-orm";
 import { ResourceNotFoundError, UnknownError } from "../utils/error.js";
 import { configData } from "../utils/config.js";
 
+//! Handles FS error from node
+const handleFsError = (err: unknown) => {
+  if (err && typeof err === "object") {
+    if ("code" in err && err.code === "ENOENT")
+      throw new ResourceNotFoundError();
+    else if ("message" in err && typeof err.message === "string")
+      throw new UnknownError(err.message);
+  }
+  throw new UnknownError();
+};
+
 //! Transforms from a DB row to a list item DTO
 const transformListItem = (row: FileRow): FileListItem => ({
   id: row.id,
@@ -42,10 +53,7 @@ const getFilePathOnDisk = (id: string) =>
 const deleteFile = async (id: string) => {
   // Delete from disk
   const filePath = getFilePathOnDisk(id);
-  await fs.unlink(filePath).catch((err) => {
-    if (err.code === "ENOENT") throw new ResourceNotFoundError();
-    throw new UnknownError(err.message);
-  });
+  await fs.unlink(filePath).catch(handleFsError);
 
   // Delete from DB
   const numRows = await db.delete(FilesTable).where(eq(FilesTable.id, id));
@@ -55,9 +63,7 @@ const deleteFile = async (id: string) => {
 //! Gets the path to download a file
 const downloadFile = async (id: string) => {
   const filePath = getFilePathOnDisk(id);
-  await fs.access(filePath).catch((err) => {
-    throw new ResourceNotFoundError();
-  });
+  await fs.access(filePath).catch(handleFsError);
 
   const fileInfo = await getFileInfo(id);
   return {

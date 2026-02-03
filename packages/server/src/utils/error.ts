@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import z, { ZodError } from "zod";
+import { ZodError } from "zod";
 import { ErrorCode, ErrorResponse } from "shared";
 
 //! General error class

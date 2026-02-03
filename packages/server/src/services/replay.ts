@@ -150,7 +150,7 @@ const transformListItem = (
 
 const getAll = async (): Promise<ReplayListItem[]> => {
   const jobs = await db.select().from(ReplaysTable);
-  return await Promise.all(
+  return Promise.all(
     jobs.map(async (replayJob) => {
       const [portRemaps, addrRemaps] = await Promise.all([
         // prettier-ignore
@@ -183,7 +183,7 @@ const getSingle = async (id: string): Promise<ReplayListItem> => {
 };
 
 const deleteSingle = async (id: string) => {
-  await db.transaction((tx) => {
+  db.transaction((tx) => {
     const job = tx
       .select({ status: ReplaysTable.status })
       .from(ReplaysTable)
@@ -290,7 +290,7 @@ const insertNew = async (post: ReplayPost): Promise<ReplayListItem> => {
   }
 
   // Perform all the insert transactions
-  await db.transaction((tx) => {
+  db.transaction((tx) => {
     tx.insert(ReplaysTable).values(replayJob).run();
 
     addrRemaps.forEach((remap) => {
@@ -305,7 +305,7 @@ const insertNew = async (post: ReplayPost): Promise<ReplayListItem> => {
   return transformListItem(replayJob, portRemaps, addrRemaps);
 };
 
-const modifyItem = async (patch: ReplayPatch): Promise<ReplayListItem> => {
+const modifyItem = async (_patch: ReplayPatch): Promise<ReplayListItem> => {
   // TODO: not implemented
   throw new AppError(
     "Not implemented",
@@ -315,7 +315,7 @@ const modifyItem = async (patch: ReplayPatch): Promise<ReplayListItem> => {
 };
 
 const commandStatus = async (id: string, command: JobCommand) => {
-  await db.transaction((tx) => {
+  db.transaction((tx) => {
     // Find the job and its current status
     const job = tx
       .select({ status: ReplaysTable.status })
