@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App.tsx";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { initI18n } from "./i18n";
+import { BrowserRouter } from "react-router-dom";
 
 const theme = createTheme({});
 
@@ -15,7 +16,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,
 );
