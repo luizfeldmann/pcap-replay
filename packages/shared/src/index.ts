@@ -3,5 +3,7 @@ export * from "./dto/ReplayListItem.js";
 export * from "./dto/ReplaySettings.js";
 export * from "./dto/ReplayStatus.js";
 export * from "./dto/JobCommand.js";
+export * from "./dto/PaginatedRequest.js";
+export * from "./dto/PaginatedResponse.js";
 export * from "./dto/error/ErrorCode.js";
 export * from "./dto/error/ErrorResponse.js";

@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 import { FilesService } from "../services/files.js";
 import { configData } from "../utils/config.js";
@@ -11,7 +10,11 @@ import {
   fileDownloadResponse,
   jsonResponse,
 } from "../utils/openapi.js";
-import { FileListItemSchema } from "shared";
+import {
+  FileListItemSchema,
+  PaginatedFileListRequestSchema,
+  PaginatedFileListResponseSchema,
+} from "shared";
 import { ZodOpenApiOperationObject } from "zod-openapi";
 
 // Tag for API docs
@@ -54,13 +57,28 @@ const getFilesList = {
   docs: {
     tags: [FILES_TAG],
     summary: "List all files in the server",
+    parameters: [
+      {
+        in: "query",
+        name: "limit",
+        required: true,
+        schema: { type: "integer" },
+      },
+      {
+        in: "query",
+        name: "cursor",
+        required: false,
+        schema: { type: "string" },
+      },
+    ],
     responses: {
-      [StatusCodes.OK]: jsonResponse(z.array(FileListItemSchema)),
+      [StatusCodes.OK]: jsonResponse(PaginatedFileListResponseSchema),
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {
-    const listItems = await FilesService.getFilesList();
+    const params = PaginatedFileListRequestSchema.parse(req.query);
+    const listItems = await FilesService.getFilesList(params);
     resp.json(listItems);
   },
 };

@@ -1,11 +1,16 @@
-import { FileListItem } from "shared";
+import {
+  FileListItem,
+  PaginatedFileListRequest,
+  PaginatedFileListResponse,
+} from "shared";
 import { db } from "../models/db.js";
 import path from "path";
 import fs from "fs/promises";
 import { FileRow, FilesTable } from "../models/files.js";
-import { eq } from "drizzle-orm";
+import { eq, lt, desc } from "drizzle-orm";
 import { ResourceNotFoundError, UnknownError } from "../utils/error.js";
 import { configData } from "../utils/config.js";
+import { getLastItem } from "../utils/utils.js";
 
 //! Handles FS error from node
 const handleFsError = (err: unknown) => {
@@ -27,9 +32,20 @@ const transformListItem = (row: FileRow): FileListItem => ({
 });
 
 //! Reads from the DB the list of files
-const getFilesList = async (): Promise<FileListItem[]> => {
-  const dbFiles = await db.select().from(FilesTable);
-  return dbFiles.map(transformListItem);
+const getFilesList = async (
+  req: PaginatedFileListRequest,
+): Promise<PaginatedFileListResponse> => {
+  const cursor = req.cursor ? new Date(req.cursor) : new Date();
+  const dbFiles = await db
+    .select()
+    .from(FilesTable)
+    .where(lt(FilesTable.uploadedAt, cursor))
+    .orderBy(desc(FilesTable.uploadedAt))
+    .limit(req.limit);
+  return {
+    items: dbFiles.map(transformListItem),
+    nextCursor: getLastItem(dbFiles)?.uploadedAt.toISOString(),
+  };
 };
 
 //! Finds a file by it's ID in the DB

@@ -2,5 +2,12 @@
   "app.title": "PCAP Replay",
   "nav.tabs.network": "Network",
   "nav.tabs.files": "Files",
-  "nav.tabs.replays": "Replays"
+  "nav.tabs.replays": "Replays",
+  "network.interfaces": "Interfaces",
+  "files.name": "File name",
+  "files.size": "Size",
+  "files.timeUploaded": "Time uploaded",
+  "files.upload": "Upload file",
+  "files.delete": "Delete file",
+  "files.rename": "Rename file"
 }
