@@ -10,10 +10,11 @@ import { TableVirtuoso } from "react-virtuoso";
 import { useTranslation } from "react-i18next";
 import { useFiles } from "../../api/files";
 import type { FileListItem } from "shared";
+import { FileSize } from "../../components/FileSize/FileSize";
 
 type ColumnSpec = {
   label: string;
-  content(rowData: FileListItem): string;
+  content(rowData: FileListItem): React.ReactNode;
 };
 
 export const FilesPage = () => {
@@ -28,7 +29,7 @@ export const FilesPage = () => {
     },
     {
       label: t("files.size"),
-      content: (rowData) => rowData.size.toString(),
+      content: (rowData) => <FileSize size={rowData.size} />,
     },
     {
       label: t("files.timeUploaded"),

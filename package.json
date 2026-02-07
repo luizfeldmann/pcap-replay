@@ -10,6 +10,7 @@
     "type": "git"
   },
   "scripts": {
+    "dev": "concurrently \"npm run dev --workspace ui\" \"npm run dev --workspace server\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
@@ -22,6 +23,7 @@
     "@eslint/js": "^9.39.2",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
