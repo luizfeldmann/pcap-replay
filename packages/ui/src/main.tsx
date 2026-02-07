@@ -5,6 +5,7 @@ import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { initI18n } from "./i18n";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SnackbarProvider } from "notistack";
 
 const theme = createTheme({});
 
@@ -20,7 +21,9 @@ createRoot(rootElement).render(
       <CssBaseline />
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <SnackbarProvider maxSnack={5}>
+            <App />
+          </SnackbarProvider>
         </QueryClientProvider>
       </BrowserRouter>
     </ThemeProvider>

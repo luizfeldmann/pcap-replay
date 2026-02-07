@@ -1,3 +1,4 @@
 {
-  "getFiles": "/api/files"
+  "getFiles": "/api/files",
+  "uploadFile": "/api/files"
 }

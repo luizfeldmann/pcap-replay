@@ -13,5 +13,8 @@
   "files.timeUploaded": "Time uploaded",
   "files.upload": "Upload file",
   "files.delete": "Delete file",
-  "files.rename": "Rename file"
+  "files.rename": "Rename file",
+  "files.error.badtype": "The file type must be .PCAP",
+  "files.error.upload": "File upload failed: '{{name}}' - {{message}}",
+  "files.success.upload": "File upload success: '{{name}}'"
 }

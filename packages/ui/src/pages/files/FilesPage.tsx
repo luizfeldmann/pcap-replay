@@ -1,4 +1,5 @@
 import {
+  Box,
   Paper,
   Table,
   TableBody,
@@ -8,9 +9,10 @@ import {
 } from "@mui/material";
 import { TableVirtuoso } from "react-virtuoso";
 import { useTranslation } from "react-i18next";
-import { useFiles } from "../../api/files";
+import { useFilesList } from "../../api/files";
 import type { FileListItem } from "shared";
 import { FileSize } from "../../components/FileSize/FileSize";
+import { UploadButton } from "../../components/UploadButton/UploadButton";
 
 type ColumnSpec = {
   label: string;
@@ -19,7 +21,7 @@ type ColumnSpec = {
 
 export const FilesPage = () => {
   const { t } = useTranslation();
-  const { data, fetchNextPage, hasNextPage } = useFiles();
+  const { data, fetchNextPage, hasNextPage } = useFilesList();
   const rows = data?.pages.flatMap((p) => p.items) ?? [];
 
   const columns: ColumnSpec[] = [
@@ -38,7 +40,7 @@ export const FilesPage = () => {
   ];
 
   return (
-    <Paper sx={{ height: 600, width: "100%" }}>
+    <Box component={Paper} sx={{ height: 600, width: "100%" }}>
       <TableVirtuoso
         data={rows}
         endReached={() => hasNextPage && void fetchNextPage()}
@@ -77,6 +79,7 @@ export const FilesPage = () => {
           </>
         )}
       />
-    </Paper>
+      <UploadButton />
+    </Box>
   );
 };
