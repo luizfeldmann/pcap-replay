@@ -1,3 +1,4 @@
+export * from "./dto/NetworkInterface.js";
 export * from "./dto/FileListItem.js";
 export * from "./dto/ReplayListItem.js";
 export * from "./dto/ReplaySettings.js";
