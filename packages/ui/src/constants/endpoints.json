@@ -1,4 +1,5 @@
 {
+  "getNetworkInterfaces": "/api/network/interfaces",
   "getFiles": "/api/files",
   "uploadFile": "/api/files"
 }

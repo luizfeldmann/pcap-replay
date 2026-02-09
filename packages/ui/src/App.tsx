@@ -21,21 +21,21 @@ const tabs = [
     location: "/" + routes.network,
     page: <NetworkPage />,
     label: "nav.tabs.network",
-    icon: Icons.Network,
+    icon: <Icons.Network />,
   },
   {
     path: routes.files,
     location: "/" + routes.files,
     page: <FilesPage />,
     label: "nav.tabs.files",
-    icon: Icons.Files,
+    icon: <Icons.Files />,
   },
   {
     path: routes.replays,
     location: "/" + routes.replays,
     page: <ReplaysPage />,
     label: "nav.tabs.replays",
-    icon: Icons.Replays,
+    icon: <Icons.Replays />,
   },
 ];
 

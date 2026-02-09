@@ -31,7 +31,7 @@ export const UploadButton = () => {
         style={{ display: "none" }}
         onChange={upload.onChangeFileUpload}
       />
-      {Icons.UploadFile}
+      {<Icons.UploadFile />}
       {t("files.upload")}
     </Fab>
   );
