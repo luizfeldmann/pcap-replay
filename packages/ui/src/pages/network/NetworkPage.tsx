@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ToggleListGrid } from "../../components/ToggleListGrid/ToggleListGrid";
 import { useToggleListGrid } from "../../components/ToggleListGrid/useToggleListGrid";
@@ -9,11 +9,11 @@ export const NetworkPage = () => {
   const { t } = useTranslation();
   const [toggleValue, toggleSet] = useToggleListGrid();
   return (
-    <Box>
+    <Stack spacing={1}>
       <Typography variant="h6">{t("network.interfaces")}</Typography>
       <ToggleListGrid value={toggleValue} setValue={toggleSet} />
       {toggleValue === "list" && <NetworkInterfacesList />}
       {toggleValue === "grid" && <NetworkInterfacesTable />}
-    </Box>
+    </Stack>
   );
 };

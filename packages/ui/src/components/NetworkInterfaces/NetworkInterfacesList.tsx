@@ -134,7 +134,7 @@ export const NetworkInterfacesList = () => {
   const interfaces = useNetworkInterfaces();
 
   return (
-    <Stack spacing={1} marginTop={2}>
+    <>
       {interfaces.isLoading && <LinearProgress />}
       {interfaces.isError && (
         <Alert severity="error">{interfaces.error.message}</Alert>
@@ -142,6 +142,6 @@ export const NetworkInterfacesList = () => {
       {interfaces.data?.map((item) => (
         <InterfaceCard key={item.name} data={item} />
       ))}
-    </Stack>
+    </>
   );
 };

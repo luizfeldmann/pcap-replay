@@ -4,6 +4,8 @@
   "nav.tabs.files": "Files",
   "nav.tabs.replays": "Replays",
   "network.interfaces": "Interfaces",
+  "network.nic.name": "Interface",
+  "network.nic.family": "Family",
   "network.nic.ip": "IP",
   "network.nic.netmask": "Mask",
   "network.nic.cidr": "CIDR",
