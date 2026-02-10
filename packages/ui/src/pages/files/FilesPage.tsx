@@ -1,6 +1,9 @@
 import {
+  Alert,
   Box,
+  LinearProgress,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -21,8 +24,8 @@ type ColumnSpec = {
 
 export const FilesPage = () => {
   const { t } = useTranslation();
-  const { data, fetchNextPage, hasNextPage } = useFilesList();
-  const rows = data?.pages.flatMap((p) => p.items) ?? [];
+  const filesQuery = useFilesList();
+  const rows = filesQuery.data?.pages.flatMap((p) => p.items) ?? [];
 
   const columns: ColumnSpec[] = [
     {
@@ -40,10 +43,16 @@ export const FilesPage = () => {
   ];
 
   return (
-    <Box component={Paper} sx={{ height: 600, width: "100%" }}>
+    <Stack spacing={1} component={Paper} sx={{ height: 600, width: "100%" }}>
+      {filesQuery.isLoading && <LinearProgress />}
+      {filesQuery.isError && (
+        <Alert severity="error">{filesQuery.error.message}</Alert>
+      )}
       <TableVirtuoso
         data={rows}
-        endReached={() => hasNextPage && void fetchNextPage()}
+        endReached={() =>
+          filesQuery.hasNextPage && void filesQuery.fetchNextPage()
+        }
         overscan={100}
         components={{
           Table: (props) => (
@@ -80,6 +89,6 @@ export const FilesPage = () => {
         )}
       />
       <UploadButton />
-    </Box>
+    </Stack>
   );
 };

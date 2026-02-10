@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Badge,
   Box,
@@ -135,6 +136,9 @@ export const NetworkInterfacesList = () => {
   return (
     <Stack spacing={1} marginTop={2}>
       {interfaces.isLoading && <LinearProgress />}
+      {interfaces.isError && (
+        <Alert severity="error">{interfaces.error.message}</Alert>
+      )}
       {interfaces.data?.map((item) => (
         <InterfaceCard key={item.name} data={item} />
       ))}
