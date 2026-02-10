@@ -6,33 +6,22 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Chip,
   Collapse,
   Grid,
   IconButton,
   LinearProgress,
   Stack,
-  Typography,
 } from "@mui/material";
 import { useNetworkInterfaces } from "../../api/networkInterfaces";
 import type { NetworkInterface, NetworkInterfaceAddress } from "shared";
 import { useMemo, useState } from "react";
 import { Icons } from "../../constants/Icons";
 import { useTranslation } from "react-i18next";
-
-const TagChip = (props: { label: string }) => (
-  <Chip size="small" color="default" label={props.label} />
-);
-
-const DetailHeader = (props: { label: string }) => (
-  <Typography variant="body2" color="text.secondary">
-    {props.label}
-  </Typography>
-);
-
-const DetailContent = (props: { label: string }) => (
-  <Typography variant="body2">{props.label}</Typography>
-);
+import {
+  DetailHeader,
+  TagChip,
+  DetailContent,
+} from "./NetworkInterfacesList.style";
 
 const AddrDetails = (props: { data: NetworkInterfaceAddress }) => {
   const { t } = useTranslation();
@@ -58,14 +47,14 @@ const AddrDetails = (props: { data: NetworkInterfaceAddress }) => {
           columnGap: 1,
         }}
       >
-        <DetailHeader label={t("network.nic.ip")} />
-        <DetailContent label={props.data.address} />
-        <DetailHeader label={t("network.nic.netmask")} />
-        <DetailContent label={props.data.netmask} />
-        <DetailHeader label={t("network.nic.cidr")} />
-        <DetailContent label={props.data.cidr} />
-        <DetailHeader label={t("network.nic.mac")} />
-        <DetailContent label={props.data.mac} />
+        <DetailHeader>{t("network.nic.ip")}</DetailHeader>
+        <DetailContent>{props.data.address}</DetailContent>
+        <DetailHeader>{t("network.nic.netmask")}</DetailHeader>
+        <DetailContent>{props.data.netmask}</DetailContent>
+        <DetailHeader>{t("network.nic.cidr")}</DetailHeader>
+        <DetailContent>{props.data.cidr}</DetailContent>
+        <DetailHeader>{t("network.nic.mac")}</DetailHeader>
+        <DetailContent>{props.data.mac}</DetailContent>
       </Box>
     </Stack>
   );
