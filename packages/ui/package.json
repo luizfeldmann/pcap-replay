@@ -8,6 +8,8 @@
     "mock": "vite --mode mock",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "intl:status": "npx i18next-cli status",
+    "intl:sync": "npx i18next-cli sync",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -33,6 +35,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "i18next-cli": "^1.42.6",
     "msw": "^2.12.10",
     "vite": "^7.2.4"
   }

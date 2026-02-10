@@ -6,10 +6,10 @@ export const FileSize = (props: { size: number }) => {
 
   const formatted = useMemo(() => {
     const units = [
-      "files.size.b",
-      "files.size.kb",
-      "files.size.mb",
-      "files.size.gb",
+      "files.units.b",
+      "files.units.kb",
+      "files.units.mb",
+      "files.units.gb",
     ];
 
     let u = 0;
