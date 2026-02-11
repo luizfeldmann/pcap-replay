@@ -1,4 +1,5 @@
 {
+  "language": "English",
   "app.title": "PCAP Replay",
   "nav.tabs.network": "Network",
   "nav.tabs.files": "Files",

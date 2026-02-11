@@ -6,14 +6,23 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { AppBar, Tab, Tabs, Typography, Toolbar, Box } from "@mui/material";
+import {
+  AppBar,
+  Tab,
+  Tabs,
+  Typography,
+  Toolbar,
+  Box,
+  IconButton,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { FilesPage } from "./pages/files/FilesPage";
 import { NetworkPage } from "./pages/network/NetworkPage";
 import { ReplaysPage } from "./pages/replay/ReplaysPage";
-
+import endpoints from "./constants/endpoints.json";
 import routes from "./constants/routes.json";
 import { Icons } from "./constants/Icons";
+import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector";
 
 const tabs = [
   {
@@ -83,6 +92,11 @@ const AppLayout = () => {
               />
             ))}
           </Tabs>
+          <Box sx={{ flexGrow: 1 }} />
+          <LanguageSelector />
+          <IconButton color="inherit" size="small" href={endpoints.apiDocs}>
+            <Icons.ApiDocs />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Box component="main" sx={{ p: 2 }}>
