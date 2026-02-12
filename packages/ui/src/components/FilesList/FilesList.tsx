@@ -3,7 +3,9 @@ import type { FileListItem } from "shared";
 import { useFilesList } from "../../api/files";
 import {
   Alert,
+  Box,
   LinearProgress,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -13,6 +15,8 @@ import {
 import { TableVirtuoso } from "react-virtuoso";
 import { FileSize } from "../FileSize/FileSize";
 import type { TFunction } from "i18next";
+import { Icons } from "../../constants/Icons";
+import endpoint from "../../constants/endpoints.json";
 
 type ColumnSpec = {
   label(t: TFunction): string;
@@ -22,7 +26,19 @@ type ColumnSpec = {
 const columns: ColumnSpec[] = [
   {
     label: (t) => t("files.name"),
-    content: (_t, rowData) => rowData.name,
+    content: (_t, rowData) => (
+      <Box
+        component={Link}
+        target="_blank"
+        underline="none"
+        href={`${endpoint.downloadFile}/${rowData.id}`}
+        download={rowData.name}
+        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+      >
+        <Icons.FileItem color="primary" />
+        {rowData.name}
+      </Box>
+    ),
   },
   {
     label: (t) => t("files.size"),
