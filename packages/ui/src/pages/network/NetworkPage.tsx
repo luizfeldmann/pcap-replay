@@ -9,7 +9,7 @@ export const NetworkPage = () => {
   const { t } = useTranslation();
   const [toggleValue, toggleSet] = useToggleListGrid();
   return (
-    <Stack spacing={1}>
+    <Stack spacing={1} sx={{ display: "flex", flexGrow: 1 }}>
       <Typography variant="h6">{t("network.interfaces")}</Typography>
       <ToggleListGrid value={toggleValue} setValue={toggleSet} />
       {toggleValue === "list" && <NetworkInterfacesList />}

@@ -19,12 +19,13 @@
       "netmask": "Máscara",
       "cidr": "CIDR",
       "mac": "MAC",
-      "v4": "IPv4'",
+      "v4": "IPv4",
       "v6": "IPv6",
       "internal": "Interno"
     }
   },
   "files": {
+    "list": "Arquivos carregados",
     "name": "Nome do arquivo",
     "size": "Tamanho",
     "units": {
@@ -35,8 +36,9 @@
     },
     "timeUploaded": "Data do envio",
     "upload": "Enviar arquivo",
-    "delete": "Deletar arquivo",
-    "rename": "Renomear arquivo",
+    "download": "Baixar",
+    "delete": "Deletar",
+    "rename": "Renomear",
     "error": {
       "badtype": "O arquivo deve ser do tipo .PCAP",
       "upload": "Erro ao enviar arquivo: '{{name}}' - {{message}}"

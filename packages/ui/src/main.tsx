@@ -6,6 +6,7 @@ import { initI18n } from "./i18n";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SnackbarProvider } from "notistack";
+import "./index.css";
 
 // Possibly mock server
 if (__MOCK__) {

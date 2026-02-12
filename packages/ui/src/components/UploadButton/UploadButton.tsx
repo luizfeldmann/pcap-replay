@@ -20,8 +20,9 @@ export const UploadButton = () => {
       disabled={upload.isPending}
       style={{
         position: "absolute",
-        bottom: 16,
-        right: 16,
+        top: 0,
+        right: 0,
+        margin: 0,
         zIndex: 10,
       }}
     >

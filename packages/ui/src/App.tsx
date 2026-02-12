@@ -59,7 +59,7 @@ const AppLayout = () => {
   );
 
   return (
-    <>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <AppBar position="sticky" color="primary" elevation={2}>
         <Toolbar
           variant="dense"
@@ -99,10 +99,10 @@ const AppLayout = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Box component="main" sx={{ p: 2 }}>
+      <Box component="main" sx={{ p: 2, flexGrow: 1, display: "flex" }}>
         <Outlet />
       </Box>
-    </>
+    </Box>
   );
 };
 
