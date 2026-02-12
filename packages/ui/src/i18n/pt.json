@@ -41,10 +41,12 @@
     "rename": "Renomear",
     "error": {
       "badtype": "O arquivo deve ser do tipo .PCAP",
-      "upload": "Erro ao enviar arquivo: '{{name}}' - {{message}}"
+      "upload": "Erro ao enviar arquivo: '{{name}}' - {{message}}",
+      "delete": "Erro ao deletar arquivo: '{{name}}' - {{message}}"
     },
     "success": {
-      "upload": "Envio concluído: '{{name}}'"
+      "upload": "Envio concluído: '{{name}}'",
+      "delete": "Arquivo deletado: '{{name}}'"
     }
   }
 }

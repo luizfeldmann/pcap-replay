@@ -7,11 +7,13 @@ import {
 import {
   FileListItemSchema,
   PaginatedFileListResponseSchema,
+  type FileListItem,
   type PaginatedFileListResponse,
 } from "shared";
 import endpoints from "../constants/endpoints.json";
 import { useTranslation } from "react-i18next";
 import { enqueueSnackbar } from "notistack";
+import { itemsFilter } from "./pagedDataTransform";
 
 const QUERY_KEY = "files";
 
@@ -77,6 +79,43 @@ export const useFileUpload = () => {
           // TODO
           return oldData;
         },
+      );
+    },
+  });
+};
+
+export const useDeleteFile = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (variables: { id: string; name: string }) => {
+      const resp = await fetch(`${endpoints.deleteFile}/${variables.id}`, {
+        method: "DELETE",
+      });
+      if (!resp.ok) throw new Error(resp.statusText);
+    },
+    onError: (err, variables) => {
+      enqueueSnackbar(
+        t("files.error.delete", { name: variables.name, message: err.message }),
+        {
+          variant: "error",
+        },
+      );
+    },
+    onSuccess: (_data, variables) => {
+      enqueueSnackbar(t("files.success.delete", { name: variables.name }), {
+        variant: "success",
+      });
+
+      queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
+        [QUERY_KEY],
+        (oldData) =>
+          itemsFilter<PaginatedFileListResponse, FileListItem>(
+            oldData,
+            "items",
+            (item) => item.id !== variables.id,
+          ),
       );
     },
   });

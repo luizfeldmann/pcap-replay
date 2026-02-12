@@ -28,5 +28,7 @@
   "files.rename": "Rename",
   "files.error.badtype": "The file type must be .PCAP",
   "files.error.upload": "File upload failed: '{{name}}' - {{message}}",
-  "files.success.upload": "File upload success: '{{name}}'"
+  "files.error.delete": "File deletion error: '{{name}}' - {{message}}",
+  "files.success.upload": "File upload success: '{{name}}'",
+  "files.success.delete": "File deletion success: '{{name}}'"
 }

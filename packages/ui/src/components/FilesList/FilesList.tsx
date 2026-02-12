@@ -73,7 +73,9 @@ export const FilesList = () => {
           <TableCell>{rowData.time}</TableCell>
           <TableCell>
             <FileContextButton
-              onClick={(e) => filesMenu.onOpen(e, rowData.id)}
+              onClick={(e) =>
+                filesMenu.onOpen(e, { id: rowData.id, name: rowData.name })
+              }
             />
           </TableCell>
         </>
