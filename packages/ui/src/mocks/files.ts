@@ -63,4 +63,21 @@ const getFiles = http.get(`/api/files`, ({ request }) => {
   } satisfies PaginatedFileListResponse);
 });
 
-export const filesMocks: RequestHandler[] = [getFiles];
+// Delete a file
+const deleteFile = http.delete<{ id: string }>(
+  `/api/files/:id`,
+  ({ params }) => {
+    // List must have been accessed first
+    if (!mockFilesCache) return new HttpResponse(null, { status: 500 });
+
+    // Try to find the item
+    const index = mockFilesCache.findIndex((item) => item.id === params.id);
+    if (index === -1) return new HttpResponse(null, { status: 404 });
+
+    // Remove the file
+    mockFilesCache.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
+  },
+);
+
+export const filesMocks: RequestHandler[] = [getFiles, deleteFile];
