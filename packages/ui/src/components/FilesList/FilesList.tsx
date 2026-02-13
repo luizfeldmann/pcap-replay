@@ -17,6 +17,7 @@ import { TableCellHeader } from "./FileList.style";
 import { FileIconLink } from "./FileIconLink";
 import { useFileContextMenu } from "../FileContextMenu/useFileContextMenu";
 import { FileContextMenu } from "../FileContextMenu/FileContextMenu";
+import { LocaleDateTime } from "../LocaleDateTime/LocaleDateTime";
 
 export const FilesList = () => {
   const { t } = useTranslation();
@@ -70,7 +71,9 @@ export const FilesList = () => {
           <TableCell>
             <FileSize size={rowData.size} />
           </TableCell>
-          <TableCell>{rowData.time}</TableCell>
+          <TableCell>
+            <LocaleDateTime iso={rowData.time} />
+          </TableCell>
           <TableCell>
             <FileContextButton
               onClick={(e) =>
