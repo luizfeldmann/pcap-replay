@@ -1,4 +1,5 @@
 import {
+  Add,
   Check,
   Close,
   DataObject,
@@ -29,6 +30,7 @@ export const Icons = {
   Rename: Edit,
   Confirm: Check,
   Cancel: Close,
+  Add: Add,
   MoreContext: MoreVert,
   Replays: ReplayCircleFilled,
   UploadFile: UploadFile,

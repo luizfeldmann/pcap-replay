@@ -36,5 +36,8 @@
   "files.error.upload": "File upload failed: '{{name}}' - {{message}}",
   "files.error.delete": "File deletion error: '{{name}}' - {{message}}",
   "files.success.upload": "File upload success: '{{name}}'",
-  "files.success.delete": "File deletion success: '{{name}}'"
+  "files.success.delete": "File deletion success: '{{name}}'",
+  "replays.create.button": "Create",
+  "replays.create.title": "Create new replay",
+  "replays.edit.title": "Edit replay"
 }

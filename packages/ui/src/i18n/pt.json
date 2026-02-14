@@ -62,5 +62,14 @@
       "upload": "Envio concluído: '{{name}}'",
       "delete": "Arquivo deletado: '{{name}}'"
     }
+  },
+  "replays": {
+    "create": {
+      "button": "Criar",
+      "title": "Criar nova reprodução"
+    },
+    "edit": {
+      "title": "Editar reprodução"
+    }
   }
 }

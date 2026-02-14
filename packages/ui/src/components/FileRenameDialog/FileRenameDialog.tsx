@@ -84,6 +84,13 @@ export const FileRenameDialog = (props: {
                 label={t("files.dialog.rename.label.name")}
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
+                onFocus={(e) => {
+                  // Preselect the file's base name (not extension)
+                  const input = e.target as HTMLInputElement;
+                  const dotIndex = input.value.lastIndexOf(".");
+                  const selRange = dotIndex > 0 ? dotIndex : input.value.length;
+                  input.setSelectionRange(0, selRange);
+                }}
               />
             )}
           />

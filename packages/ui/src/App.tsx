@@ -23,6 +23,7 @@ import endpoints from "./constants/endpoints.json";
 import routes from "./constants/routes.json";
 import { Icons } from "./constants/Icons";
 import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector";
+import { ReplayFormPage } from "./pages/replay/ReplayFormPage";
 
 const tabs = [
   {
@@ -114,6 +115,14 @@ export const App = () => {
         {tabs.map((t) => (
           <Route key={t.path} path={t.path} element={t.page} />
         ))}
+        <Route
+          path={routes.replays_create}
+          element={<ReplayFormPage mode="create" />}
+        />
+        <Route
+          path={`${routes.replays_edit}/:id`}
+          element={<ReplayFormPage mode="edit" />}
+        />
       </Route>
     </Routes>
   );
