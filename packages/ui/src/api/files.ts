@@ -12,7 +12,7 @@ import {
   type PaginatedFileListResponse,
 } from "shared";
 import endpoints from "../constants/endpoints.json";
-import { itemsFilter, itemsMap } from "./pagedDataTransform";
+import { itemPrepend, itemsFilter, itemsMap } from "./pagedDataTransform";
 
 const QUERY_KEY = "files";
 
@@ -52,16 +52,15 @@ export const useFileUpload = () => {
         throw new Error(res.statusText);
       }
 
+      // Read the returned file
       const body = await res.json();
       return FileListItemSchema.parse(body);
     },
-    onSuccess: (_data) => {
+    onSuccess: (data) => {
+      // Prepend the returned file data in the cache list
       queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
         [QUERY_KEY],
-        (oldData) => {
-          // TODO
-          return oldData;
-        },
+        (oldData) => itemPrepend(oldData, "items", data),
       );
     },
   });
@@ -78,12 +77,14 @@ export const useDeleteFile = () => {
       if (!resp.ok) throw new Error(resp.statusText);
     },
     onSuccess: (_data, variables) => {
+      // Remove the file from the query cache
       queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
         [QUERY_KEY],
         (oldData) =>
           itemsFilter<PaginatedFileListResponse, FileListItem>(
             oldData,
             "items",
+            // Filter (keep) all files whose IDs are NOT the deleted file
             (item) => item.id !== variables.id,
           ),
       );
@@ -109,12 +110,15 @@ export const useRenameFile = () => {
       return FileListItemSchema.parse(body);
     },
     onSuccess: (data) =>
+      // Rename the file in the query cache
       queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
         [QUERY_KEY],
         (oldData) =>
           itemsMap<PaginatedFileListResponse, FileListItem>(
             oldData,
             "items",
+            // The renamed file maps to the new data
+            // the other files map to themselves
             (item) => (item.id === data.id ? data : item),
           ),
       ),

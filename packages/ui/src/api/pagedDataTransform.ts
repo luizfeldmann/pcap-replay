@@ -2,7 +2,7 @@ import type { InfiniteData } from "@tanstack/react-query";
 
 const pageTransform = <TPage>(
   prevData: InfiniteData<TPage> | undefined,
-  cb: (page: TPage) => TPage,
+  cb: (page: TPage, pageIndex: number) => TPage,
 ): InfiniteData<TPage> | undefined => {
   if (!prevData) return undefined;
   return {
@@ -18,12 +18,21 @@ type KeysOfType<T, V> = {
 const itemsTransform = <TPage, TItem>(
   prevData: InfiniteData<TPage> | undefined,
   itemsKey: KeysOfType<TPage, TItem[]>,
-  cb: (items: TItem[]) => TItem[],
+  cb: (items: TItem[], pageIndex: number) => TItem[],
 ): InfiniteData<TPage> | undefined =>
-  pageTransform(prevData, (page) => ({
+  pageTransform(prevData, (page, pageIndex) => ({
     ...page,
-    [itemsKey]: cb(page[itemsKey] as TItem[]),
+    [itemsKey]: cb(page[itemsKey] as TItem[], pageIndex),
   }));
+
+export const itemPrepend = <TPage, TItem>(
+  prevData: InfiniteData<TPage> | undefined,
+  itemsKey: KeysOfType<TPage, TItem[]>,
+  item: TItem,
+): InfiniteData<TPage> | undefined =>
+  itemsTransform<TPage, TItem>(prevData, itemsKey, (list, pageIndex) =>
+    pageIndex === 0 ? [item, ...list] : list,
+  );
 
 export const itemsFilter = <TPage, TItem>(
   prevData: InfiniteData<TPage> | undefined,
