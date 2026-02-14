@@ -19,7 +19,26 @@ export const useFileUploadButton = () => {
     }
 
     // Send the mutation
-    upload.mutate(file);
+    upload.mutate(file, {
+      // Show a snackbar if an error ocurred
+      onError: (err, variables) => {
+        enqueueSnackbar(
+          t("files.error.upload", {
+            name: variables.name,
+            message: err.message,
+          }),
+          {
+            variant: "error",
+          },
+        );
+      },
+      onSuccess: (_data, variables) => {
+        // Show a snackbar on upload success
+        enqueueSnackbar(t("files.success.upload", { name: variables.name }), {
+          variant: "success",
+        });
+      },
+    });
   };
 
   return { onChangeFileUpload, isPending: upload.isPending };

@@ -12,8 +12,6 @@ import {
   type PaginatedFileListResponse,
 } from "shared";
 import endpoints from "../constants/endpoints.json";
-import { useTranslation } from "react-i18next";
-import { enqueueSnackbar } from "notistack";
 import { itemsFilter, itemsMap } from "./pagedDataTransform";
 
 const QUERY_KEY = "files";
@@ -36,7 +34,6 @@ export const useFilesList = () =>
   });
 
 export const useFileUpload = () => {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -58,19 +55,7 @@ export const useFileUpload = () => {
       const body = await res.json();
       return FileListItemSchema.parse(body);
     },
-    onError: (err, variables) => {
-      enqueueSnackbar(
-        t("files.error.upload", { name: variables.name, message: err.message }),
-        {
-          variant: "error",
-        },
-      );
-    },
-    onSuccess: (_data, variables) => {
-      enqueueSnackbar(t("files.success.upload", { name: variables.name }), {
-        variant: "success",
-      });
-
+    onSuccess: (_data) => {
       queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
         [QUERY_KEY],
         (oldData) => {
@@ -83,7 +68,6 @@ export const useFileUpload = () => {
 };
 
 export const useDeleteFile = () => {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -93,19 +77,7 @@ export const useDeleteFile = () => {
       });
       if (!resp.ok) throw new Error(resp.statusText);
     },
-    onError: (err, variables) => {
-      enqueueSnackbar(
-        t("files.error.delete", { name: variables.name, message: err.message }),
-        {
-          variant: "error",
-        },
-      );
-    },
     onSuccess: (_data, variables) => {
-      enqueueSnackbar(t("files.success.delete", { name: variables.name }), {
-        variant: "success",
-      });
-
       queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
         [QUERY_KEY],
         (oldData) =>

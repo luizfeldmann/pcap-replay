@@ -1,6 +1,8 @@
 import type { PopoverPosition } from "@mui/material";
 import { useState } from "react";
 import { useDeleteFile } from "../../api/files";
+import { enqueueSnackbar } from "notistack";
+import { useTranslation } from "react-i18next";
 
 export type FileContextSelection = {
   id: string;
@@ -8,6 +10,7 @@ export type FileContextSelection = {
 };
 
 export const useFileContextMenu = () => {
+  const { t } = useTranslation();
   // Mutation to delete the file
   const fileDeletion = useDeleteFile();
 
@@ -37,8 +40,26 @@ export const useFileContextMenu = () => {
   };
 
   const onDelete = () => {
-    if (selectedRow) fileDeletion.mutate(selectedRow);
     onClose();
+    if (!selectedRow) return;
+    fileDeletion.mutate(selectedRow, {
+      onError: (err, variables) => {
+        enqueueSnackbar(
+          t("files.error.delete", {
+            name: variables.name,
+            message: err.message,
+          }),
+          {
+            variant: "error",
+          },
+        );
+      },
+      onSuccess: (_data, variables) => {
+        enqueueSnackbar(t("files.success.delete", { name: variables.name }), {
+          variant: "success",
+        });
+      },
+    });
   };
 
   const onRename = () => {
