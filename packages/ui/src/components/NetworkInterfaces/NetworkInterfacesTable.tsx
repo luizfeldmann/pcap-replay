@@ -16,8 +16,11 @@ import { HeaderCell } from "./NetworkInterfacesTable.style";
 
 export const NetworkInterfacesTable = () => {
   const { t } = useTranslation();
+
+  // Query interfaces from server
   const interfaces = useNetworkInterfaces();
 
+  // Flatten all addresses of each interface, one per row
   const flatData = useMemo(
     () =>
       interfaces.data?.flatMap((iface) =>
@@ -26,46 +29,46 @@ export const NetworkInterfacesTable = () => {
     [interfaces.data],
   );
 
+  // Show loading or error
+  if (interfaces.isLoading) return <LinearProgress />;
+  else if (interfaces.isError)
+    return <Alert severity="error">{interfaces.error.message}</Alert>;
+
+  // Render the table
   return (
-    <>
-      {interfaces.isLoading && <LinearProgress />}
-      {interfaces.isError && (
-        <Alert severity="error">{interfaces.error.message}</Alert>
-      )}
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow>
-              <HeaderCell>{t("network.nic.name")}</HeaderCell>
-              <HeaderCell>{t("network.nic.family")}</HeaderCell>
-              <HeaderCell>{t("network.nic.internal")}</HeaderCell>
-              <HeaderCell>{t("network.nic.ip")}</HeaderCell>
-              <HeaderCell>{t("network.nic.netmask")}</HeaderCell>
-              <HeaderCell>{t("network.nic.cidr")}</HeaderCell>
-              <HeaderCell>{t("network.nic.mac")}</HeaderCell>
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }}>
+        <TableHead>
+          <TableRow>
+            <HeaderCell>{t("network.nic.name")}</HeaderCell>
+            <HeaderCell>{t("network.nic.family")}</HeaderCell>
+            <HeaderCell>{t("network.nic.internal")}</HeaderCell>
+            <HeaderCell>{t("network.nic.ip")}</HeaderCell>
+            <HeaderCell>{t("network.nic.netmask")}</HeaderCell>
+            <HeaderCell>{t("network.nic.cidr")}</HeaderCell>
+            <HeaderCell>{t("network.nic.mac")}</HeaderCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {flatData?.map((item, i) => (
+            <TableRow key={i}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>
+                {item.family === "IPv4"
+                  ? t("network.nic.v4")
+                  : t("network.nic.v6")}
+              </TableCell>
+              <TableCell>
+                {item.internal && t("network.nic.internal")}
+              </TableCell>
+              <TableCell>{item.address}</TableCell>
+              <TableCell>{item.netmask}</TableCell>
+              <TableCell>{item.cidr}</TableCell>
+              <TableCell>{item.mac}</TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {flatData?.map((item, i) => (
-              <TableRow key={i}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>
-                  {item.family === "IPv4"
-                    ? t("network.nic.v4")
-                    : t("network.nic.v6")}
-                </TableCell>
-                <TableCell>
-                  {item.internal && t("network.nic.internal")}
-                </TableCell>
-                <TableCell>{item.address}</TableCell>
-                <TableCell>{item.netmask}</TableCell>
-                <TableCell>{item.cidr}</TableCell>
-                <TableCell>{item.mac}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
