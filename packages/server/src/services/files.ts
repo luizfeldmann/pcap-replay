@@ -1,5 +1,6 @@
 import {
   FileListItem,
+  FilePatch,
   PaginatedFileListRequest,
   PaginatedFileListResponse,
 } from "shared";
@@ -8,9 +9,14 @@ import path from "path";
 import fs from "fs/promises";
 import { FileRow, FilesTable } from "../models/files.js";
 import { eq, lt, desc } from "drizzle-orm";
-import { ResourceNotFoundError, UnknownError } from "../utils/error.js";
+import {
+  RequestValidationError,
+  ResourceNotFoundError,
+  UnknownError,
+} from "../utils/error.js";
 import { configData } from "../utils/config.js";
 import { getLastItem } from "../utils/utils.js";
+import { SQLiteUpdateSetSource } from "drizzle-orm/sqlite-core/index.js";
 
 //! Handles FS error from node
 const handleFsError = (err: unknown) => {
@@ -59,6 +65,39 @@ const getFileInfo = async (id: string): Promise<FileListItem> => {
   if (!dbFile) throw new ResourceNotFoundError();
 
   return transformListItem(dbFile);
+};
+
+const modifyFile = (id: string, patch: FilePatch): FileListItem => {
+  // Ensure there is something to be updated
+  if (Object.keys(patch).length === 0) throw new RequestValidationError();
+
+  return db.transaction((tx) => {
+    // Compute the set of updates based on the data provided by the patch
+    const updateValues: SQLiteUpdateSetSource<typeof FilesTable> = {};
+
+    if (patch.name) updateValues.filename = patch.name;
+
+    // Apply update to the DB
+    const result = tx
+      .update(FilesTable)
+      .set(updateValues)
+      .where(eq(FilesTable.id, id))
+      .run();
+
+    if (!result.changes) throw new ResourceNotFoundError();
+
+    // Read the latest state of the file to return it
+    const dbFile = tx
+      .select()
+      .from(FilesTable)
+      .where(eq(FilesTable.id, id))
+      .get();
+
+    if (!dbFile) throw new ResourceNotFoundError();
+
+    // Return the updated file
+    return transformListItem(dbFile);
+  });
 };
 
 //! Gets the name of the path on disk
@@ -113,6 +152,7 @@ const saveFile = async (
 export const FilesService = {
   getFilesList,
   deleteFile,
+  modifyFile,
   downloadFile,
   saveFile,
 };

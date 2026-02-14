@@ -67,9 +67,9 @@ const createReplayJob = {
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, resp: Response) => {
+  handler: (req: Request, resp: Response) => {
     const postData = ReplayPostSchema.parse(req.body);
-    const createdItem = await ReplayService.insertNew(postData);
+    const createdItem = ReplayService.insertNew(postData);
     resp.json(createdItem);
   },
 };
@@ -108,9 +108,9 @@ const deleteReplayJob = {
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, resp: Response) => {
+  handler: (req: Request, resp: Response) => {
     const params = JobIdSchema.parse(req.params);
-    await ReplayService.deleteSingle(params.id);
+    ReplayService.deleteSingle(params.id);
     resp.sendStatus(StatusCodes.NO_CONTENT);
   },
 };
@@ -135,9 +135,9 @@ const commandReplayJob = {
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, resp: Response) => {
+  handler: (req: Request, resp: Response) => {
     const params = JobCommandRequestSchema.parse(req.params);
-    await ReplayService.commandStatus(params.id, params.command);
+    ReplayService.commandStatus(params.id, params.command);
     resp.sendStatus(StatusCodes.ACCEPTED);
   },
 };

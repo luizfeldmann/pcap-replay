@@ -12,6 +12,7 @@ import {
 } from "../utils/openapi.js";
 import {
   FileListItemSchema,
+  FilePatchSchema,
   PaginatedFileListRequestSchema,
   PaginatedFileListResponseSchema,
 } from "shared";
@@ -156,6 +157,27 @@ const getFileById = {
   },
 };
 
+// Modify/update a file
+const modifyFile = {
+  docs: {
+    tags: [FILES_TAG],
+    summary: "Modify a file",
+    parameters: [
+      { in: "path", name: "id", required: true, schema: { type: "string" } },
+    ],
+    responses: {
+      [StatusCodes.CREATED]: jsonResponse(FileListItemSchema),
+      default: defaultErrorResponse(),
+    },
+  } satisfies ZodOpenApiOperationObject,
+  handler: (req: Request, resp: Response) => {
+    const params = FileIdSchema.parse(req.params);
+    const patch = FilePatchSchema.parse(req.body);
+    const modified = FilesService.modifyFile(params.id, patch);
+    resp.json(modified);
+  },
+};
+
 // Deleting of one file
 const deleteFile = {
   docs: {
@@ -181,6 +203,7 @@ const deleteFile = {
 export const FilesController = {
   getFilesList,
   getFileById,
+  modifyFile,
   deleteFile,
   uploadFile,
 };

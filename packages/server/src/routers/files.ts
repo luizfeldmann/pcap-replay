@@ -12,6 +12,7 @@ router.post(
   FilesController.uploadFile.handler,
 );
 router.get("/:id", FilesController.getFileById.handler);
+router.patch("/:id", FilesController.modifyFile.handler);
 router.delete("/:id", FilesController.deleteFile.handler);
 
 const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
@@ -21,6 +22,7 @@ const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
   },
   [`${prefix}/{id}`]: {
     get: FilesController.getFileById.docs,
+    patch: FilesController.modifyFile.docs,
     delete: FilesController.deleteFile.docs,
   },
 });

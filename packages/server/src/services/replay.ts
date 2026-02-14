@@ -182,7 +182,7 @@ const getSingle = async (id: string): Promise<ReplayListItem> => {
   return transformListItem(replayJob, portRemaps, addrRemaps);
 };
 
-const deleteSingle = async (id: string) => {
+const deleteSingle = (id: string) => {
   db.transaction((tx) => {
     const job = tx
       .select({ status: ReplaysTable.status })
@@ -199,7 +199,7 @@ const deleteSingle = async (id: string) => {
   });
 };
 
-const insertNew = async (post: ReplayPost): Promise<ReplayListItem> => {
+const insertNew = (post: ReplayPost): ReplayListItem => {
   const id = crypto.randomUUID();
 
   // Transform the job data
@@ -305,7 +305,7 @@ const insertNew = async (post: ReplayPost): Promise<ReplayListItem> => {
   return transformListItem(replayJob, portRemaps, addrRemaps);
 };
 
-const modifyItem = async (_patch: ReplayPatch): Promise<ReplayListItem> => {
+const modifyItem = (_patch: ReplayPatch): Promise<ReplayListItem> => {
   // TODO: not implemented
   throw new AppError(
     "Not implemented",
@@ -314,7 +314,7 @@ const modifyItem = async (_patch: ReplayPatch): Promise<ReplayListItem> => {
   );
 };
 
-const commandStatus = async (id: string, command: JobCommand) => {
+const commandStatus = (id: string, command: JobCommand) => {
   db.transaction((tx) => {
     // Find the job and its current status
     const job = tx
