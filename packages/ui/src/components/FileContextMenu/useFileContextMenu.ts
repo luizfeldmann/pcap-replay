@@ -8,9 +8,18 @@ export type FileContextSelection = {
 };
 
 export const useFileContextMenu = () => {
+  // Mutation to delete the file
   const fileDeletion = useDeleteFile();
+
+  // Stores location where the context was opened
   const [anchor, setAnchor] = useState<undefined | PopoverPosition>(undefined);
+
+  // On which row the context was opened
   const [selectedRow, setSelectedRow] = useState<
+    FileContextSelection | undefined
+  >(undefined);
+
+  const [renameFile, setRenameFile] = useState<
     FileContextSelection | undefined
   >(undefined);
 
@@ -33,9 +42,12 @@ export const useFileContextMenu = () => {
   };
 
   const onRename = () => {
-    // TODO
-    console.log("Rename", selectedRow);
+    setRenameFile(selectedRow);
     onClose();
+  };
+
+  const onCloseRename = () => {
+    setRenameFile(undefined);
   };
 
   return {
@@ -44,5 +56,9 @@ export const useFileContextMenu = () => {
     onClose,
     onRename,
     onDelete,
+    fileRename: {
+      file: renameFile,
+      close: onCloseRename,
+    },
   };
 };

@@ -11,6 +11,12 @@ export const FileListItemSchema = z.object({
 
 export type FileListItem = z.infer<typeof FileListItemSchema>;
 
+export const FilePatchSchema = FileListItemSchema.pick({
+  name: true,
+}).partial();
+
+export type FilePatch = z.infer<typeof FilePatchSchema>;
+
 export const PaginatedFileListRequestSchema = PaginatedRequestSchema.extend({
   cursor: z.iso.datetime().optional(),
 });

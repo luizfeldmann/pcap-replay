@@ -8,12 +8,13 @@ import {
   FileListItemSchema,
   PaginatedFileListResponseSchema,
   type FileListItem,
+  type FilePatch,
   type PaginatedFileListResponse,
 } from "shared";
 import endpoints from "../constants/endpoints.json";
 import { useTranslation } from "react-i18next";
 import { enqueueSnackbar } from "notistack";
-import { itemsFilter } from "./pagedDataTransform";
+import { itemsFilter, itemsMap } from "./pagedDataTransform";
 
 const QUERY_KEY = "files";
 
@@ -55,8 +56,7 @@ export const useFileUpload = () => {
       }
 
       const body = await res.json();
-      const { data } = FileListItemSchema.safeParse(body);
-      return data;
+      return FileListItemSchema.parse(body);
     },
     onError: (err, variables) => {
       enqueueSnackbar(
@@ -66,9 +66,7 @@ export const useFileUpload = () => {
         },
       );
     },
-    onSuccess: (data, variables) => {
-      if (!data) return;
-
+    onSuccess: (_data, variables) => {
       enqueueSnackbar(t("files.success.upload", { name: variables.name }), {
         variant: "success",
       });
@@ -118,5 +116,35 @@ export const useDeleteFile = () => {
           ),
       );
     },
+  });
+};
+
+export const useRenameFile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (variables: { id: string; patch: FilePatch }) => {
+      const resp = await fetch(`${endpoints.renameFile}/${variables.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(variables.patch),
+      });
+      if (!resp.ok) throw new Error(resp.statusText);
+
+      // Return the new file state from the response
+      const body = await resp.json();
+      return FileListItemSchema.parse(body);
+    },
+    onSuccess: (data) =>
+      queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
+        [QUERY_KEY],
+        (oldData) =>
+          itemsMap<PaginatedFileListResponse, FileListItem>(
+            oldData,
+            "items",
+            (item) => (item.id === data.id ? data : item),
+          ),
+      ),
   });
 };

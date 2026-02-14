@@ -1,4 +1,6 @@
 import {
+  Check,
+  Close,
   DataObject,
   Delete,
   Edit,
@@ -25,6 +27,8 @@ export const Icons = {
   Files: Folder,
   Delete: Delete,
   Rename: Edit,
+  Confirm: Check,
+  Cancel: Close,
   MoreContext: MoreVert,
   Replays: ReplayCircleFilled,
   UploadFile: UploadFile,

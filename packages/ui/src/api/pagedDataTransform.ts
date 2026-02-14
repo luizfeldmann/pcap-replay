@@ -33,3 +33,12 @@ export const itemsFilter = <TPage, TItem>(
   itemsTransform<TPage, TItem>(prevData, itemsKey, (list) =>
     list.filter((item) => predicate(item)),
   );
+
+export const itemsMap = <TPage, TItem>(
+  prevData: InfiniteData<TPage> | undefined,
+  itemsKey: KeysOfType<TPage, TItem[]>,
+  predicate: (item: TItem) => TItem,
+): InfiniteData<TPage> | undefined =>
+  itemsTransform<TPage, TItem>(prevData, itemsKey, (list) =>
+    list.map((item) => predicate(item)),
+  );

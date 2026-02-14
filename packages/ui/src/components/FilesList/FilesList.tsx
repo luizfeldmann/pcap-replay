@@ -18,6 +18,7 @@ import { FileIconLink } from "./FileIconLink";
 import { useFileContextMenu } from "../FileContextMenu/useFileContextMenu";
 import { FileContextMenu } from "../FileContextMenu/FileContextMenu";
 import { LocaleDateTime } from "../LocaleDateTime/LocaleDateTime";
+import { FileRenameDialog } from "../FileRenameDialog/FileRenameDialog";
 
 export const FilesList = () => {
   const { t } = useTranslation();
@@ -60,6 +61,7 @@ export const FilesList = () => {
               onDelete={filesMenu.onDelete}
               onRename={filesMenu.onRename}
             />
+            <FileRenameDialog {...filesMenu.fileRename} />
           </TableCellHeader>
         </TableRow>
       )}

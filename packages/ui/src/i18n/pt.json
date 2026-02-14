@@ -39,6 +39,20 @@
     "download": "Baixar",
     "delete": "Deletar",
     "rename": "Renomear",
+    "dialog": {
+      "rename": {
+        "title": "Renomear arquivo",
+        "confirm": "Renomear",
+        "cancel": "Cancelar",
+        "label": {
+          "name": "Nome"
+        },
+        "validate": {
+          "extension": "O arquivo deve ter extensão '.pcap'",
+          "invalidchars": "Caracteres inválidos para nome de arquivo"
+        }
+      }
+    },
     "error": {
       "badtype": "O arquivo deve ser do tipo .PCAP",
       "upload": "Erro ao enviar arquivo: '{{name}}' - {{message}}",

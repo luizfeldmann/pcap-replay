@@ -1,5 +1,6 @@
 import { HttpResponse, RequestHandler, http } from "msw";
 import {
+  FilePatchSchema,
   PaginatedRequestSchema,
   type FileListItem,
   type PaginatedFileListResponse,
@@ -80,4 +81,29 @@ const deleteFile = http.delete<{ id: string }>(
   },
 );
 
-export const filesMocks: RequestHandler[] = [getFiles, deleteFile];
+// Patch a file
+const patchFile = http.patch<{ id: string }>(
+  `/api/files/:id`,
+  async ({ params, request }) => {
+    // List must have been accessed first
+    if (!mockFilesCache) return new HttpResponse(null, { status: 500 });
+
+    // Parse request
+    const requestBody = await request.json();
+    const { success, data: requestData } =
+      FilePatchSchema.safeParse(requestBody);
+    if (!success) return new HttpResponse(null, { status: 400 });
+
+    // Try to find the item
+    const file = mockFilesCache.find((item) => item.id === params.id);
+    if (!file) return new HttpResponse(null, { status: 404 });
+
+    // Modify file
+    if (requestData.name) file.name = requestData.name;
+
+    // Return updated file
+    return HttpResponse.json(file);
+  },
+);
+
+export const filesMocks: RequestHandler[] = [getFiles, patchFile, deleteFile];
