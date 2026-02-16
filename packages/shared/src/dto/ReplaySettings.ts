@@ -63,6 +63,8 @@ const LengthSettingsSchema = z.union([
   }),
 ]);
 
+export type LengthSettings = z.infer<typeof LengthSettingsSchema>;
+
 const RepeatSettingsSchema = z.union([
   z.object({
     type: z.literal("loop"),
@@ -72,6 +74,8 @@ const RepeatSettingsSchema = z.union([
     times: z.int().min(1),
   }),
 ]);
+
+export type RepeatSettings = z.infer<typeof RepeatSettingsSchema>;
 
 // Full replay job settings
 export const ReplaySettingsSchema = z.object({

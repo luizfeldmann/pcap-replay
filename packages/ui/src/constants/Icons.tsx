@@ -1,5 +1,7 @@
 import {
   Add,
+  AllInclusive,
+  Block,
   Check,
   Close,
   DataObject,
@@ -12,7 +14,10 @@ import {
   Lan,
   Language,
   MoreVert,
+  Numbers,
+  RepeatOne,
   ReplayCircleFilled,
+  Timer,
   UploadFile,
   ViewList,
 } from "@mui/icons-material";
@@ -33,5 +38,10 @@ export const Icons = {
   Add: Add,
   MoreContext: MoreVert,
   Replays: ReplayCircleFilled,
+  Infinity: AllInclusive,
+  RepeatTimes: RepeatOne,
+  Duration: Timer,
+  Numbers: Numbers,
+  Forbidden: Block,
   UploadFile: UploadFile,
 };

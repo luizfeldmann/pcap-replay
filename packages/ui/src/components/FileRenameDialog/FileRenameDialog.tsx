@@ -62,7 +62,7 @@ export const FileRenameDialog = (props: {
             name="name"
             control={control}
             rules={{
-              required: "",
+              required: t("files.dialog.rename.validate.required"),
               validate: {
                 validChars: (v) =>
                   !INVALID_CHARS.test(v) ||

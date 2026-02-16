@@ -48,6 +48,7 @@
           "name": "Nome"
         },
         "validate": {
+          "required": "",
           "extension": "O arquivo deve ter extensão '.pcap'",
           "invalidchars": "Caracteres inválidos para nome de arquivo"
         }
@@ -70,6 +71,36 @@
     },
     "edit": {
       "title": "Editar reprodução"
+    },
+    "form": {
+      "button": {
+        "create": "Criar",
+        "edit": "Salvar alteração"
+      },
+      "name": {
+        "label": "Nome",
+        "validate": {
+          "required": "Obrigatório informar o nome da reprodução"
+        }
+      },
+      "interface": {
+        "label": "Interface de rede",
+        "required": "Obrigatório informar a interface de rede"
+      },
+      "repeat": {
+        "label": "Repetição",
+        "loop": "Loop",
+        "times": "Vezes",
+        "count": "Número de repetições"
+      },
+      "limit": {
+        "label": "Limitação",
+        "duration": "Duração",
+        "durationunit": "s",
+        "packets": "Pacotes",
+        "maxduration": "Máxima duração",
+        "maxpackets": "Quantidade de pacotes"
+      }
     }
   }
 }
