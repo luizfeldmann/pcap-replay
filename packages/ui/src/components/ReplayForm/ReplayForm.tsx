@@ -18,6 +18,8 @@ import { useNetworkInterfaces } from "../../api/networkInterfaces";
 import { Icons } from "../../constants/Icons";
 import { ReplayRepetitionEdit } from "../ReplayRepetitionEdit/ReplayRepetitionEdit";
 import { ReplayLengthEdit } from "../ReplayLengthEdit/ReplayLengthEdit";
+import { Link } from "react-router-dom";
+import routes from "../../constants/routes.json";
 
 export const ReplayForm = (props: {
   initState: ReplayPost;
@@ -118,9 +120,19 @@ export const ReplayForm = (props: {
         )}
       />
       <Divider flexItem />
-      <Button startIcon={<Icons.Confirm />} variant="contained" type="submit">
-        {props.labelSubmit}
-      </Button>
+      <Stack direction="row" spacing={2} justifyContent="flex-start">
+        <Button startIcon={<Icons.Confirm />} variant="contained" type="submit">
+          {props.labelSubmit}
+        </Button>
+        <Button
+          startIcon={<Icons.Cancel />}
+          variant="outlined"
+          component={Link}
+          to={"/" + routes.replays}
+        >
+          {t("replays.form.button.cancel")}
+        </Button>
+      </Stack>
     </Stack>
   );
 };

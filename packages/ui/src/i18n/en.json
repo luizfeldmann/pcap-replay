@@ -43,6 +43,7 @@
   "replays.edit.title": "Edit replay",
   "replays.form.button.create": "Create",
   "replays.form.button.edit": "Save edit",
+  "replays.form.button.cancel": "Cancel",
   "replays.form.name.label": "Name",
   "replays.form.name.validate.required": "The replay name is required",
   "replays.form.interface.label": "Network Interface",
