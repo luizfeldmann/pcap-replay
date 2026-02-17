@@ -51,6 +51,8 @@ const LoadSettingsSchema = z.union([
   }),
 ]);
 
+export type LoadSettings = z.infer<typeof LoadSettingsSchema>;
+
 //! Defines length limitations, only one may be present
 const LengthSettingsSchema = z.union([
   z.object({

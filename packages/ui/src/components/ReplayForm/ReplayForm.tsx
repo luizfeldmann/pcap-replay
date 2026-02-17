@@ -20,6 +20,7 @@ import { ReplayRepetitionEdit } from "../ReplayRepetitionEdit/ReplayRepetitionEd
 import { ReplayLengthEdit } from "../ReplayLengthEdit/ReplayLengthEdit";
 import { Link } from "react-router-dom";
 import routes from "../../constants/routes.json";
+import { ReplaySpeedEdit } from "../ReplaySpeedEdit/ReplaySpeedEdit";
 
 export const ReplayForm = (props: {
   initState: ReplayPost;
@@ -119,6 +120,17 @@ export const ReplayForm = (props: {
           </FormControl>
         )}
       />
+      <Divider flexItem />
+      <FormControl>
+        <FormLabel>{t("replays.form.speed.label")}</FormLabel>
+        <Controller
+          control={control}
+          name="load"
+          render={({ field }) => (
+            <ReplaySpeedEdit value={field.value} onChange={field.onChange} />
+          )}
+        />
+      </FormControl>
       <Divider flexItem />
       <Stack direction="row" spacing={2} justifyContent="flex-start">
         <Button startIcon={<Icons.Confirm />} variant="contained" type="submit">

@@ -75,7 +75,8 @@
     "form": {
       "button": {
         "create": "Criar",
-        "edit": "Salvar alteração"
+        "edit": "Salvar alteração",
+        "cancel": "Cancelar"
       },
       "name": {
         "label": "Nome",
@@ -100,6 +101,18 @@
         "packets": "Pacotes",
         "maxduration": "Máxima duração",
         "maxpackets": "Quantidade de pacotes"
+      },
+      "speed": {
+        "label": "Velocidade",
+        "packetrate": "Taxa de pacotes",
+        "packetrateshort": "PPS",
+        "packetrateunit": "Pacote/s",
+        "datarate": "Taxa de dados",
+        "datarateunit": "Mbps",
+        "datarateshort": "Mbps",
+        "multiplier": "Multiplicador",
+        "multipliershort": "Mult.",
+        "multiplierunit": "x"
       }
     }
   }

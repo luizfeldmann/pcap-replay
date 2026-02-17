@@ -57,5 +57,15 @@
   "replays.form.limit.durationunit": "s",
   "replays.form.limit.packets": "Packets",
   "replays.form.limit.maxduration": "Maximum duration",
-  "replays.form.limit.maxpackets": "Maximum packets"
+  "replays.form.limit.maxpackets": "Maximum packets",
+  "replays.form.speed.label": "Speed",
+  "replays.form.speed.packetrate": "Packet rate",
+  "replays.form.speed.packetrateshort": "PPS",
+  "replays.form.speed.packetrateunit": "Packet/s",
+  "replays.form.speed.datarate": "Data rate",
+  "replays.form.speed.datarateunit": "Mbps",
+  "replays.form.speed.datarateshort": "Mbps",
+  "replays.form.speed.multiplier": "Multiplier",
+  "replays.form.speed.multipliershort": "Mult.",
+  "replays.form.speed.multiplierunit": "x"
 }

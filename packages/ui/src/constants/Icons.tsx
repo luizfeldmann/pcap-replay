@@ -17,7 +17,10 @@ import {
   Numbers,
   RepeatOne,
   ReplayCircleFilled,
+  Speed,
+  SwapVert,
   Timer,
+  Tune,
   UploadFile,
   ViewList,
 } from "@mui/icons-material";
@@ -42,6 +45,9 @@ export const Icons = {
   RepeatTimes: RepeatOne,
   Duration: Timer,
   Numbers: Numbers,
+  SpeedMult: Tune,
+  SpeedDataRate: Speed,
+  SpeedPackets: SwapVert,
   Forbidden: Block,
   UploadFile: UploadFile,
 };
