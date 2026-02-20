@@ -1,9 +1,10 @@
 import {
+  Accordion,
+  AccordionDetails,
   Button,
   Divider,
   FormControl,
   FormHelperText,
-  FormLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -22,6 +23,7 @@ import { Link } from "react-router-dom";
 import routes from "../../constants/routes.json";
 import { ReplaySpeedEdit } from "../ReplaySpeedEdit/ReplaySpeedEdit";
 import { PortRemapEditor } from "../PortRemapEditor/PortRemapEditor";
+import { SectionHeader } from "./ReplayForm.styles";
 
 export const ReplayForm = (props: {
   initState: ReplayPost;
@@ -32,7 +34,13 @@ export const ReplayForm = (props: {
 
   // Form control
   const { t } = useTranslation();
-  const { handleSubmit, reset, control } = useForm<ReplayPost>({
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { isValid },
+  } = useForm<ReplayPost>({
+    mode: "onTouched",
     defaultValues: props.initState,
   });
 
@@ -45,10 +53,6 @@ export const ReplayForm = (props: {
     <Stack
       component="form"
       spacing={2}
-      sx={{
-        alignItems: "flex-start",
-        minWidth: 400,
-      }}
       onSubmit={(e) => void handleSubmit(onSubmit)(e)}
     >
       <Controller
@@ -96,56 +100,96 @@ export const ReplayForm = (props: {
           </FormControl>
         )}
       />
-      <Divider flexItem />
-      <Controller
-        control={control}
-        name="repeat"
-        render={({ field }) => (
-          <FormControl>
-            <FormLabel>{t("replays.form.repeat.label")}</FormLabel>
-            <ReplayRepetitionEdit
-              value={field.value}
-              onChange={field.onChange}
+      <Divider flexItem sx={{ margin: 2 }} />
+      <Stack spacing={0}>
+        <Accordion>
+          <SectionHeader>
+            <Icons.Loop />
+            {t("replays.form.repeat.label")}
+          </SectionHeader>
+          <AccordionDetails>
+            <Controller
+              control={control}
+              name="repeat"
+              render={({ field }) => (
+                <ReplayRepetitionEdit
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
-          </FormControl>
-        )}
-      />
-      <Divider flexItem />
-      <Controller
-        control={control}
-        name="limit"
-        render={({ field }) => (
-          <FormControl>
-            <FormLabel>{t("replays.form.limit.label")}</FormLabel>
-            <ReplayLengthEdit value={field.value} onChange={field.onChange} />
-          </FormControl>
-        )}
-      />
-      <Divider flexItem />
-      <FormControl>
-        <FormLabel>{t("replays.form.speed.label")}</FormLabel>
-        <Controller
-          control={control}
-          name="load"
-          render={({ field }) => (
-            <ReplaySpeedEdit value={field.value} onChange={field.onChange} />
-          )}
-        />
-      </FormControl>
-      <Divider flexItem />
-      <FormControl>
-        <FormLabel>{t("replays.form.portremap.label")}</FormLabel>
-        <Controller
-          control={control}
-          name="portRemap"
-          render={({ field }) => (
-            <PortRemapEditor value={field.value} onChange={field.onChange} />
-          )}
-        />
-      </FormControl>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <SectionHeader>
+            <Icons.LoadLimit />
+            {t("replays.form.limit.label")}
+          </SectionHeader>
+          <AccordionDetails>
+            <Controller
+              control={control}
+              name="limit"
+              render={({ field }) => (
+                <ReplayLengthEdit
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <SectionHeader>
+            <Icons.Speed />
+            {t("replays.form.speed.label")}
+          </SectionHeader>
+          <AccordionDetails>
+            <Controller
+              control={control}
+              name="load"
+              render={({ field }) => (
+                <ReplaySpeedEdit
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <SectionHeader>
+            <Icons.PortRemap />
+            {t("replays.form.portremap.label")}
+          </SectionHeader>
+          <AccordionDetails>
+            <Controller
+              control={control}
+              name="portRemap"
+              render={({ field }) => (
+                <PortRemapEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <SectionHeader>
+            <Icons.AddressRemap />
+            {t("replays.form.addressremap.label")}
+          </SectionHeader>
+          <AccordionDetails></AccordionDetails>
+        </Accordion>
+      </Stack>
       <Divider flexItem />
       <Stack direction="row" spacing={2} justifyContent="flex-start">
-        <Button startIcon={<Icons.Confirm />} variant="contained" type="submit">
+        <Button
+          startIcon={<Icons.Confirm />}
+          variant="contained"
+          type="submit"
+          disabled={!isValid}
+        >
           {props.labelSubmit}
         </Button>
         <Button

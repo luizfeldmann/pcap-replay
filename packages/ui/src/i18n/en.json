@@ -76,5 +76,6 @@
   "replays.form.portremap.to": "To",
   "replays.form.portremap.validate.to.required": "Must inform remap output",
   "replays.form.portremap.apply": "Apply",
-  "replays.form.portremap.delete": "Delete"
+  "replays.form.portremap.delete": "Delete",
+  "replays.form.addressremap.label": "Address Remapping"
 }

@@ -130,6 +130,9 @@
         "to": "Para",
         "apply": "Aplicar",
         "delete": "Deletar"
+      },
+      "addressremap": {
+        "label": "Remapear endereços"
       }
     }
   }
