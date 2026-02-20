@@ -5,7 +5,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import type { LengthSettings } from "shared";
+import { ReplayLengthLimits, type LengthSettings } from "shared";
 import { Icons } from "../../constants/Icons";
 import { useTranslation } from "react-i18next";
 import type { ChangeEvent } from "react";
@@ -70,7 +70,7 @@ export const ReplayLengthEdit = (props: {
           label={t("replays.form.limit.maxpackets")}
           slotProps={{
             htmlInput: {
-              min: 1,
+              min: ReplayLengthLimits.packets.min,
             },
           }}
           value={props.value.maxPackets}
@@ -90,7 +90,7 @@ export const ReplayLengthEdit = (props: {
               ),
             },
             htmlInput: {
-              min: 1,
+              min: ReplayLengthLimits.duration.min,
             },
           }}
           value={props.value.maxDuration}

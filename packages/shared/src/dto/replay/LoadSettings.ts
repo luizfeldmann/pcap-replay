@@ -11,6 +11,7 @@ export const ReplayLoadLimits = {
   },
   pps: {
     min: 0,
+    max: 1000,
   },
 };
 
@@ -32,7 +33,10 @@ export const LoadSettingsSchema = z.union([
   }),
   z.object({
     type: z.literal("pps"),
-    packetRate: z.number().min(ReplayLoadLimits.pps.min),
+    packetRate: z
+      .number()
+      .min(ReplayLoadLimits.pps.min)
+      .max(ReplayLoadLimits.pps.max),
   }),
 ]);
 

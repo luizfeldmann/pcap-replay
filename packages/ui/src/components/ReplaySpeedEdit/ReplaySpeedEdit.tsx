@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Icons } from "../../constants/Icons";
 import { useTranslation } from "react-i18next";
-import type { LoadSettings } from "shared";
+import { ReplayLoadLimits, type LoadSettings } from "shared";
 
 //! Keys of the mode buttons
 type SpeedModes = "none" | LoadSettings["type"];
@@ -18,18 +18,18 @@ const rangeDefs: {
   [K in LoadSettings["type"]]: { min: number; max: number; step: number };
 } = {
   multiplier: {
-    min: 0.1,
-    max: 5.0,
+    min: ReplayLoadLimits.multiplier.min,
+    max: ReplayLoadLimits.multiplier.max,
     step: 0.1,
   },
   mbps: {
-    min: 0.1,
-    max: 100,
+    min: ReplayLoadLimits.mbps.min,
+    max: ReplayLoadLimits.mbps.max,
     step: 0.1,
   },
   pps: {
-    min: 1,
-    max: 1000,
+    min: ReplayLoadLimits.pps.min,
+    max: ReplayLoadLimits.pps.max,
     step: 1,
   },
 };
