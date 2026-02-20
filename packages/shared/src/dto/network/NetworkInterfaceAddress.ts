@@ -1,4 +1,4 @@
-import { z } from "zod";
+import z from "zod";
 
 export const NetworkInterfaceAddressSchema = z.union([
   z.object({
@@ -22,10 +22,3 @@ export const NetworkInterfaceAddressSchema = z.union([
 export type NetworkInterfaceAddress = z.infer<
   typeof NetworkInterfaceAddressSchema
 >;
-
-export const NetworkInterfaceSchema = z.object({
-  name: z.string(),
-  addr: z.array(NetworkInterfaceAddressSchema),
-});
-
-export type NetworkInterface = z.infer<typeof NetworkInterfaceSchema>;
