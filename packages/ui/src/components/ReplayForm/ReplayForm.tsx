@@ -21,6 +21,7 @@ import { ReplayLengthEdit } from "../ReplayLengthEdit/ReplayLengthEdit";
 import { Link } from "react-router-dom";
 import routes from "../../constants/routes.json";
 import { ReplaySpeedEdit } from "../ReplaySpeedEdit/ReplaySpeedEdit";
+import { PortRemapEditor } from "../PortRemapEditor/PortRemapEditor";
 
 export const ReplayForm = (props: {
   initState: ReplayPost;
@@ -128,6 +129,17 @@ export const ReplayForm = (props: {
           name="load"
           render={({ field }) => (
             <ReplaySpeedEdit value={field.value} onChange={field.onChange} />
+          )}
+        />
+      </FormControl>
+      <Divider flexItem />
+      <FormControl>
+        <FormLabel>{t("replays.form.portremap.label")}</FormLabel>
+        <Controller
+          control={control}
+          name="portRemap"
+          render={({ field }) => (
+            <PortRemapEditor value={field.value} onChange={field.onChange} />
           )}
         />
       </FormControl>

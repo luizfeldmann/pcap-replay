@@ -113,6 +113,23 @@
         "multiplier": "Multiplicador",
         "multipliershort": "Mult.",
         "multiplierunit": "x"
+      },
+      "portremap": {
+        "label": "Remapear portas",
+        "start": "De / Início",
+        "end": "Fim",
+        "from": "De",
+        "validate": {
+          "from": {
+            "required": "Deve informar a porta de origem"
+          },
+          "to": {
+            "required": "Deve informar a porta substituta"
+          }
+        },
+        "to": "Para",
+        "apply": "Aplicar",
+        "delete": "Deletar"
       }
     }
   }
