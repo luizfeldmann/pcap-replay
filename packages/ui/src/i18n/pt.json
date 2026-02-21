@@ -39,6 +39,7 @@
     "download": "Baixar",
     "delete": "Deletar",
     "rename": "Renomear",
+    "newreplay": "Nova reprodução",
     "dialog": {
       "rename": {
         "title": "Renomear arquivo",

@@ -3,33 +3,59 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  type PopoverPosition,
+  Link,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Icons } from "../../utils/Icons";
+import { routes } from "../../utils/routes";
+import type {
+  FileContextActions,
+  FileContextState,
+} from "./useFileContextMenu";
+import { endpoints } from "../../utils/endpoints";
 
 export const FileContextMenu = (props: {
-  anchor?: PopoverPosition;
-  onClose(): void;
-  onRename(): void;
-  onDelete(): void;
+  state: FileContextState;
+  actions: FileContextActions;
 }) => {
   const { t } = useTranslation();
 
   return (
     <Menu
       anchorReference="anchorPosition"
-      anchorPosition={props.anchor}
-      open={Boolean(props?.anchor)}
-      onClose={props.onClose}
+      anchorPosition={props.state.anchor}
+      open={Boolean(props.state.anchor)}
+      onClose={props.actions.onClose}
     >
-      <MenuItem onClick={props.onRename}>
+      <MenuItem
+        component={Link}
+        underline="none"
+        href={routes.replaysCreatePage.location(props.state.selected?.id)}
+      >
+        <ListItemIcon>
+          <Icons.FileAddToJob />
+        </ListItemIcon>
+        <ListItemText>{t("files.newreplay")}</ListItemText>
+      </MenuItem>
+      <MenuItem
+        component={Link}
+        target="_blank"
+        underline="none"
+        download={props.state.selected?.name}
+        href={endpoints.downloadFile.path(props.state.selected?.id || "")}
+      >
+        <ListItemIcon>
+          <Icons.DownloadFile />
+        </ListItemIcon>
+        <ListItemText>{t("files.download")}</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={props.actions.onRename}>
         <ListItemIcon>
           <Icons.Rename />
         </ListItemIcon>
         <ListItemText>{t("files.rename")}</ListItemText>
       </MenuItem>
-      <MenuItem onClick={props.onDelete}>
+      <MenuItem onClick={props.actions.onDelete}>
         <ListItemIcon>
           <Icons.Delete />
         </ListItemIcon>

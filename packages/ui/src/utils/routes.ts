@@ -16,7 +16,11 @@ export const routes = {
   },
   replaysCreatePage: {
     path: "replays/create",
-    location: "/replays/create",
+    location: (file?: string) => {
+      const pathname = "/replays/create";
+      if (!file) return pathname;
+      return pathname + "?file=" + file;
+    },
   },
   replaysEditPage: {
     path: "replays/edit/:id",

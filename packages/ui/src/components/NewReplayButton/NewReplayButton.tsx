@@ -20,7 +20,7 @@ export const NewReplayButton = () => {
         zIndex: 10,
       }}
       component={Link}
-      to={routes.replaysCreatePage.location}
+      to={routes.replaysCreatePage.location()}
     >
       {<Icons.Add />}
       {t("replays.create.button")}

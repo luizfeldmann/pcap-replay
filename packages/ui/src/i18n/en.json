@@ -26,6 +26,7 @@
   "files.download": "Download",
   "files.delete": "Delete",
   "files.rename": "Rename",
+  "files.newreplay": "New Replay",
   "files.dialog.rename.title": "Rename file",
   "files.dialog.rename.confirm": "Rename",
   "files.dialog.rename.cancel": "Cancel",

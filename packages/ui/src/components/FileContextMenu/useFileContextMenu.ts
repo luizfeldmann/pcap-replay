@@ -9,40 +9,53 @@ export type FileContextSelection = {
   name: string;
 };
 
+export type FileContextState = {
+  selected?: FileContextSelection;
+  anchor?: PopoverPosition;
+};
+
+export type FileContextActions = {
+  onClose(): void;
+  onRename(): void;
+  onDelete(): void;
+};
+
 export const useFileContextMenu = () => {
   const { t } = useTranslation();
   // Mutation to delete the file
   const fileDeletion = useDeleteFile();
 
-  // Stores location where the context was opened
-  const [anchor, setAnchor] = useState<undefined | PopoverPosition>(undefined);
+  // Stores location where the context was opened and the associated file
+  const [state, setState] = useState<FileContextState>({});
 
-  // On which row the context was opened
-  const [selectedRow, setSelectedRow] = useState<
-    FileContextSelection | undefined
-  >(undefined);
-
+  // Stores the file being renamed
   const [renameFile, setRenameFile] = useState<
     FileContextSelection | undefined
   >(undefined);
 
+  // Opens the context menu when the file is clicked
   const onOpen = (
     event: React.MouseEvent<HTMLElement>,
     row: FileContextSelection,
-  ) => {
-    setAnchor({ left: event.clientX, top: event.clientY });
-    setSelectedRow(row);
-  };
+  ) =>
+    setState({
+      anchor: { left: event.clientX, top: event.clientY },
+      selected: row,
+    });
 
-  const onClose = () => {
-    setAnchor(undefined);
-    setSelectedRow(undefined);
-  };
+  // Closes the context menu
+  const onClose = () => setState({});
 
+  //! Callback to delete a file
   const onDelete = () => {
+    // Close the context
     onClose();
-    if (!selectedRow) return;
-    fileDeletion.mutate(selectedRow, {
+    // Sanity
+    if (!state.selected) return;
+
+    // Invoke API
+    fileDeletion.mutate(state.selected, {
+      // Show error message
       onError: (err, variables) => {
         enqueueSnackbar(
           t("files.error.delete", {
@@ -54,6 +67,7 @@ export const useFileContextMenu = () => {
           },
         );
       },
+      // Show success message
       onSuccess: (_data, variables) => {
         enqueueSnackbar(t("files.success.delete", { name: variables.name }), {
           variant: "success",
@@ -62,21 +76,28 @@ export const useFileContextMenu = () => {
     });
   };
 
+  // Sets this file as being renamed
   const onRename = () => {
-    setRenameFile(selectedRow);
+    setRenameFile(state.selected);
     onClose();
   };
 
+  // Close the file renaming
   const onCloseRename = () => {
     setRenameFile(undefined);
   };
 
   return {
-    anchor,
+    // Passed to the parent to open the context on a given file
     onOpen,
-    onClose,
-    onRename,
-    onDelete,
+    // Passed to the menu for rendering of the action buttons
+    state,
+    actions: {
+      onClose,
+      onRename,
+      onDelete,
+    } satisfies FileContextActions,
+    // Passed to the renaming dialog
     fileRename: {
       file: renameFile,
       close: onCloseRename,

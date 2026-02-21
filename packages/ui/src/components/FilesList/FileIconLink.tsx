@@ -7,7 +7,7 @@ export const FileIconLink = (props: { id: string; name: string }) => (
     component={Link}
     target="_blank"
     underline="none"
-    href={`${endpoints.downloadFile}/${props.id}`}
+    href={endpoints.downloadFile.path(props.id)}
     download={props.name}
     sx={{ display: "flex", alignItems: "center", gap: 1 }}
   >

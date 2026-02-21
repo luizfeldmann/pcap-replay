@@ -56,10 +56,8 @@ export const FilesList = () => {
           <TableCellHeader>{t("files.timeUploaded")}</TableCellHeader>
           <TableCellHeader sx={{ width: 64 }}>
             <FileContextMenu
-              anchor={filesMenu.anchor}
-              onClose={filesMenu.onClose}
-              onDelete={filesMenu.onDelete}
-              onRename={filesMenu.onRename}
+              state={filesMenu.state}
+              actions={filesMenu.actions}
             />
             <FileRenameDialog {...filesMenu.fileRename} />
           </TableCellHeader>
