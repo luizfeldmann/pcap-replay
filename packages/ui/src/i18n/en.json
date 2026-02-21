@@ -47,6 +47,8 @@
   "replays.form.button.cancel": "Cancel",
   "replays.form.name.label": "Name",
   "replays.form.name.validate.required": "The replay name is required",
+  "replays.form.file.label": "Capture file",
+  "replays.form.file.validate.required": "Requires a recorded capture file",
   "replays.form.interface.label": "Network Interface",
   "replays.form.interface.required": "The network interface name is required",
   "replays.form.repeat.label": "Repetition",

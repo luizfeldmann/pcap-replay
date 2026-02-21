@@ -26,6 +26,7 @@ import { ReplaySpeedEdit } from "../ReplaySpeedEdit/ReplaySpeedEdit";
 import { PortRemapEditor } from "../PortRemapEditor/PortRemapEditor";
 import { SectionHeader } from "./ReplayForm.styles";
 import { AddressRemapEdit } from "../AddressRemapEdit/AddressRemapEdit";
+import { FileSelectBox } from "../FileSelectBox/FileSelectBox";
 
 export const ReplayForm = (props: {
   initState: ReplayPost;
@@ -100,6 +101,22 @@ export const ReplayForm = (props: {
               <FormHelperText>{fieldState.error.message}</FormHelperText>
             )}
           </FormControl>
+        )}
+      />
+      <Controller
+        control={control}
+        name="fileId"
+        rules={{
+          required: t("replays.form.file.validate.required"),
+        }}
+        render={({ field, fieldState }) => (
+          <FileSelectBox
+            value={field.value}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            label={t("replays.form.file.label")}
+            error={fieldState.error?.message}
+          />
         )}
       />
       <Divider flexItem sx={{ margin: 2 }} />

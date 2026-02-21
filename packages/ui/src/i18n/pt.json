@@ -49,8 +49,8 @@
           "name": "Nome"
         },
         "validate": {
-          "required": "",
-          "extension": "O arquivo deve ter extensão '.pcap'",
+          "required": "Deve informar um novo nome para o arquivo",
+          "extension": "O nome do arquivo deve ter extensão '.pcap'",
           "invalidchars": "Caracteres inválidos para nome de arquivo"
         }
       }
@@ -83,6 +83,12 @@
         "label": "Nome",
         "validate": {
           "required": "Obrigatório informar o nome da reprodução"
+        }
+      },
+      "file": {
+        "label": "Arquivo de captura",
+        "validate": {
+          "required": "Requer um arquivo de captura para reproduzir"
         }
       },
       "interface": {
