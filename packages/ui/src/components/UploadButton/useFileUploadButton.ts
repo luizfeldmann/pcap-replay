@@ -1,6 +1,6 @@
 import { enqueueSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
-import { useFileUpload } from "../../api/files";
+import { useFileUpload } from "../../api/files/useFileUpload";
 
 export const useFileUploadButton = () => {
   const { t } = useTranslation();

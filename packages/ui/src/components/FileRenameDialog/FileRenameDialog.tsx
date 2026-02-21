@@ -13,7 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Icons } from "../../utils/Icons";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { useRenameFile } from "../../api/files";
+import { useRenameFile } from "../../api/files/useRenameFile";
 
 // Characters not allowed in the file name
 const INVALID_CHARS = /[\\/:*?"<>|]/;

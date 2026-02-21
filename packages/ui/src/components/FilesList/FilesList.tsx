@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useFilesList } from "../../api/files";
+import { useFilesList } from "../../api/files/useFilesList";
 import {
   Alert,
   LinearProgress,

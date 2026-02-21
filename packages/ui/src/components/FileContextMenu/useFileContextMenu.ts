@@ -1,6 +1,6 @@
 import type { PopoverPosition } from "@mui/material";
 import { useState } from "react";
-import { useDeleteFile } from "../../api/files";
+import { useDeleteFile } from "../../api/files/useDeleteFile";
 import { enqueueSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
