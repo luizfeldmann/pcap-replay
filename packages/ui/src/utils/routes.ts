@@ -1,4 +1,7 @@
 export const routes = {
+  apiDocs: {
+    location: "/api/docs",
+  },
   networkPage: {
     path: "network",
     location: "/network",

@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import { FilesPage } from "./pages/files/FilesPage";
 import { NetworkPage } from "./pages/network/NetworkPage";
 import { ReplaysPage } from "./pages/replay/ReplaysPage";
-import endpoints from "./utils/endpoints.json";
 import { routes } from "./utils/routes";
 import { Icons } from "./utils/Icons";
 import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector";
@@ -96,7 +95,11 @@ const AppLayout = () => {
           </Tabs>
           <Box sx={{ flexGrow: 1 }} />
           <LanguageSelector />
-          <IconButton color="inherit" size="small" href={endpoints.apiDocs}>
+          <IconButton
+            color="inherit"
+            size="small"
+            href={routes.apiDocs.location}
+          >
             <Icons.ApiDocs />
           </IconButton>
         </Toolbar>

@@ -1,9 +1,0 @@
-{
-  "apiDocs": "/api/docs",
-  "getNetworkInterfaces": "/api/network/interfaces",
-  "getFiles": "/api/files",
-  "deleteFile": "/api/files",
-  "renameFile": "/api/files",
-  "downloadFile": "/api/files",
-  "uploadFile": "/api/files"
-}

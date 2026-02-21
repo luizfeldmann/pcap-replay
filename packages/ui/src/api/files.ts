@@ -11,7 +11,7 @@ import {
   type FilePatch,
   type PaginatedFileListResponse,
 } from "shared";
-import endpoints from "../utils/endpoints.json";
+import { endpoints } from "../utils/endpoints";
 import { itemPrepend, itemsFilter, itemsMap } from "./pagedDataTransform";
 
 const QUERY_KEY = "files";
@@ -20,11 +20,7 @@ export const useFilesList = () =>
   useInfiniteQuery({
     queryKey: [QUERY_KEY],
     queryFn: async ({ pageParam }) => {
-      const params = new URLSearchParams({
-        limit: "50",
-      });
-      if (pageParam.length) params.append("cursor", pageParam);
-      const resp = await fetch(`${endpoints.getFiles}?${params.toString()}`);
+      const resp = await fetch(endpoints.getFiles.path("50", pageParam));
       const body = await resp.json();
       const page = PaginatedFileListResponseSchema.parse(body);
       return page;
@@ -43,8 +39,8 @@ export const useFileUpload = () => {
       formData.append("file", file);
 
       // Post the file
-      const res = await fetch(endpoints.uploadFile, {
-        method: "POST",
+      const res = await fetch(endpoints.uploadFile.path, {
+        method: endpoints.uploadFile.method,
         body: formData,
       });
 
@@ -71,8 +67,8 @@ export const useDeleteFile = () => {
 
   return useMutation({
     mutationFn: async (variables: { id: string; name: string }) => {
-      const resp = await fetch(`${endpoints.deleteFile}/${variables.id}`, {
-        method: "DELETE",
+      const resp = await fetch(endpoints.deleteFile.path(variables.id), {
+        method: endpoints.deleteFile.method,
       });
       if (!resp.ok) throw new Error(resp.statusText);
     },
@@ -96,8 +92,8 @@ export const useRenameFile = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (variables: { id: string; patch: FilePatch }) => {
-      const resp = await fetch(`${endpoints.renameFile}/${variables.id}`, {
-        method: "PATCH",
+      const resp = await fetch(endpoints.renameFile.path(variables.id), {
+        method: endpoints.renameFile.method,
         headers: {
           "Content-Type": "application/json",
         },
