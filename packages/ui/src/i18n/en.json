@@ -77,5 +77,17 @@
   "replays.form.portremap.validate.to.required": "Must inform remap output",
   "replays.form.portremap.apply": "Apply",
   "replays.form.portremap.delete": "Delete",
-  "replays.form.addressremap.label": "Address Remapping"
+  "replays.form.addressremap.label": "Address Remapping",
+  "replays.form.addressremap.source": "Source address remapping",
+  "replays.form.addressremap.dest": "Destination address remapping",
+  "replays.form.addressremap.proto": "Protocol",
+  "replays.form.addressremap.proto4": "IPv4",
+  "replays.form.addressremap.proto6": "IPv6",
+  "replays.form.addressremap.validate.proto.required": "Inform protocol",
+  "replays.form.addressremap.from": "Remap from",
+  "replays.form.addressremap.validate.from.required": "Inform adress",
+  "replays.form.addressremap.validate.from.invalid": "Invalid address",
+  "replays.form.addressremap.to": "Remap to",
+  "replays.form.addressremap.validate.to.required": "Inform adress",
+  "replays.form.addressremap.validate.to.invalid": "Invalid address"
 }

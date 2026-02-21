@@ -10,6 +10,7 @@ import {
   Select,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -24,6 +25,7 @@ import routes from "../../constants/routes.json";
 import { ReplaySpeedEdit } from "../ReplaySpeedEdit/ReplaySpeedEdit";
 import { PortRemapEditor } from "../PortRemapEditor/PortRemapEditor";
 import { SectionHeader } from "./ReplayForm.styles";
+import { AddressRemapEdit } from "../AddressRemapEdit/AddressRemapEdit";
 
 export const ReplayForm = (props: {
   initState: ReplayPost;
@@ -179,7 +181,37 @@ export const ReplayForm = (props: {
             <Icons.AddressRemap />
             {t("replays.form.addressremap.label")}
           </SectionHeader>
-          <AccordionDetails></AccordionDetails>
+          <AccordionDetails>
+            <Stack direction="column" spacing={2}>
+              <Typography variant="overline">
+                {t("replays.form.addressremap.source")}
+              </Typography>
+              <Controller
+                control={control}
+                name="srcRemap"
+                render={({ field }) => (
+                  <AddressRemapEdit
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Divider flexItem />
+              <Typography variant="overline">
+                {t("replays.form.addressremap.dest")}
+              </Typography>
+              <Controller
+                control={control}
+                name="dstRemap"
+                render={({ field }) => (
+                  <AddressRemapEdit
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </Stack>
+          </AccordionDetails>
         </Accordion>
       </Stack>
       <Divider flexItem />

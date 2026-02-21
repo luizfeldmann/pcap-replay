@@ -44,6 +44,7 @@ export const Icons = {
   Confirm: Check,
   Cancel: Close,
   Add: Add,
+  Edit: Edit,
   MoreContext: MoreVert,
   Replays: ReplayCircleFilled,
   Infinity: AllInclusive,

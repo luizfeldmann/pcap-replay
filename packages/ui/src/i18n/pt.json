@@ -132,7 +132,27 @@
         "delete": "Deletar"
       },
       "addressremap": {
-        "label": "Remapear endereços"
+        "label": "Remapear endereços",
+        "source": "Remapear origem",
+        "dest": "Remapear destino",
+        "proto": "Protocolo",
+        "proto4": "IPv4",
+        "proto6": "IPv6",
+        "validate": {
+          "proto": {
+            "required": "Informar protocolo"
+          },
+          "from": {
+            "required": "Informar endereço a ser remapeado",
+            "invalid": "Endereço inválido"
+          },
+          "to": {
+            "required": "Informar endereço para o qual remapear",
+            "invalid": "Endereço inválido"
+          }
+        },
+        "from": "De",
+        "to": "Para"
       }
     }
   }

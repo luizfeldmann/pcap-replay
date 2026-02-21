@@ -88,6 +88,7 @@ export const PortRemapForm = (props: {
             value={getPortValue(field.value)}
             onChange={(e) => field.onChange(convertPortValue(e))}
             type="number"
+            size="small"
             error={!!fieldState.error}
             helperText={fieldState.error?.message}
             label={t("replays.form.portremap.start")}
@@ -109,6 +110,7 @@ export const PortRemapForm = (props: {
             value={getPortValue(field.value)}
             onChange={(e) => field.onChange(convertPortValue(e))}
             type="number"
+            size="small"
             label={t("replays.form.portremap.end")}
             slotProps={{
               htmlInput: {
@@ -131,6 +133,7 @@ export const PortRemapForm = (props: {
             value={getPortValue(field.value)}
             onChange={(e) => field.onChange(convertPortValue(e))}
             type="number"
+            size="small"
             label={t("replays.form.portremap.to")}
             error={!!fieldState.error}
             helperText={fieldState.error?.message}
