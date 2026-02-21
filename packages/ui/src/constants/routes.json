@@ -1,7 +1,0 @@
-{
-  "network": "network",
-  "files": "files",
-  "replays": "replays",
-  "replays_create": "replays/create",
-  "replays_edit": "replays/edit"
-}

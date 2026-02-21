@@ -1,7 +1,7 @@
 import { Box, IconButton, TableCell, TableRow } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { AddressRemap } from "shared";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 
 export const AddressRemapConstRow = (props: {
   value: AddressRemap;

@@ -3,7 +3,7 @@ import { useEffect, type ChangeEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import type { PortRemap } from "shared";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 
 type FormData = {
   start: number;

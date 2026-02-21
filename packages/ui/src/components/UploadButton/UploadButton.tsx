@@ -1,5 +1,5 @@
 import { Fab } from "@mui/material";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { useTranslation } from "react-i18next";
 import { useRef } from "react";
 import { useFileUploadButton } from "./useFileUploadButton";

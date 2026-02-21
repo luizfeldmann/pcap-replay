@@ -1,5 +1,5 @@
 import { IconButton, Menu, MenuItem } from "@mui/material";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { useLanguageSelector } from "./useLanguageSelector";
 
 export const LanguageSelector = () => {

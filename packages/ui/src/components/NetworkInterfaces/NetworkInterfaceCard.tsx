@@ -12,7 +12,7 @@ import {
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { NetworkInterface } from "shared";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { TagChip } from "./NetworkInterfacesList.style";
 import { NetworkInterfaceAddressDetails } from "./NetworkInterfaceAddressDetails";
 

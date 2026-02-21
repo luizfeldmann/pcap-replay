@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
-import endpoints from "../constants/endpoints.json";
+import endpoints from "../utils/endpoints.json";
 import { NetworkInterfaceSchema } from "shared";
 
 const QUERY_KEY = "interfaces";

@@ -1,8 +1,8 @@
 import { Fab } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { Link } from "react-router-dom";
-import routes from "../../constants/routes.json";
+import { routes } from "../../utils/routes";
 
 export const NewReplayButton = () => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export const NewReplayButton = () => {
         zIndex: 10,
       }}
       component={Link}
-      to={"/" + routes.replays_create}
+      to={routes.replaysCreatePage.location}
     >
       {<Icons.Add />}
       {t("replays.create.button")}

@@ -6,7 +6,7 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import { ReplayLengthLimits, type LengthSettings } from "shared";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { useTranslation } from "react-i18next";
 import type { ChangeEvent } from "react";
 

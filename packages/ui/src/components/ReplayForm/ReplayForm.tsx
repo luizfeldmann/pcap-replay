@@ -17,11 +17,11 @@ import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import type { ReplayPost } from "shared";
 import { useNetworkInterfaces } from "../../api/networkInterfaces";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { ReplayRepetitionEdit } from "../ReplayRepetitionEdit/ReplayRepetitionEdit";
 import { ReplayLengthEdit } from "../ReplayLengthEdit/ReplayLengthEdit";
 import { Link } from "react-router-dom";
-import routes from "../../constants/routes.json";
+import { routes } from "../../utils/routes";
 import { ReplaySpeedEdit } from "../ReplaySpeedEdit/ReplaySpeedEdit";
 import { PortRemapEditor } from "../PortRemapEditor/PortRemapEditor";
 import { SectionHeader } from "./ReplayForm.styles";
@@ -228,7 +228,7 @@ export const ReplayForm = (props: {
           startIcon={<Icons.Cancel />}
           variant="outlined"
           component={Link}
-          to={"/" + routes.replays}
+          to={routes.replaysViewPage.location}
         >
           {t("replays.form.button.cancel")}
         </Button>

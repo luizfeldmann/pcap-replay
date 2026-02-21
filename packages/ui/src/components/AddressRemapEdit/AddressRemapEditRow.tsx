@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import type { AddressRemap } from "shared";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 
 export const AddressRemapEditRow = (props: {
   value?: AddressRemap;

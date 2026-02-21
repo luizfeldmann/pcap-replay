@@ -6,7 +6,7 @@ import {
   type PopoverPosition,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 
 export const FileContextMenu = (props: {
   anchor?: PopoverPosition;

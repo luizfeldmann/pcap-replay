@@ -1,6 +1,6 @@
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import type { ListGridOption } from "./useToggleListGrid";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 
 export const ToggleListGrid = (props: {
   value: ListGridOption;

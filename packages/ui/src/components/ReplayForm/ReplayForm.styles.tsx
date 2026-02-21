@@ -3,7 +3,7 @@ import {
   Box,
   type AccordionSummaryProps,
 } from "@mui/material";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 
 export const SectionHeader = ({
   children,

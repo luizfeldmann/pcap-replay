@@ -10,7 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useRenameFile } from "../../api/files";

@@ -5,7 +5,7 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import type { RepeatSettings } from "shared";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { useTranslation } from "react-i18next";
 import type { ChangeEvent } from "react";
 

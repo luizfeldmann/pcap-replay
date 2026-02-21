@@ -11,7 +11,7 @@ import {
   type FilePatch,
   type PaginatedFileListResponse,
 } from "shared";
-import endpoints from "../constants/endpoints.json";
+import endpoints from "../utils/endpoints.json";
 import { itemPrepend, itemsFilter, itemsMap } from "./pagedDataTransform";
 
 const QUERY_KEY = "files";

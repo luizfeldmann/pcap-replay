@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import type { AddressRemap } from "shared";
 import { HeaderCell } from "./AddressRemapEdit.style";
 import { AddressRemapEditRow } from "./AddressRemapEditRow";
-import { Icons } from "../../constants/Icons";
+import { Icons } from "../../utils/Icons";
 import { AddressRemapConstRow } from "./AddressRemapConstRow";
 
 export const AddressRemapEdit = (props: {

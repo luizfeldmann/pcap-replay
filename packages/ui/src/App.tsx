@@ -19,31 +19,31 @@ import { useTranslation } from "react-i18next";
 import { FilesPage } from "./pages/files/FilesPage";
 import { NetworkPage } from "./pages/network/NetworkPage";
 import { ReplaysPage } from "./pages/replay/ReplaysPage";
-import endpoints from "./constants/endpoints.json";
-import routes from "./constants/routes.json";
-import { Icons } from "./constants/Icons";
+import endpoints from "./utils/endpoints.json";
+import { routes } from "./utils/routes";
+import { Icons } from "./utils/Icons";
 import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector";
 import { ReplayFormPageEdit } from "./pages/replay/ReplayFormPageEdit";
 import { ReplayFormPageCreate } from "./pages/replay/ReplayFormPageCreate";
 
 const tabs = [
   {
-    path: routes.network,
-    location: "/" + routes.network,
+    path: routes.networkPage.path,
+    location: routes.networkPage.location,
     page: <NetworkPage />,
     label: "nav.tabs.network",
     icon: <Icons.Network />,
   },
   {
-    path: routes.files,
-    location: "/" + routes.files,
+    path: routes.filesPage.path,
+    location: routes.filesPage.location,
     page: <FilesPage />,
     label: "nav.tabs.files",
     icon: <Icons.Files />,
   },
   {
-    path: routes.replays,
-    location: "/" + routes.replays,
+    path: routes.replaysViewPage.path,
+    location: "/" + routes.replaysViewPage.location,
     page: <ReplaysPage />,
     label: "nav.tabs.replays",
     icon: <Icons.Replays />,
@@ -112,16 +112,19 @@ export const App = () => {
   return (
     <Routes>
       <Route path="/" element={<AppLayout />}>
-        <Route index element={<Navigate to={routes.network} replace />} />
+        <Route
+          index
+          element={<Navigate to={routes.networkPage.location} replace />}
+        />
         {tabs.map((t) => (
           <Route key={t.path} path={t.path} element={t.page} />
         ))}
         <Route
-          path={routes.replays_create}
+          path={routes.replaysCreatePage.path}
           element={<ReplayFormPageCreate />}
         />
         <Route
-          path={`${routes.replays_edit}/:id`}
+          path={routes.replaysEditPage.path}
           element={<ReplayFormPageEdit />}
         />
       </Route>
