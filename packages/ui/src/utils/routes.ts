@@ -16,6 +16,9 @@ export const routes = {
   },
   replaysCreatePage: {
     path: "replays/create",
+    searchParams: {
+      file: "file",
+    },
     location: (file?: string) => {
       const pathname = "/replays/create";
       if (!file) return pathname;
