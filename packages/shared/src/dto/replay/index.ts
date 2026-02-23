@@ -9,3 +9,5 @@ export * from "./ReplayPatch.js";
 export * from "./ReplayPost.js";
 export * from "./ReplaySettings.js";
 export * from "./ReplayStatus.js";
+export * from "./PaginatedReplayListRequest.js";
+export * from "./PaginatedReplayListResponse.js";

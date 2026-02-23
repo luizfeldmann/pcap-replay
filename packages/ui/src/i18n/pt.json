@@ -162,6 +162,46 @@
         "from": "De",
         "to": "Para"
       }
+    },
+    "table": {
+      "name": "Nome",
+      "status": "Estado",
+      "createdtime": "Criado",
+      "startedtime": "Iniciado",
+      "finishedtime": "Concluído",
+      "interface": "Interface",
+      "file": "Arquivo",
+      "portremap": {
+        "label": "Remapear Portas",
+        "from": "De",
+        "to": "Para"
+      },
+      "sourceremap": {
+        "label": "Remapear Origem",
+        "from": "De",
+        "to": "Para"
+      },
+      "destremap": {
+        "label": "Remapear Destino",
+        "from": "De",
+        "to": "Para"
+      },
+      "repeat": {
+        "label": "Repetição",
+        "loop": "Loop",
+        "times": "{{n}} vezes"
+      },
+      "speed": {
+        "label": "Velocidade",
+        "multiplier": "{{x}} x",
+        "pps": "{{x}} pac/s",
+        "mbps": "{{x}} Mbps"
+      },
+      "length": {
+        "label": "Limitar",
+        "packets": "{{x}} pacotes",
+        "duration": "{{x}} s"
+      }
     }
   }
 }

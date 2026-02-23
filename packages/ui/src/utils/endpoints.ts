@@ -32,6 +32,16 @@ export const endpoints = {
     method: "POST",
   },
   /** REPLAY */
+  getReplays: {
+    path: (limit: string, cursor?: string) => {
+      const params = new URLSearchParams({
+        limit,
+      });
+      if (cursor && cursor.length) params.append("cursor", cursor);
+      return `/api/jobs/replay?${params.toString()}`;
+    },
+    method: "GET",
+  },
   postReplay: {
     path: "/api/jobs/replay",
     method: "POST",
