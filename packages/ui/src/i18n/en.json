@@ -40,6 +40,7 @@
   "files.success.upload": "File upload success: '{{name}}'",
   "files.success.delete": "File deletion success: '{{name}}'",
   "replays.create.button": "Create",
+  "replays.create.success": "New replay job created: '{{name}}'",
   "replays.create.title": "Create new replay",
   "replays.edit.title": "Edit replay",
   "replays.form.button.create": "Create",

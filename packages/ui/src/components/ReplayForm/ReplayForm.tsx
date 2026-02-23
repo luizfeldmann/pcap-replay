@@ -1,7 +1,9 @@
 import {
   Accordion,
   AccordionDetails,
+  Alert,
   Button,
+  CircularProgress,
   Divider,
   FormControl,
   FormHelperText,
@@ -31,6 +33,9 @@ import { FileSelectBox } from "../FileSelectBox/FileSelectBox";
 export const ReplayForm = (props: {
   initState: ReplayPost;
   labelSubmit: string;
+  isLoading: boolean;
+  error?: string;
+  onSubmit(formData: ReplayPost): void;
 }) => {
   // Query required options
   const interfaces = useNetworkInterfaces();
@@ -50,13 +55,11 @@ export const ReplayForm = (props: {
   // Reset the form state when the initial values change
   useEffect(() => reset(props.initState), [reset, props.initState]);
 
-  const onSubmit = (_formData: ReplayPost) => {};
-
   return (
     <Stack
       component="form"
       spacing={2}
-      onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+      onSubmit={(e) => void handleSubmit(props.onSubmit)(e)}
     >
       <Controller
         control={control}
@@ -232,14 +235,16 @@ export const ReplayForm = (props: {
         </Accordion>
       </Stack>
       <Divider flexItem />
+      {props.error && <Alert severity="error">{props.error}</Alert>}
       <Stack direction="row" spacing={2} justifyContent="flex-start">
         <Button
           startIcon={<Icons.Confirm />}
           variant="contained"
           type="submit"
-          disabled={!isValid}
+          disabled={!isValid || props.isLoading}
         >
-          {props.labelSubmit}
+          {!props.isLoading && props.labelSubmit}
+          {props.isLoading && <CircularProgress />}
         </Button>
         <Button
           startIcon={<Icons.Cancel />}

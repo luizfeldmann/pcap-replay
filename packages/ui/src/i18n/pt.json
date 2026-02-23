@@ -68,6 +68,7 @@
   "replays": {
     "create": {
       "button": "Criar",
+      "success": "Nova reprodução criada",
       "title": "Criar nova reprodução"
     },
     "edit": {

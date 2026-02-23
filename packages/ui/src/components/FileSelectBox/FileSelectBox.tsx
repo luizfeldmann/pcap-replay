@@ -1,4 +1,4 @@
-import { Autocomplete, Menu, MenuItem, TextField } from "@mui/material";
+import { Autocomplete, MenuItem, TextField } from "@mui/material";
 import { useFilesList } from "../../api/files/useFilesList";
 import { Virtuoso } from "react-virtuoso";
 import { Children, forwardRef, useMemo, type FocusEventHandler } from "react";

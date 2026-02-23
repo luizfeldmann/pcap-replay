@@ -4,7 +4,8 @@ import { ReplayPostSchema, type ReplayListItem } from "shared";
 // Caches list after first request
 let mockItemsCache: ReplayListItem[] | undefined = undefined;
 
-const postReplay = http.get(`/api/jobs/replay`, async ({ request }) => {
+// Creates a new replay and returns the object
+const postReplay = http.post(`/api/jobs/replay`, async ({ request }) => {
   // Validate request
   const requestBody = await request.json();
   const { success, data: requestData } =
@@ -22,7 +23,7 @@ const postReplay = http.get(`/api/jobs/replay`, async ({ request }) => {
 
   // Add to list and return it
   mockItemsCache.unshift(newItem);
-  HttpResponse.json(newItem, { status: 201 });
+  return HttpResponse.json(newItem, { status: 201 });
 });
 
 // Delete a replay item
