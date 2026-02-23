@@ -18,7 +18,7 @@ const generateMockFiles = (): FileListItem[] => {
     Math.round(SIZE_MIN * Math.pow(SIZE_MAX / SIZE_MIN, i / (NUM_FILES - 1)));
 
   const timeScale = (i: number) =>
-    new Date(Date.UTC(2026, 2, 10, 9) - i * TIME_SPAN).toISOString();
+    new Date(Date.UTC(2026, 1, 10, 9) - i * TIME_SPAN).toISOString();
 
   return Array.from({ length: NUM_FILES }, (_, i) => ({
     id: i.toString(),
@@ -64,6 +64,30 @@ const getFiles = http.get(`/api/files`, ({ request }) => {
   } satisfies PaginatedFileListResponse);
 });
 
+// Upload a file
+const uploadFile = http.post("/api/files", async ({ request }) => {
+  // Get form data from stream
+  const formData = await request.formData();
+
+  // Verify its a file
+  const file = formData.get("file");
+  if (!(file instanceof File)) return new HttpResponse(null, { status: 400 });
+
+  // Add to the list
+  if (!mockFilesCache) mockFilesCache = [];
+
+  const newItem: FileListItem = {
+    id: mockFilesCache.length.toFixed(0),
+    name: file.name,
+    size: file.size,
+    time: new Date().toISOString(),
+  };
+  mockFilesCache.unshift(newItem);
+
+  // Return new full item to the client
+  return HttpResponse.json(newItem, { status: 201 });
+});
+
 // Delete a file
 const deleteFile = http.delete<{ id: string }>(
   `/api/files/:id`,
@@ -106,4 +130,9 @@ const patchFile = http.patch<{ id: string }>(
   },
 );
 
-export const filesMocks: RequestHandler[] = [getFiles, patchFile, deleteFile];
+export const filesMocks: RequestHandler[] = [
+  getFiles,
+  uploadFile,
+  patchFile,
+  deleteFile,
+];
