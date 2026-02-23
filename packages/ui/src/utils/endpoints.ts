@@ -1,8 +1,10 @@
 export const endpoints = {
+  /** NETWORK */
   getNetworkInterfaces: {
     path: "/api/network/interfaces",
     method: "GET",
   },
+  /** FILES */
   getFiles: {
     path: (limit: string, cursor?: string) => {
       const params = new URLSearchParams({
@@ -28,5 +30,14 @@ export const endpoints = {
   uploadFile: {
     path: "/api/files",
     method: "POST",
+  },
+  /** REPLAY */
+  postReplay: {
+    path: "/api/jobs/replay",
+    method: "POST",
+  },
+  deleteReplay: {
+    path: (id: string) => `/api/jobs/replay/${id}`,
+    method: "DELETE",
   },
 };
