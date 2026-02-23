@@ -7,6 +7,7 @@ export const ReplayListItemSchema = z
   .object({
     id: z.string(),
     status: ReplayStatusSchema,
+    createdTime: z.iso.datetime(),
     startTime: z.iso.datetime().optional(),
     endTime: z.iso.datetime().optional(),
   })

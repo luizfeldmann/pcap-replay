@@ -69,6 +69,7 @@ const transformListItem = (
     name: replayJob.name,
     interface: replayJob.interface,
     status: statusTransformList[replayJob.status],
+    createdTime: replayJob.createdTime.toISOString(),
     startTime: replayJob.startTime?.toISOString(),
     endTime: replayJob.endTime?.toISOString(),
   };
@@ -230,6 +231,7 @@ const insertNew = (post: ReplayPost): ReplayListItem => {
     file: post.fileId,
     interface: post.interface,
     status: "STOPPED",
+    createdTime: new Date(),
     startTime: null,
     endTime: null,
     loop,

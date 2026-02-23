@@ -63,7 +63,7 @@ const createReplayJob = {
     summary: "Creates a new replay job",
     requestBody: jsonRequestBody(ReplayPostSchema),
     responses: {
-      [StatusCodes.OK]: jsonResponse(ReplayListItemSchema),
+      [StatusCodes.CREATED]: jsonResponse(ReplayListItemSchema),
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,

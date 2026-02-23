@@ -8,7 +8,7 @@ export const ReplaysTable = sqliteTable("replays", {
   file: text("file")
     .notNull()
     .references(() => FilesTable.id, { onDelete: "restrict" }),
-  interface: text("file").notNull(),
+  interface: text("interface").notNull(),
   status: text("status", {
     // prettier-ignore
     enum: [
@@ -20,8 +20,9 @@ export const ReplaysTable = sqliteTable("replays", {
       "ERROR",
     ],
   }).notNull(),
-  startTime: integer("uploaded_at", { mode: "timestamp_ms" }),
-  endTime: integer("uploaded_at", { mode: "timestamp_ms" }),
+  startTime: integer("startTime", { mode: "timestamp_ms" }),
+  endTime: integer("endTime", { mode: "timestamp_ms" }),
+  createdTime: integer("createdTime", { mode: "timestamp_ms" }).notNull(),
   loop: integer("loop", { mode: "boolean" }),
   repeat: integer("repeat"),
   limitDuration: integer("limitDuration"),
