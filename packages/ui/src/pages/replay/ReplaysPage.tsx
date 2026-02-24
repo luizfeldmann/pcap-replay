@@ -28,7 +28,9 @@ export const ReplaysPage = () => {
         />
       </Stack>
       {toggleValue === "list" && <ReplayJobsList />}
-      {toggleValue === "grid" && <ReplayJobsTable />}
+      {toggleValue === "grid" && (
+        <ReplayJobsTable visibility={columnsSelect.state} />
+      )}
     </Stack>
   );
 };
