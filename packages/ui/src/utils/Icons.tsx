@@ -36,6 +36,7 @@ import {
   Timer,
   Tune,
   UploadFile,
+  ViewColumn,
   ViewList,
 } from "@mui/icons-material";
 
@@ -46,6 +47,7 @@ export const Icons = {
   ExpandChevron: ExpandMore,
   List: ViewList,
   Grid: GridOn,
+  SelectColumn: ViewColumn,
   Network: Lan,
   FileAddToJob: PlaylistAdd,
   FileItem: InsertDriveFile,

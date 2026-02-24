@@ -94,6 +94,7 @@
   "replays.form.addressremap.to": "Remap to",
   "replays.form.addressremap.validate.to.required": "Inform adress",
   "replays.form.addressremap.validate.to.invalid": "Invalid address",
+  "replays.table.selectcolumns": "Select columns",
   "replays.table.name": "Name",
   "replays.table.status": "Status",
   "replays.table.createdtime": "Created",

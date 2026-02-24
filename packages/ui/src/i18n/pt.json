@@ -164,6 +164,7 @@
       }
     },
     "table": {
+      "selectcolumns": "Selecionar colunas",
       "name": "Nome",
       "status": "Estado",
       "createdtime": "Criado",
