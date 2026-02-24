@@ -72,7 +72,13 @@ export const FilesList = () => {
             <FileSize size={rowData.size} />
           </TableCell>
           <TableCell>
-            <LocaleDateTime iso={rowData.time} />
+            <LocaleDateTime
+              iso={rowData.time}
+              options={{
+                dateStyle: "medium",
+                timeStyle: "medium",
+              }}
+            />
           </TableCell>
           <TableCell>
             <FileContextButton

@@ -8,6 +8,7 @@ import {
   useColumnNames,
   type ReplayColumnId,
 } from "../ReplayColumnsFilter/useReplayColumnsFilter";
+import { ReplayJobsTableRow } from "./ReplayJobsTableRow";
 
 export const ReplayJobsTable = (props: {
   visibility: Record<ReplayColumnId, boolean>;
@@ -158,6 +159,13 @@ export const ReplayJobsTable = (props: {
             </TableRow>
           )}
         </>
+      )}
+      itemContent={(_, data) => (
+        <ReplayJobsTableRow
+          key={data.id}
+          data={data}
+          visibility={props.visibility}
+        />
       )}
     />
   );

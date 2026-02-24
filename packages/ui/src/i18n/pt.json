@@ -74,6 +74,12 @@
     "edit": {
       "title": "Editar reprodução"
     },
+    "status": {
+      "stopped": "Parado",
+      "finished": "Concluído",
+      "error": "Erro",
+      "running": "Executando"
+    },
     "form": {
       "button": {
         "create": "Criar",
