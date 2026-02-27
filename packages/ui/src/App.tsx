@@ -14,6 +14,7 @@ import {
   Toolbar,
   Box,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { FilesPage } from "./pages/files/FilesPage";
@@ -95,13 +96,15 @@ const AppLayout = () => {
           </Tabs>
           <Box sx={{ flexGrow: 1 }} />
           <LanguageSelector />
-          <IconButton
-            color="inherit"
-            size="small"
-            href={routes.apiDocs.location}
-          >
-            <Icons.ApiDocs />
-          </IconButton>
+          <Tooltip title={t("nav.links.apidocs")}>
+            <IconButton
+              color="inherit"
+              size="small"
+              href={routes.apiDocs.location}
+            >
+              <Icons.ApiDocs />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </AppBar>
       <Box component="main" sx={{ p: 2, flexGrow: 1, display: "flex" }}>

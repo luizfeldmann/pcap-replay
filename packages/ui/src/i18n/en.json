@@ -1,9 +1,13 @@
 {
   "language": "English",
   "app.title": "PCAP Replay",
+  "app.general.viewlist": "View as list",
+  "app.general.viewgrid": "View as table",
+  "app.general.language": "Language",
   "nav.tabs.network": "Network",
   "nav.tabs.files": "Files",
   "nav.tabs.replays": "Replays",
+  "nav.links.apidocs": "API documentation",
   "network.interfaces": "Interfaces",
   "network.nic.name": "Interface",
   "network.nic.family": "Family",

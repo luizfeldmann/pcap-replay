@@ -1,8 +1,10 @@
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
 import { Icons } from "../../utils/Icons";
 import { useLanguageSelector } from "./useLanguageSelector";
+import { useTranslation } from "react-i18next";
 
 export const LanguageSelector = () => {
+  const { t } = useTranslation();
   const {
     isOpen,
     anchorEl,
@@ -14,13 +16,15 @@ export const LanguageSelector = () => {
 
   return (
     <>
-      <IconButton
-        size="small"
-        color="inherit"
-        onClick={(e) => setAnchorEl(e.currentTarget)}
-      >
-        <Icons.Language />
-      </IconButton>
+      <Tooltip title={t("app.general.language")}>
+        <IconButton
+          size="small"
+          color="inherit"
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+        >
+          <Icons.Language />
+        </IconButton>
+      </Tooltip>
       <Menu
         anchorEl={anchorEl}
         open={isOpen}

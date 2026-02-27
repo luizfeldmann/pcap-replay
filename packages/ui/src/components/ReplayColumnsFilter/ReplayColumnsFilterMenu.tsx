@@ -11,6 +11,8 @@ import {
   type ReplayColumnId,
 } from "./useReplayColumnsFilter";
 
+const readOnlyItems: ReplayColumnId[] = ["name", "status"];
+
 export const ReplayColumnsFilterMenu = (props: {
   anchor?: HTMLElement;
   close(): void;
@@ -25,6 +27,7 @@ export const ReplayColumnsFilterMenu = (props: {
     id,
     label: columns[id],
     visible: props.visibility[id],
+    disabled: readOnlyItems.includes(id),
   }));
 
   return (
@@ -39,6 +42,7 @@ export const ReplayColumnsFilterMenu = (props: {
           <ListItemIcon>
             <Checkbox
               size="small"
+              disabled={item.disabled}
               checked={item.visible}
               onChange={(e, value) => {
                 e.stopPropagation();

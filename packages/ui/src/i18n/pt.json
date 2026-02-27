@@ -1,13 +1,21 @@
 {
   "language": "Português",
   "app": {
-    "title": "PCAP Replay"
+    "title": "PCAP Replay",
+    "general": {
+      "viewlist": "Ver como lista",
+      "viewgrid": "Ver como tabela",
+      "language": "Idioma"
+    }
   },
   "nav": {
     "tabs": {
       "network": "Rede",
       "files": "Arquivos",
       "replays": "Reproduções"
+    },
+    "links": {
+      "apidocs": "Documentação da API"
     }
   },
   "network": {
