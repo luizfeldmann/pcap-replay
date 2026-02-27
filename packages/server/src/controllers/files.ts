@@ -132,8 +132,31 @@ const uploadFile = {
   },
 };
 
-// Download of single file
+// Gets info of a single file
 const getFileById = {
+  docs: {
+    tags: [FILES_TAG],
+    summary: "Retrieves data of a single file",
+    parameters: [
+      { in: "path", name: "id", required: true, schema: { type: "string" } },
+    ],
+    responses: {
+      [StatusCodes.OK]: jsonResponse(FileListItemSchema),
+      default: defaultErrorResponse(),
+    },
+  } satisfies ZodOpenApiOperationObject,
+  handler: async (req: Request, resp: Response) => {
+    // Get the file ID from the request
+    const params = FileIdSchema.parse(req.params);
+
+    // Get file info from DB
+    const file = await FilesService.getFileInfo(params.id);
+    resp.json(file);
+  },
+};
+
+// Download of single file
+const downloadFile = {
   docs: {
     tags: [FILES_TAG],
     summary: "Download a file",
@@ -203,6 +226,7 @@ const deleteFile = {
 export const FilesController = {
   getFilesList,
   getFileById,
+  downloadFile,
   modifyFile,
   deleteFile,
   uploadFile,

@@ -153,6 +153,7 @@ export const FilesService = {
   getFilesList,
   deleteFile,
   modifyFile,
+  getFileInfo,
   downloadFile,
   saveFile,
 };
