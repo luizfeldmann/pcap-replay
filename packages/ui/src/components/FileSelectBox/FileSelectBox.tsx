@@ -2,6 +2,7 @@ import { Autocomplete, MenuItem, TextField } from "@mui/material";
 import { useFilesList } from "../../api/files/useFilesList";
 import { Virtuoso } from "react-virtuoso";
 import { Children, forwardRef, useMemo, type FocusEventHandler } from "react";
+import { useSingleFile } from "../../api/files/useSingleFile";
 
 export const FileSelectBox = (props: {
   label: string;
@@ -10,8 +11,13 @@ export const FileSelectBox = (props: {
   onChange(value?: string): void;
   onBlur: FocusEventHandler<HTMLDivElement>;
 }) => {
-  // Infinite query for the files
+  // Infinite query for the list of files
   const { hasNextPage, fetchNextPage, data } = useFilesList();
+
+  // Query for the currently selected file
+  const currentFileQuery = useSingleFile({
+    id: props.value,
+  });
 
   // Flatten the pages in a continuous list
   const items = useMemo(
@@ -20,7 +26,7 @@ export const FileSelectBox = (props: {
   );
 
   // Currently selected item or empty
-  const selectedItem = items.find((i) => i.id === props.value) || {
+  const selectedItem = currentFileQuery.data || {
     id: "",
     name: "",
     time: "",

@@ -43,7 +43,7 @@ const tabs = [
   },
   {
     path: routes.replaysViewPage.path,
-    location: "/" + routes.replaysViewPage.location,
+    location: routes.replaysViewPage.location,
     page: <ReplaysPage />,
     label: "nav.tabs.replays",
     icon: <Icons.Replays />,

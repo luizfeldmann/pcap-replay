@@ -23,8 +23,12 @@ export const endpoints = {
     path: (id: string) => `/api/files/${id}`,
     method: "PATCH",
   },
-  downloadFile: {
+  getSingleFile: {
     path: (id: string) => `/api/files/${id}`,
+    method: "GET",
+  },
+  downloadFile: {
+    path: (id: string) => `/api/files/download/${id}`,
     method: "GET",
   },
   uploadFile: {

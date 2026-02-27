@@ -31,6 +31,21 @@ const generateMockFiles = (): FileListItem[] => {
 // Caches list after first request
 let mockFilesCache: FileListItem[] | undefined = undefined;
 
+// Reads the info of a single file
+const getSingleFile = http.get<{ id: string }>(
+  `/api/files/:id`,
+  ({ params }) => {
+    // Lazy generate list
+    if (!mockFilesCache) mockFilesCache = generateMockFiles();
+
+    // Find the file
+    const file = mockFilesCache.find((item) => item.id === params.id);
+    if (!file) return new HttpResponse(null, { status: 404 });
+
+    return HttpResponse.json(file);
+  },
+);
+
 // Reads list of files
 const getFiles = http.get(`/api/files`, ({ request }) => {
   // Lazy generate list
@@ -131,6 +146,7 @@ const patchFile = http.patch<{ id: string }>(
 );
 
 export const filesMocks: RequestHandler[] = [
+  getSingleFile,
   getFiles,
   uploadFile,
   patchFile,

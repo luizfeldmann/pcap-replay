@@ -7,10 +7,12 @@ import type {
   ReplayListItem,
 } from "shared";
 import type { ReplayColumnId } from "../ReplayColumnsFilter/useReplayColumnsFilter";
-import { TableCell } from "@mui/material";
+import { CircularProgress, TableCell } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { LocaleDateTime } from "../LocaleDateTime/LocaleDateTime";
 import { ReplayStatusChip } from "../ReplayStatus/ReplayStatusChip";
+import { useSingleFile } from "../../api/files/useSingleFile";
+import { Icons } from "../../utils/Icons";
 
 // Text displayed in the repetitions setting cell
 const RepeatCell = (props: { value?: RepeatSettings }) => {
@@ -85,6 +87,14 @@ const PortRemapCell = (props: { value?: PortRemap }) => (
   </>
 );
 
+// Renders the file name and link
+const FileCell = (props: { id: string }) => {
+  const query = useSingleFile({ id: props.id, refetchOnMount: false });
+  if (query.isLoading) return <CircularProgress size="small" />;
+  else if (query.isError) return <Icons.StatusError />;
+  return <>{query.data?.name}</>;
+};
+
 // Data present in both primary and secondary rows
 type RowCommon = {
   srcRemap?: AddressRemap;
@@ -150,7 +160,7 @@ export const ReplayJobsTableRow = (props: {
           )}
           {props.visibility.file && (
             <TableCell rowSpan={props.data.rowSpan}>
-              {props.data.fileId}
+              <FileCell id={props.data.fileId} />
             </TableCell>
           )}
           {props.visibility.repeat && (

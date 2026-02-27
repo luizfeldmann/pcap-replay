@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SnackbarProvider } from "notistack";
 import "./index.css";
+import { CacheNormalization } from "./components/CacheNormalization/CacheNormalization.tsx";
 
 // Possibly mock server
 if (__MOCK__) {
@@ -33,6 +34,7 @@ createRoot(rootElement).render(
       <CssBaseline />
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
+          <CacheNormalization />
           <SnackbarProvider maxSnack={5}>
             <App />
           </SnackbarProvider>

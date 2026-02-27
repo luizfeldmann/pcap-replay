@@ -4,7 +4,7 @@ import { PaginatedFileListResponseSchema } from "shared";
 
 export const QUERY_KEY_FILES = "files";
 
-export const useFilesList = () =>
+export const useFilesList = (options?: { enabled?: boolean }) =>
   useInfiniteQuery({
     queryKey: [QUERY_KEY_FILES],
     queryFn: async ({ pageParam }) => {
@@ -15,4 +15,5 @@ export const useFilesList = () =>
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
+    enabled: options?.enabled,
   });
