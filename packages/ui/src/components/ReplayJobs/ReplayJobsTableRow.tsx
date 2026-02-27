@@ -7,7 +7,7 @@ import type {
   ReplayListItem,
 } from "shared";
 import type { ReplayColumnId } from "../ReplayColumnsFilter/useReplayColumnsFilter";
-import { TableCell, TableRow } from "@mui/material";
+import { TableCell } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { LocaleDateTime } from "../LocaleDateTime/LocaleDateTime";
 import { ReplayStatusChip } from "../ReplayStatus/ReplayStatusChip";
@@ -65,6 +65,7 @@ const TimestampCell = (props: { iso?: string }) => {
   );
 };
 
+// Renders the to/from cells in the source or destination remap columns
 const AddressRemapCell = (props: { value?: AddressRemap }) => (
   <>
     <TableCell>{props.value?.from}</TableCell>
@@ -72,6 +73,7 @@ const AddressRemapCell = (props: { value?: AddressRemap }) => (
   </>
 );
 
+// Renders the to/from port numbers in the port remap
 const PortRemapCell = (props: { value?: PortRemap }) => (
   <>
     <TableCell>
@@ -83,80 +85,100 @@ const PortRemapCell = (props: { value?: PortRemap }) => (
   </>
 );
 
+// Data present in both primary and secondary rows
+type RowCommon = {
+  srcRemap?: AddressRemap;
+  dstRemap?: AddressRemap;
+  portRemap?: PortRemap;
+};
+
+// Row containing the full replay job item
+export type ReplayJobTablePrimaryRow = {
+  type: "primary";
+  rowSpan: number;
+} & Omit<ReplayListItem, "srcRemap" | "dstRemap" | "portRemap"> &
+  RowCommon;
+
+// Row containing only extra list items where the main cells where merged
+export type ReplayJobTableSecondaryRow = {
+  type: "secondary";
+} & RowCommon;
+
+//! Data regarding one row of the table
+export type ReplayJobTableRowData =
+  | ReplayJobTablePrimaryRow
+  | ReplayJobTableSecondaryRow;
+
 // One row in the replays table
 export const ReplayJobsTableRow = (props: {
-  data: ReplayListItem;
+  data: ReplayJobTableRowData;
   visibility: Record<ReplayColumnId, boolean>;
 }) => {
-  // Count number of rows needed for spanning
-  const sourceremapRows =
-    (props.visibility.sourceremap && props.data.srcRemap?.length) || 0;
-  const destremapRows =
-    (props.visibility.destremap && props.data.dstRemap?.length) || 0;
-  const portremapRows =
-    (props.visibility.portremap && props.data.portRemap?.length) || 0;
-
-  const rowSpan = Math.max(1, sourceremapRows, destremapRows, portremapRows);
-
   return (
     <>
-      {Array.from({ length: rowSpan }, (_, i) => (
-        <TableRow key={i}>
-          {i === 0 && props.visibility.name && (
-            <TableCell rowSpan={rowSpan}>{props.data.name}</TableCell>
+      {props.data.type === "primary" && (
+        <>
+          {props.visibility.name && (
+            <TableCell rowSpan={props.data.rowSpan}>
+              {props.data.name}
+            </TableCell>
           )}
-          {i === 0 && props.visibility.status && (
-            <TableCell rowSpan={rowSpan}>
+          {props.visibility.status && (
+            <TableCell rowSpan={props.data.rowSpan}>
               <ReplayStatusChip value={props.data.status} />
             </TableCell>
           )}
-          {i === 0 && props.visibility.createdTime && (
-            <TableCell rowSpan={rowSpan}>
+          {props.visibility.createdTime && (
+            <TableCell rowSpan={props.data.rowSpan}>
               <TimestampCell iso={props.data.createdTime} />
             </TableCell>
           )}
-          {i === 0 && props.visibility.startedTime && (
-            <TableCell rowSpan={rowSpan}>
+          {props.visibility.startedTime && (
+            <TableCell rowSpan={props.data.rowSpan}>
               <TimestampCell iso={props.data.startTime} />
             </TableCell>
           )}
-          {i === 0 && props.visibility.finishedTime && (
-            <TableCell rowSpan={rowSpan}>
+          {props.visibility.finishedTime && (
+            <TableCell rowSpan={props.data.rowSpan}>
               <TimestampCell iso={props.data.endTime} />
             </TableCell>
           )}
-          {i === 0 && props.visibility.interface && (
-            <TableCell rowSpan={rowSpan}>{props.data.interface}</TableCell>
+          {props.visibility.interface && (
+            <TableCell rowSpan={props.data.rowSpan}>
+              {props.data.interface}
+            </TableCell>
           )}
-          {i === 0 && props.visibility.file && (
-            <TableCell rowSpan={rowSpan}>{props.data.fileId}</TableCell>
+          {props.visibility.file && (
+            <TableCell rowSpan={props.data.rowSpan}>
+              {props.data.fileId}
+            </TableCell>
           )}
-          {i === 0 && props.visibility.repeat && (
-            <TableCell rowSpan={rowSpan}>
+          {props.visibility.repeat && (
+            <TableCell rowSpan={props.data.rowSpan}>
               <RepeatCell value={props.data.repeat} />
             </TableCell>
           )}
-          {i === 0 && props.visibility.speed && (
-            <TableCell rowSpan={rowSpan}>
+          {props.visibility.speed && (
+            <TableCell rowSpan={props.data.rowSpan}>
               <LoadCell value={props.data.load} />
             </TableCell>
           )}
-          {i === 0 && props.visibility.length && (
-            <TableCell rowSpan={rowSpan}>
+          {props.visibility.length && (
+            <TableCell rowSpan={props.data.rowSpan}>
               <LengthCell value={props.data.limit} />
             </TableCell>
           )}
-          {props.visibility.sourceremap && (
-            <AddressRemapCell value={props.data.srcRemap?.at(i)} />
-          )}
-          {props.visibility.destremap && (
-            <AddressRemapCell value={props.data.dstRemap?.at(i)} />
-          )}
-          {props.visibility.portremap && (
-            <PortRemapCell value={props.data.portRemap?.at(i)} />
-          )}
-        </TableRow>
-      ))}
+        </>
+      )}
+      {props.visibility.sourceremap && (
+        <AddressRemapCell value={props.data.srcRemap} />
+      )}
+      {props.visibility.destremap && (
+        <AddressRemapCell value={props.data.dstRemap} />
+      )}
+      {props.visibility.portremap && (
+        <PortRemapCell value={props.data.portRemap} />
+      )}
     </>
   );
 };

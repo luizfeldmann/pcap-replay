@@ -22,10 +22,12 @@ export const ReplaysPage = () => {
       <NewReplayButton />
       <Stack direction="row" gap={2}>
         <ToggleListGrid value={toggleValue} setValue={toggleSet} />
-        <ReplayColumnsFilterButton
-          visibility={columnsSelect.state}
-          setVisibility={columnsSelect.setColumn}
-        />
+        {toggleValue === "grid" && (
+          <ReplayColumnsFilterButton
+            visibility={columnsSelect.state}
+            setVisibility={columnsSelect.setColumn}
+          />
+        )}
       </Stack>
       {toggleValue === "list" && <ReplayJobsList />}
       {toggleValue === "grid" && (

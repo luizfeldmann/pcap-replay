@@ -8,7 +8,12 @@ import {
   useColumnNames,
   type ReplayColumnId,
 } from "../ReplayColumnsFilter/useReplayColumnsFilter";
-import { ReplayJobsTableRow } from "./ReplayJobsTableRow";
+import {
+  ReplayJobsTableRow,
+  type ReplayJobTablePrimaryRow,
+  type ReplayJobTableSecondaryRow,
+} from "./ReplayJobsTableRow";
+import { useMemo } from "react";
 
 export const ReplayJobsTable = (props: {
   visibility: Record<ReplayColumnId, boolean>;
@@ -20,7 +25,44 @@ export const ReplayJobsTable = (props: {
   const jobs = useReplaysList();
 
   // Flatten the pages into a single list
-  const data = jobs.data?.pages.flatMap((p) => p.items);
+  const data = useMemo(
+    () =>
+      jobs.data?.pages
+        .flatMap((p) => p.items)
+        .flatMap((item) => {
+          // Count number of rows needed for spanning
+          const srcRows =
+            (props.visibility.sourceremap && item.srcRemap?.length) || 0;
+          const destRows =
+            (props.visibility.destremap && item.dstRemap?.length) || 0;
+          const portRows =
+            (props.visibility.portremap && item.portRemap?.length) || 0;
+          const rowSpan = Math.max(1, srcRows, destRows, portRows);
+
+          // Produce primary and secondary rows
+          return Array.from({ length: rowSpan }, (_, i) => {
+            const common = {
+              key: `${item.id}-${i}`,
+              srcRemap: item.srcRemap?.at(i),
+              dstRemap: item.dstRemap?.at(i),
+              portRemap: item.portRemap?.at(i),
+            };
+
+            return i == 0
+              ? ({
+                  rowSpan,
+                  type: "primary",
+                  ...item,
+                  ...common,
+                } satisfies ReplayJobTablePrimaryRow)
+              : ({
+                  type: "secondary",
+                  ...common,
+                } satisfies ReplayJobTableSecondaryRow);
+          });
+        }),
+    [jobs.data?.pages, props.visibility],
+  );
 
   // Decide spanning layout from visibility
   const isHeaderMultiRow =
@@ -162,7 +204,7 @@ export const ReplayJobsTable = (props: {
       )}
       itemContent={(_, data) => (
         <ReplayJobsTableRow
-          key={data.id}
+          key={data.key}
           data={data}
           visibility={props.visibility}
         />
