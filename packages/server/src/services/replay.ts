@@ -6,6 +6,8 @@ import {
   ReplayPatch,
   ReplayPost,
   ReplayStatus,
+  PaginatedReplayListRequest,
+  PaginatedReplayListResponse,
 } from "shared";
 import { db } from "../models/db.js";
 import {
@@ -16,7 +18,7 @@ import {
   PortRemapRow,
   AddressRemapRow,
 } from "../models/replay.js";
-import { eq } from "drizzle-orm";
+import { eq, lt, desc } from "drizzle-orm";
 import {
   AppError,
   ConflictError,
@@ -25,6 +27,7 @@ import {
   UnknownError,
 } from "../utils/error.js";
 import { StatusCodes } from "http-status-codes";
+import { getLastItem } from "../utils/utils.js";
 
 const transformPortRemap = (portRemap: PortRemapRow): PortRemap =>
   portRemap.start === portRemap.end
@@ -149,9 +152,18 @@ const transformListItem = (
   return item;
 };
 
-const getAll = async (): Promise<ReplayListItem[]> => {
-  const jobs = await db.select().from(ReplaysTable);
-  return Promise.all(
+const getJobsList = async (
+  req: PaginatedReplayListRequest,
+): Promise<PaginatedReplayListResponse> => {
+  const cursor = req.cursor ? new Date(req.cursor) : new Date();
+  const jobs = await db
+    .select()
+    .from(ReplaysTable)
+    .where(lt(ReplaysTable.createdTime, cursor))
+    .orderBy(desc(ReplaysTable.createdTime))
+    .limit(req.limit);
+
+  const items = await Promise.all(
     jobs.map(async (replayJob) => {
       const [portRemaps, addrRemaps] = await Promise.all([
         // prettier-ignore
@@ -166,6 +178,11 @@ const getAll = async (): Promise<ReplayListItem[]> => {
       return transformListItem(replayJob, portRemaps, addrRemaps);
     }),
   );
+
+  return {
+    items,
+    nextCursor: getLastItem(items)?.createdTime,
+  };
 };
 
 const getSingle = async (id: string): Promise<ReplayListItem> => {
@@ -357,7 +374,7 @@ const commandStatus = (id: string, command: JobCommand) => {
 };
 
 export const ReplayService = {
-  getAll,
+  getJobsList,
   getSingle,
   deleteSingle,
   insertNew,

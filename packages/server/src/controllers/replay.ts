@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 import { ZodOpenApiOperationObject } from "zod-openapi";
 import { ReplayService } from "../services/replay.js";
 import { StatusCodes } from "http-status-codes";
@@ -13,6 +12,8 @@ import {
   ReplayListItemSchema,
   ReplayPatchSchema,
   ReplayPostSchema,
+  PaginatedReplayListRequestSchema,
+  PaginatedReplayListResponseSchema,
 } from "shared";
 
 // Tag for API docs
@@ -27,14 +28,29 @@ const getReplayJobs = {
   docs: {
     tags: [REPLAY_TAG],
     summary: "Reads the list of all replay jobs",
+    parameters: [
+      {
+        in: "query",
+        name: "limit",
+        required: true,
+        schema: { type: "integer" },
+      },
+      {
+        in: "query",
+        name: "cursor",
+        required: false,
+        schema: { type: "string" },
+      },
+    ],
     responses: {
-      [StatusCodes.OK]: jsonResponse(z.array(ReplayListItemSchema)),
+      [StatusCodes.OK]: jsonResponse(PaginatedReplayListResponseSchema),
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {
-    const allJobs = await ReplayService.getAll();
-    resp.json(allJobs);
+    const params = PaginatedReplayListRequestSchema.parse(req.query);
+    const paginatedJobs = await ReplayService.getJobsList(params);
+    resp.json(paginatedJobs);
   },
 };
 
