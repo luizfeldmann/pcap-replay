@@ -2,8 +2,8 @@ import { Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ToggleListGrid } from "../../components/ToggleListGrid/ToggleListGrid";
 import { useToggleListGrid } from "../../components/ToggleListGrid/useToggleListGrid";
-import { NetworkInterfacesTable } from "../../components/NetworkInterfaces/NetworkInterfacesTable";
-import { NetworkInterfacesList } from "../../components/NetworkInterfaces/NetworkInterfacesList";
+import { NetworkInterfacesTable } from "../../components/NetworkInterfacesTable/NetworkInterfacesTable";
+import { NetworkInterfacesList } from "../../components/NetworkInterfacesList/NetworkInterfacesList";
 
 export const NetworkPage = () => {
   const { t } = useTranslation();
