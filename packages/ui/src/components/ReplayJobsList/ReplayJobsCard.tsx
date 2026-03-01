@@ -6,7 +6,6 @@ import {
   IconButton,
   Stack,
   Typography,
-  CardActionArea,
   Collapse,
   CardContent,
   Table,
@@ -47,17 +46,25 @@ const TimesInfo = (props: {
   return (
     <Box
       sx={{
+        flexGrow: 1,
+        width: "fit-content",
         display: "grid",
         gridTemplateColumns: "auto 1fr",
         rowGap: 0.5,
-        columnGap: 1,
+        columnGap: 2,
       }}
     >
-      {t("replays.table.createdtime")}
+      <Typography color="text.secondary">
+        {t("replays.table.createdtime")}
+      </Typography>
       <ReplayDateTime iso={props.createdTime} />
-      {t("replays.table.startedtime")}
+      <Typography color="text.secondary">
+        {t("replays.table.startedtime")}
+      </Typography>
       <ReplayDateTime iso={props.startTime} />
-      {t("replays.table.finishedtime")}
+      <Typography color="text.secondary">
+        {t("replays.table.finishedtime")}
+      </Typography>
       <ReplayDateTime iso={props.endTime} />
     </Box>
   );
@@ -81,14 +88,20 @@ export const SettingsInfo = (props: {
         display: "grid",
         gridTemplateColumns: "auto 1fr",
         rowGap: 0.5,
-        columnGap: 1,
+        columnGap: 2,
       }}
     >
-      {t("replays.table.repeat.label")}
+      <Typography color="text.secondary">
+        {t("replays.table.repeat.label")}
+      </Typography>
       <RepeatSettingsText value={props.repeat} />
-      {t("replays.table.speed.label")}
+      <Typography color="text.secondary">
+        {t("replays.table.speed.label")}
+      </Typography>
       <LoadSettingsText value={props.load} />
-      {t("replays.table.length.label")}
+      <Typography color="text.secondary">
+        {t("replays.table.length.label")}
+      </Typography>
       <LengthSettingsText value={props.length} />
     </Box>
   );
@@ -100,11 +113,13 @@ export const SourceRemapTable = (props: { srcRemap?: AddressRemap[] }) => {
   if (!props.srcRemap) return <></>;
 
   return (
-    <Table>
+    <Table size="small">
       <TableHead>
         <TableRow>
           <TableCell colSpan={2}>
-            {t("replays.table.sourceremap.label")}
+            <Typography color="text.secondary">
+              {t("replays.table.sourceremap.label")}
+            </Typography>
           </TableCell>
         </TableRow>
         <TableRow>
@@ -129,11 +144,13 @@ export const DestRemapTable = (props: { dstRemap?: AddressRemap[] }) => {
   if (!props.dstRemap) return <></>;
 
   return (
-    <Table>
+    <Table size="small">
       <TableHead>
         <TableRow>
           <TableCell colSpan={2}>
-            {t("replays.table.destremap.label")}
+            <Typography color="text.secondary">
+              {t("replays.table.destremap.label")}
+            </Typography>
           </TableCell>
         </TableRow>
         <TableRow>
@@ -158,11 +175,13 @@ export const PortRemapTable = (props: { portRemap?: PortRemap[] }) => {
   if (!props.portRemap) return <></>;
 
   return (
-    <Table>
+    <Table size="small">
       <TableHead>
         <TableRow>
           <TableCell colSpan={2}>
-            {t("replays.table.portremap.label")}
+            <Typography color="text.secondary">
+              {t("replays.table.portremap.label")}
+            </Typography>
           </TableCell>
         </TableRow>
         <TableRow>
@@ -213,24 +232,27 @@ export const ReplayJobsCard = (props: {
         subheader={
           <Stack direction="row" spacing={2}>
             <Stack direction="column">
-              <Typography fontWeight="bold">
-                {t("replays.table.interface")}
-              </Typography>
-              {props.data.interface}
+              {t("replays.table.interface")}
+              <Typography fontWeight="bold">{props.data.interface}</Typography>
             </Stack>
             <Stack direction="column">
-              <Typography fontWeight="bold">
-                {t("replays.table.file")}
-              </Typography>
-              {fileInfo.data?.name}
+              {t("replays.table.file")}
+              <Typography fontWeight="bold">{fileInfo.data?.name}</Typography>
             </Stack>
           </Stack>
         }
         action={
-          <Stack>
-            <IconButton onClick={(e) => props.onMore(e.currentTarget)}>
-              <Icons.MoreContext />
-            </IconButton>
+          <Stack direction="column" gap={1} alignItems="end">
+            <Stack direction="row" alignItems="center" gap={2}>
+              <ReplayCommandButton
+                size="small"
+                currentStatus={props.data.status}
+                onClick={() => {}}
+              />
+              <IconButton onClick={(e) => props.onMore(e.currentTarget)}>
+                <Icons.MoreContext />
+              </IconButton>
+            </Stack>
             <IconButton onClick={() => setExpanded((v) => !v)}>
               <Icons.ExpandChevron
                 sx={{
@@ -243,30 +265,37 @@ export const ReplayJobsCard = (props: {
         }
       />
       <Collapse in={expanded}>
-        <CardContent component={Stack} direction="row" gap={2}>
-          <TimesInfo
-            createdTime={props.data.createdTime}
-            startTime={props.data.startTime}
-            endTime={props.data.endTime}
-          />
-          <SettingsInfo
-            load={props.data.load}
-            length={props.data.limit}
-            repeat={props.data.repeat}
-          />
-          <SourceRemapTable srcRemap={props.data.srcRemap} />
-          <DestRemapTable dstRemap={props.data.dstRemap} />
-          <PortRemapTable portRemap={props.data.portRemap} />
+        <CardContent
+          component={Stack}
+          direction="row"
+          gap={4}
+          alignItems="start"
+        >
+          <Box sx={{ flexGrow: 0 }}>
+            <TimesInfo
+              createdTime={props.data.createdTime}
+              startTime={props.data.startTime}
+              endTime={props.data.endTime}
+            />
+          </Box>
+          <Box sx={{ flexGrow: 0 }}>
+            <SettingsInfo
+              load={props.data.load}
+              length={props.data.limit}
+              repeat={props.data.repeat}
+            />
+          </Box>
+          <Box flexGrow={0}>
+            <SourceRemapTable srcRemap={props.data.srcRemap} />
+          </Box>
+          <Box flexGrow={0}>
+            <DestRemapTable dstRemap={props.data.dstRemap} />
+          </Box>
+          <Box flexGrow={0}>
+            <PortRemapTable portRemap={props.data.portRemap} />
+          </Box>
         </CardContent>
       </Collapse>
-      <CardActionArea>
-        <ReplayCommandButton
-          sx={{ m: 2 }}
-          size="small"
-          currentStatus={props.data.status}
-          onClick={() => {}}
-        />
-      </CardActionArea>
     </Card>
   );
 };
