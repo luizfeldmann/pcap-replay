@@ -1,91 +1,15 @@
-import type {
-  AddressRemap,
-  LengthSettings,
-  LoadSettings,
-  PortRemap,
-  RepeatSettings,
-  ReplayListItem,
-} from "shared";
+import type { AddressRemap, PortRemap, ReplayListItem } from "shared";
 import type { ReplayColumnId } from "../ReplayColumnsFilter/useReplayColumnsFilter";
 import { CircularProgress, TableCell } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { LocaleDateTime } from "../LocaleDateTime/LocaleDateTime";
 import { ReplayStatusChip } from "../ReplayStatus/ReplayStatusChip";
 import { useSingleFile } from "../../api/files/useSingleFile";
 import { Icons } from "../../utils/Icons";
-
-// Text displayed in the repetitions setting cell
-const RepeatCell = (props: { value?: RepeatSettings }) => {
-  const { t } = useTranslation();
-  if (props.value?.type === "loop") {
-    return <>{t("replays.table.repeat.loop")}</>;
-  } else if (props.value?.type === "times") {
-    return <>{t("replays.table.repeat.times", { n: props.value.times })}</>;
-  }
-  return <></>;
-};
-
-// Text displayed in the load/speed settings cell
-const LoadCell = (props: { value?: LoadSettings }) => {
-  const { t } = useTranslation();
-  if (props.value?.type === "multiplier") {
-    return <>{t("replays.table.speed.multiplier", { x: props.value.speed })}</>;
-  } else if (props.value?.type === "mbps") {
-    return <>{t("replays.table.speed.mbps", { x: props.value.dataRate })}</>;
-  } else if (props.value?.type === "pps") {
-    return <>{t("replays.table.speed.pps", { x: props.value.packetRate })}</>;
-  }
-  return <></>;
-};
-
-// Text displayed in the limit/length cell
-const LengthCell = (props: { value?: LengthSettings }) => {
-  const { t } = useTranslation();
-  if (props.value?.type === "duration") {
-    return (
-      <>{t("replays.table.length.duration", { x: props.value.maxDuration })}</>
-    );
-  } else if (props.value?.type === "packets") {
-    return (
-      <>{t("replays.table.length.packets", { x: props.value.maxPackets })}</>
-    );
-  }
-  return <></>;
-};
-
-// Display text for the cells containing a date-time
-const TimestampCell = (props: { iso?: string }) => {
-  if (!props.iso) return <></>;
-  return (
-    <LocaleDateTime
-      iso={props.iso}
-      options={{
-        dateStyle: "short",
-        timeStyle: "short",
-      }}
-    />
-  );
-};
-
-// Renders the to/from cells in the source or destination remap columns
-const AddressRemapCell = (props: { value?: AddressRemap }) => (
-  <>
-    <TableCell>{props.value?.from}</TableCell>
-    <TableCell>{props.value?.to}</TableCell>
-  </>
-);
-
-// Renders the to/from port numbers in the port remap
-const PortRemapCell = (props: { value?: PortRemap }) => (
-  <>
-    <TableCell>
-      {typeof props.value?.from === "number" && props.value.from}
-      {typeof props.value?.from === "object" &&
-        `${props.value.from.start} - ${props.value.from.end}`}
-    </TableCell>
-    <TableCell>{props.value?.to}</TableCell>
-  </>
-);
+import { TimestampCell } from "./ReplayJobsTableRow.styles";
+import { RepeatSettingsText } from "./RepeatSettingsText";
+import { LoadSettingsText } from "./LoadSettingsText";
+import { LengthSettingsText } from "./LengthSettingsText";
+import { AddressRemapCells } from "./AddressRemapCells";
+import { PortRemapCells } from "./PortRemapCells";
 
 // Renders the file name and link
 const FileCell = (props: { id: string }) => {
@@ -165,29 +89,29 @@ export const ReplayJobsTableRow = (props: {
           )}
           {props.visibility.repeat && (
             <TableCell rowSpan={props.data.rowSpan}>
-              <RepeatCell value={props.data.repeat} />
+              <RepeatSettingsText value={props.data.repeat} />
             </TableCell>
           )}
           {props.visibility.speed && (
             <TableCell rowSpan={props.data.rowSpan}>
-              <LoadCell value={props.data.load} />
+              <LoadSettingsText value={props.data.load} />
             </TableCell>
           )}
           {props.visibility.length && (
             <TableCell rowSpan={props.data.rowSpan}>
-              <LengthCell value={props.data.limit} />
+              <LengthSettingsText value={props.data.limit} />
             </TableCell>
           )}
         </>
       )}
       {props.visibility.sourceremap && (
-        <AddressRemapCell value={props.data.srcRemap} />
+        <AddressRemapCells value={props.data.srcRemap} />
       )}
       {props.visibility.destremap && (
-        <AddressRemapCell value={props.data.dstRemap} />
+        <AddressRemapCells value={props.data.dstRemap} />
       )}
       {props.visibility.portremap && (
-        <PortRemapCell value={props.data.portRemap} />
+        <PortRemapCells value={props.data.portRemap} />
       )}
     </>
   );

@@ -128,5 +128,7 @@
   "replays.table.speed.mbps": "{{x}} Mbps",
   "replays.table.length.label": "Length",
   "replays.table.length.packets": "{{x}} packets",
-  "replays.table.length.duration": "{{x}} s"
+  "replays.table.length.duration": "{{x}} s",
+  "replays.context.startplay": "Start",
+  "replays.context.stop": "Stop"
 }

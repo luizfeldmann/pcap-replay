@@ -217,6 +217,10 @@
         "packets": "{{x}} pacotes",
         "duration": "{{x}} s"
       }
+    },
+    "context": {
+      "startplay": "Iniciar",
+      "stop": "Parar"
     }
   }
 }
