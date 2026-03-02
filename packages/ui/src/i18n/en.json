@@ -130,5 +130,7 @@
   "replays.table.length.packets": "{{x}} packets",
   "replays.table.length.duration": "{{x}} s",
   "replays.context.startplay": "Start",
-  "replays.context.stop": "Stop"
+  "replays.context.stop": "Stop",
+  "replays.context.edit": "Edit",
+  "replays.context.delete": "Delete"
 }

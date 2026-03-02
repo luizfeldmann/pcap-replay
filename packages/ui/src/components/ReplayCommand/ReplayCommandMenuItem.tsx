@@ -1,40 +1,42 @@
+import {
+  CircularProgress,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  type MenuItemProps,
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
 import type { JobCommand, ReplayStatus } from "shared";
 import { ReplayCommandTransitions } from "./ReplayCommandTransitions";
 import { ReplayCommandStyles } from "./ReplayCommandStyles";
-import { Button, CircularProgress, type ButtonProps } from "@mui/material";
-import { useTranslation } from "react-i18next";
 
-export type ReplayCommandButtonProps = Omit<ButtonProps, "onClick"> & {
+export type ReplayCommandMenuItemProps = Omit<MenuItemProps, "onClick"> & {
   currentStatus: ReplayStatus;
   isLoading?: boolean;
   onClick(command: JobCommand): void;
 };
 
-export const ReplayCommandButton = ({
+export const ReplayCommandMenuItem = ({
   currentStatus,
   isLoading,
   onClick,
   disabled,
   ...props
-}: ReplayCommandButtonProps) => {
+}: ReplayCommandMenuItemProps) => {
   const { t } = useTranslation();
   const command = ReplayCommandTransitions[currentStatus];
   const style = ReplayCommandStyles[command];
 
   return (
-    <Button
+    <MenuItem
       {...props}
-      variant="contained"
-      sx={{
-        ...props.sx,
-        color: "white",
-        backgroundColor: style.color,
-      }}
       disabled={disabled || isLoading}
-      startIcon={isLoading ? <CircularProgress size="small" /> : <style.icon />}
       onClick={() => onClick(command)}
     >
-      {t(style.label)}
-    </Button>
+      <ListItemIcon>
+        {isLoading ? <CircularProgress size="small" /> : <style.icon />}
+      </ListItemIcon>
+      <ListItemText>{t(style.label)}</ListItemText>
+    </MenuItem>
   );
 };

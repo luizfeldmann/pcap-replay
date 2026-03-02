@@ -1,4 +1,11 @@
-import { Alert, Table, TableBody, TableHead, TableRow } from "@mui/material";
+import {
+  Alert,
+  LinearProgress,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { useReplaysList } from "../../api/replays/useReplaysList";
 import { useTranslation } from "react-i18next";
 import { TableVirtuoso } from "react-virtuoso";
@@ -14,6 +21,8 @@ import {
   type ReplayJobTableSecondaryRow,
 } from "./ReplayJobsTableRow";
 import { useMemo } from "react";
+import { useReplayContextMenu } from "../ReplayContextMenu/useReplayContextMenu";
+import { ReplayContextMenu } from "../ReplayContextMenu/ReplayContextMenu";
 
 export const ReplayJobsTable = (props: {
   visibility: Record<ReplayColumnId, boolean>;
@@ -23,6 +32,9 @@ export const ReplayJobsTable = (props: {
 
   // Query the items from API
   const jobs = useReplaysList();
+
+  // Single context menu for all items
+  const { open: openContextMenu, ...contextMenu } = useReplayContextMenu();
 
   // Flatten the pages into a single list
   const data = useMemo(
@@ -52,6 +64,13 @@ export const ReplayJobsTable = (props: {
               ? ({
                   rowSpan,
                   type: "primary",
+                  onMore: (e) =>
+                    openContextMenu(
+                      item.id,
+                      item.name,
+                      item.status,
+                      e.currentTarget,
+                    ),
                   ...item,
                   ...common,
                 } satisfies ReplayJobTablePrimaryRow)
@@ -61,7 +80,7 @@ export const ReplayJobsTable = (props: {
                 } satisfies ReplayJobTableSecondaryRow);
           });
         }),
-    [jobs.data?.pages, props.visibility],
+    [jobs.data?.pages, props.visibility, openContextMenu],
   );
 
   // Decide spanning layout from visibility
@@ -76,139 +95,149 @@ export const ReplayJobsTable = (props: {
 
   // Show the actual table
   return (
-    <TableVirtuoso
-      data={data}
-      endReached={() => jobs.hasNextPage && void jobs.fetchNextPage()}
-      components={{
-        Table: Table,
-        TableHead: TableHead,
-        TableBody: TableBody,
-      }}
-      fixedHeaderContent={() => (
-        <>
-          <TableRow>
-            {props.visibility.name && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Name />
-                {columnNames.name}
-              </TableCellHeader>
-            )}
-            {props.visibility.status && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Status />
-                {columnNames.status}
-              </TableCellHeader>
-            )}
-            {props.visibility.createdTime && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Created />
-                {columnNames.createdTime}
-              </TableCellHeader>
-            )}
-            {props.visibility.startedTime && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Started />
-                {columnNames.startedTime}
-              </TableCellHeader>
-            )}
-            {props.visibility.finishedTime && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Finished />
-                {columnNames.finishedTime}
-              </TableCellHeader>
-            )}
-            {props.visibility.interface && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Network />
-                {columnNames.interface}
-              </TableCellHeader>
-            )}
-            {props.visibility.file && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.FileItem />
-                {columnNames.file}
-              </TableCellHeader>
-            )}
-            {props.visibility.repeat && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Loop />
-                {columnNames.repeat}
-              </TableCellHeader>
-            )}
-            {props.visibility.speed && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.Speed />
-                {columnNames.speed}
-              </TableCellHeader>
-            )}
-            {props.visibility.length && (
-              <TableCellHeader rowSpan={rowSpan}>
-                <Icons.LoadLimit />
-                {columnNames.length}
-              </TableCellHeader>
-            )}
-            {props.visibility.sourceremap && (
-              <TableCellHeader colSpan={2}>
-                <Icons.Source />
-                {columnNames.sourceremap}
-              </TableCellHeader>
-            )}
-            {props.visibility.destremap && (
-              <TableCellHeader colSpan={2}>
-                <Icons.Destination />
-                {columnNames.destremap}
-              </TableCellHeader>
-            )}
-            {props.visibility.portremap && (
-              <TableCellHeader colSpan={2}>
-                <Icons.PortRemap />
-                {columnNames.portremap}
-              </TableCellHeader>
-            )}
-          </TableRow>
-          {isHeaderMultiRow && (
+    <>
+      {jobs.isLoading && <LinearProgress />}
+      <ReplayContextMenu
+        actions={contextMenu.actions}
+        state={contextMenu.state}
+      />
+      <TableVirtuoso
+        data={data}
+        endReached={() => jobs.hasNextPage && void jobs.fetchNextPage()}
+        components={{
+          Table: Table,
+          TableHead: TableHead,
+          TableBody: TableBody,
+        }}
+        fixedHeaderContent={() => (
+          <>
             <TableRow>
+              {props.visibility.name && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Name />
+                  {columnNames.name}
+                </TableCellHeader>
+              )}
+              {props.visibility.status && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Status />
+                  {columnNames.status}
+                </TableCellHeader>
+              )}
+              {props.visibility.createdTime && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Created />
+                  {columnNames.createdTime}
+                </TableCellHeader>
+              )}
+              {props.visibility.startedTime && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Started />
+                  {columnNames.startedTime}
+                </TableCellHeader>
+              )}
+              {props.visibility.finishedTime && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Finished />
+                  {columnNames.finishedTime}
+                </TableCellHeader>
+              )}
+              {props.visibility.interface && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Network />
+                  {columnNames.interface}
+                </TableCellHeader>
+              )}
+              {props.visibility.file && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.FileItem />
+                  {columnNames.file}
+                </TableCellHeader>
+              )}
+              {props.visibility.repeat && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Loop />
+                  {columnNames.repeat}
+                </TableCellHeader>
+              )}
+              {props.visibility.speed && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.Speed />
+                  {columnNames.speed}
+                </TableCellHeader>
+              )}
+              {props.visibility.length && (
+                <TableCellHeader rowSpan={rowSpan}>
+                  <Icons.LoadLimit />
+                  {columnNames.length}
+                </TableCellHeader>
+              )}
               {props.visibility.sourceremap && (
-                <>
-                  <TableCellHeader>
-                    {t("replays.table.sourceremap.from")}
-                  </TableCellHeader>
-                  <TableCellHeader>
-                    {t("replays.table.sourceremap.to")}
-                  </TableCellHeader>
-                </>
+                <TableCellHeader colSpan={2}>
+                  <Icons.Source />
+                  {columnNames.sourceremap}
+                </TableCellHeader>
               )}
               {props.visibility.destremap && (
-                <>
-                  <TableCellHeader>
-                    {t("replays.table.destremap.from")}
-                  </TableCellHeader>
-                  <TableCellHeader>
-                    {t("replays.table.destremap.to")}
-                  </TableCellHeader>
-                </>
+                <TableCellHeader colSpan={2}>
+                  <Icons.Destination />
+                  {columnNames.destremap}
+                </TableCellHeader>
               )}
               {props.visibility.portremap && (
-                <>
-                  <TableCellHeader>
-                    {t("replays.table.portremap.from")}
-                  </TableCellHeader>
-                  <TableCellHeader>
-                    {t("replays.table.portremap.to")}
-                  </TableCellHeader>
-                </>
+                <TableCellHeader colSpan={2}>
+                  <Icons.PortRemap />
+                  {columnNames.portremap}
+                </TableCellHeader>
               )}
+              <TableCellHeader rowSpan={rowSpan} sx={{ width: 64 }}>
+                {/** Actions button column */}
+              </TableCellHeader>
             </TableRow>
-          )}
-        </>
-      )}
-      itemContent={(_, data) => (
-        <ReplayJobsTableRow
-          key={data.key}
-          data={data}
-          visibility={props.visibility}
-        />
-      )}
-    />
+            {isHeaderMultiRow && (
+              <TableRow>
+                {props.visibility.sourceremap && (
+                  <>
+                    <TableCellHeader>
+                      {t("replays.table.sourceremap.from")}
+                    </TableCellHeader>
+                    <TableCellHeader>
+                      {t("replays.table.sourceremap.to")}
+                    </TableCellHeader>
+                  </>
+                )}
+                {props.visibility.destremap && (
+                  <>
+                    <TableCellHeader>
+                      {t("replays.table.destremap.from")}
+                    </TableCellHeader>
+                    <TableCellHeader>
+                      {t("replays.table.destremap.to")}
+                    </TableCellHeader>
+                  </>
+                )}
+                {props.visibility.portremap && (
+                  <>
+                    <TableCellHeader>
+                      {t("replays.table.portremap.from")}
+                    </TableCellHeader>
+                    <TableCellHeader>
+                      {t("replays.table.portremap.to")}
+                    </TableCellHeader>
+                  </>
+                )}
+              </TableRow>
+            )}
+          </>
+        )}
+        itemContent={(_, data) => (
+          <ReplayJobsTableRow
+            key={data.key}
+            data={data}
+            visibility={props.visibility}
+          />
+        )}
+      />
+    </>
   );
 };

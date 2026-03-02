@@ -1,6 +1,6 @@
 import type { AddressRemap, PortRemap, ReplayListItem } from "shared";
 import type { ReplayColumnId } from "../ReplayColumnsFilter/useReplayColumnsFilter";
-import { CircularProgress, TableCell } from "@mui/material";
+import { CircularProgress, IconButton, TableCell } from "@mui/material";
 import { ReplayStatusChip } from "../ReplayStatus/ReplayStatusChip";
 import { useSingleFile } from "../../api/files/useSingleFile";
 import { Icons } from "../../utils/Icons";
@@ -10,6 +10,7 @@ import { LoadSettingsText } from "./LoadSettingsText";
 import { LengthSettingsText } from "./LengthSettingsText";
 import { AddressRemapCells } from "./AddressRemapCells";
 import { PortRemapCells } from "./PortRemapCells";
+import type { MouseEventHandler } from "react";
 
 // Renders the file name and link
 const FileCell = (props: { id: string }) => {
@@ -30,6 +31,7 @@ type RowCommon = {
 export type ReplayJobTablePrimaryRow = {
   type: "primary";
   rowSpan: number;
+  onMore: MouseEventHandler<HTMLElement>;
 } & Omit<ReplayListItem, "srcRemap" | "dstRemap" | "portRemap"> &
   RowCommon;
 
@@ -112,6 +114,13 @@ export const ReplayJobsTableRow = (props: {
       )}
       {props.visibility.portremap && (
         <PortRemapCells value={props.data.portRemap} />
+      )}
+      {props.data.type === "primary" && (
+        <TableCell rowSpan={props.data.rowSpan}>
+          <IconButton size="small" onClick={props.data.onMore}>
+            <Icons.MoreContext />
+          </IconButton>
+        </TableCell>
       )}
     </>
   );

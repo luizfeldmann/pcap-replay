@@ -2,30 +2,49 @@ import { Virtuoso } from "react-virtuoso";
 import { Alert, LinearProgress } from "@mui/material";
 import { useReplaysList } from "../../api/replays/useReplaysList";
 import { ReplayJobsCard } from "./ReplayJobsCard";
+import { ReplayContextMenu } from "../ReplayContextMenu/ReplayContextMenu";
+import { useMemo } from "react";
+import { useReplayContextMenu } from "../ReplayContextMenu/useReplayContextMenu";
 
 export const ReplayJobsList = () => {
+  // Query items from API
   const queryReplay = useReplaysList();
 
+  // Single context menu for any of the items
+  const contextMenu = useReplayContextMenu();
+
   // Flatten the pages into a single list
-  const data = queryReplay.data?.pages.flatMap((p) => p.items) ?? [];
+  const data = useMemo(
+    () => queryReplay.data?.pages.flatMap((p) => p.items) ?? [],
+    [queryReplay.data],
+  );
 
   // Replace list with error if failed to fetch
   if (queryReplay.isError)
     return <Alert severity="error">{queryReplay.error.message}</Alert>;
 
   return (
-    <Virtuoso
-      data={data}
-      endReached={() =>
-        queryReplay.hasNextPage && void queryReplay.fetchNextPage()
-      }
-      itemContent={(_, item) => (
-        <ReplayJobsCard data={item} onMore={(anchor) => {}} />
-      )}
-      style={{ height: "100%" }}
-      components={{
-        Header: () => <>{queryReplay.isLoading && <LinearProgress />}</>,
-      }}
-    />
+    <>
+      {queryReplay.isLoading && <LinearProgress />}
+      <ReplayContextMenu
+        state={contextMenu.state}
+        actions={contextMenu.actions}
+      />
+      <Virtuoso
+        data={data}
+        endReached={() =>
+          queryReplay.hasNextPage && void queryReplay.fetchNextPage()
+        }
+        itemContent={(_, item) => (
+          <ReplayJobsCard
+            data={item}
+            onMore={(anchor) =>
+              contextMenu.open(item.id, item.name, item.status, anchor)
+            }
+          />
+        )}
+        style={{ height: "100%" }}
+      />
+    </>
   );
 };

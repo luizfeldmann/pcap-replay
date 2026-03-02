@@ -26,69 +26,72 @@ export const FilesList = () => {
   const filesQuery = useFilesList();
   const rows = filesQuery.data?.pages.flatMap((p) => p.items) ?? [];
 
-  if (filesQuery.isLoading) return <LinearProgress />;
-  else if (filesQuery.isError)
+  if (filesQuery.isError)
     return <Alert severity="error">{filesQuery.error.message}</Alert>;
+
   return (
-    <TableVirtuoso
-      data={rows}
-      endReached={() =>
-        filesQuery.hasNextPage && void filesQuery.fetchNextPage()
-      }
-      overscan={100}
-      components={{
-        Table: (props) => (
-          <Table
-            {...props}
-            sx={{
-              borderCollapse: "separate",
-              tableLayout: "fixed",
-            }}
-          />
-        ),
-        TableHead: TableHead,
-        TableBody: TableBody,
-      }}
-      fixedHeaderContent={() => (
-        <TableRow>
-          <TableCellHeader>{t("files.name")}</TableCellHeader>
-          <TableCellHeader>{t("files.size")}</TableCellHeader>
-          <TableCellHeader>{t("files.timeUploaded")}</TableCellHeader>
-          <TableCellHeader sx={{ width: 64 }}>
-            <FileContextMenu
-              state={filesMenu.state}
-              actions={filesMenu.actions}
-            />
-            <FileRenameDialog {...filesMenu.fileRename} />
-          </TableCellHeader>
-        </TableRow>
-      )}
-      itemContent={(_, rowData) => (
-        <>
-          <TableCell>
-            <FileIconLink id={rowData.id} name={rowData.name} />
-          </TableCell>
-          <TableCell>
-            <FileSize size={rowData.size} />
-          </TableCell>
-          <TableCell>
-            <LocaleDateTime
-              iso={rowData.time}
-              options={{
-                dateStyle: "medium",
-                timeStyle: "medium",
+    <>
+      {filesQuery.isLoading && <LinearProgress />}
+      <TableVirtuoso
+        data={rows}
+        endReached={() =>
+          filesQuery.hasNextPage && void filesQuery.fetchNextPage()
+        }
+        overscan={100}
+        components={{
+          Table: (props) => (
+            <Table
+              {...props}
+              sx={{
+                borderCollapse: "separate",
+                tableLayout: "fixed",
               }}
             />
-          </TableCell>
-          <TableCell>
-            <FileContextButton
-              onClick={(e) =>
-                filesMenu.onOpen(e, { id: rowData.id, name: rowData.name })
-              }
-            />
-          </TableCell>
-        </>
-      )}
-    />
+          ),
+          TableHead: TableHead,
+          TableBody: TableBody,
+        }}
+        fixedHeaderContent={() => (
+          <TableRow>
+            <TableCellHeader>{t("files.name")}</TableCellHeader>
+            <TableCellHeader>{t("files.size")}</TableCellHeader>
+            <TableCellHeader>{t("files.timeUploaded")}</TableCellHeader>
+            <TableCellHeader sx={{ width: 64 }}>
+              <FileContextMenu
+                state={filesMenu.state}
+                actions={filesMenu.actions}
+              />
+              <FileRenameDialog {...filesMenu.fileRename} />
+            </TableCellHeader>
+          </TableRow>
+        )}
+        itemContent={(_, rowData) => (
+          <>
+            <TableCell>
+              <FileIconLink id={rowData.id} name={rowData.name} />
+            </TableCell>
+            <TableCell>
+              <FileSize size={rowData.size} />
+            </TableCell>
+            <TableCell>
+              <LocaleDateTime
+                iso={rowData.time}
+                options={{
+                  dateStyle: "medium",
+                  timeStyle: "medium",
+                }}
+              />
+            </TableCell>
+            <TableCell>
+              <FileContextButton
+                onClick={(e) =>
+                  filesMenu.onOpen(e, { id: rowData.id, name: rowData.name })
+                }
+              />
+            </TableCell>
+          </>
+        )}
+      />
+    </>
   );
 };
