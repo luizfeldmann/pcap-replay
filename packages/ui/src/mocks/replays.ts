@@ -2,6 +2,7 @@ import { HttpResponse, RequestHandler, http } from "msw";
 import {
   PaginatedReplayListRequestSchema,
   ReplayPostSchema,
+  type JobCommand,
   type PaginatedReplayListResponse,
   type ReplayListItem,
 } from "shared";
@@ -230,8 +231,45 @@ const deleteReplay = http.delete<{ id: string }>(
   },
 );
 
+// Command a replay to start/stop
+const postCommandReplay = http.post<{ id: string; command: JobCommand }>(
+  `/api/jobs/replay/:id/:command`,
+  async ({ params }) => {
+    // List must have been accessed first
+    if (!mockItemsCache) return new HttpResponse(null, { status: 500 });
+
+    // Try to find the item
+    const item = mockItemsCache.find((item) => item.id === params.id);
+    if (!item) return new HttpResponse(null, { status: 404 });
+
+    // Handle the command type
+    switch (params.command) {
+      case "start":
+        // Check its not already running
+        if (item.status === "RUNNING")
+          return new HttpResponse(null, { status: 409 });
+        // Change to running
+        item.status = "RUNNING";
+        break;
+
+      case "stop":
+        // To stop it must first be running
+        if (item.status !== "RUNNING")
+          return new HttpResponse(null, { status: 409 });
+        // Change to stopped
+        item.status = "STOPPED";
+        break;
+    }
+
+    // Success
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // simulate delay
+    return new HttpResponse(null, { status: 202 });
+  },
+);
+
 export const replayMocks: RequestHandler[] = [
   getReplays,
   postReplay,
   deleteReplay,
+  postCommandReplay,
 ];

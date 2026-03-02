@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { routes } from "../../utils/routes";
-import type { JobCommand, ReplayStatus } from "shared";
+import type { ReplayStatus } from "shared";
 import { useDeleteReplay } from "../../api/replays/useDeleteReplay";
 import { useTranslation } from "react-i18next";
 import { enqueueSnackbar } from "notistack";
@@ -15,7 +15,6 @@ export type ReplayContextMenuState = {
 };
 
 export type ReplayContextMenuActions = {
-  onCommand(command: JobCommand): void;
   onClose(): void;
   onDelete(): void;
   getEditUrl(): string;
@@ -37,7 +36,7 @@ export const useReplayContextMenu = () => {
   // To close the menu and clear the selection
   const onClose = () => setState({});
 
-  // Hook to delete the replay
+  // Delete the replay
   const deleteApi = useDeleteReplay();
   const onDelete = () => {
     // Sanity check
@@ -58,7 +57,7 @@ export const useReplayContextMenu = () => {
           ),
         onError: (error, variables) =>
           enqueueSnackbar(
-            t("replays.success.delete", {
+            t("replays.error.delete", {
               name: variables.name,
               message: error.message,
             }),
@@ -77,7 +76,6 @@ export const useReplayContextMenu = () => {
     open,
     state,
     actions: {
-      onCommand: () => {},
       getEditUrl: () =>
         routes.replaysEditPage.location(state.selected?.id ?? ""),
       onDelete,

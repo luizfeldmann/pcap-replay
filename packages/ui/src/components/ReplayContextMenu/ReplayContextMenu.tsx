@@ -29,8 +29,10 @@ export const ReplayContextMenu = (props: {
     >
       {props.state.selected && (
         <ReplayCommandMenuItem
+          replayId={props.state.selected.id}
+          replayName={props.state.selected.name}
           currentStatus={props.state.selected.status}
-          onClick={props.actions.onCommand}
+          onSettled={props.actions.onClose}
         />
       )}
       <MenuItem

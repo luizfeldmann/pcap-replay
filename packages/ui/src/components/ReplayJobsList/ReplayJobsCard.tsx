@@ -246,8 +246,9 @@ export const ReplayJobsCard = (props: {
             <Stack direction="row" alignItems="center" gap={2}>
               <ReplayCommandButton
                 size="small"
+                replayId={props.data.id}
+                replayName={props.data.name}
                 currentStatus={props.data.status}
-                onClick={() => {}}
               />
               <IconButton onClick={(e) => props.onMore(e.currentTarget)}>
                 <Icons.MoreContext />

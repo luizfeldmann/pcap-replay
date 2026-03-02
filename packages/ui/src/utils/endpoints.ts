@@ -1,3 +1,5 @@
+import type { JobCommand } from "shared";
+
 export const endpoints = {
   /** NETWORK */
   getNetworkInterfaces: {
@@ -53,5 +55,10 @@ export const endpoints = {
   deleteReplay: {
     path: (id: string) => `/api/jobs/replay/${id}`,
     method: "DELETE",
+  },
+  postReplayCommand: {
+    path: (id: string, command: JobCommand) =>
+      `/api/jobs/replay/${id}/${command}`,
+    method: "POST",
   },
 };

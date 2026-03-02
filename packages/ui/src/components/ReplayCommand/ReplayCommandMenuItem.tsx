@@ -1,40 +1,49 @@
 import {
-  CircularProgress,
   ListItemIcon,
   ListItemText,
   MenuItem,
   type MenuItemProps,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import type { JobCommand, ReplayStatus } from "shared";
+import type { ReplayStatus } from "shared";
 import { ReplayCommandTransitions } from "./ReplayCommandTransitions";
 import { ReplayCommandStyles } from "./ReplayCommandStyles";
+import { useReplayCommandWithSnack } from "./useReplayCommandWithSnack";
 
 export type ReplayCommandMenuItemProps = Omit<MenuItemProps, "onClick"> & {
+  replayId: string;
+  replayName: string;
   currentStatus: ReplayStatus;
-  isLoading?: boolean;
-  onClick(command: JobCommand): void;
+  onSettled(): void;
 };
 
 export const ReplayCommandMenuItem = ({
+  replayId,
+  replayName,
   currentStatus,
-  isLoading,
-  onClick,
   disabled,
+  onSettled,
   ...props
 }: ReplayCommandMenuItemProps) => {
   const { t } = useTranslation();
+
+  // Api invokation
+  const mutation = useReplayCommandWithSnack(replayId);
+
+  // Use the current state to find the transition command
   const command = ReplayCommandTransitions[currentStatus];
   const style = ReplayCommandStyles[command];
 
   return (
     <MenuItem
       {...props}
-      disabled={disabled || isLoading}
-      onClick={() => onClick(command)}
+      disabled={disabled || mutation.isMutating > 0}
+      onClick={() => {
+        mutation.mutate({ name: replayName, command }, onSettled);
+      }}
     >
       <ListItemIcon>
-        {isLoading ? <CircularProgress size="small" /> : <style.icon />}
+        <style.icon />
       </ListItemIcon>
       <ListItemText>{t(style.label)}</ListItemText>
     </MenuItem>
