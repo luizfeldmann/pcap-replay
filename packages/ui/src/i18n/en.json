@@ -132,5 +132,11 @@
   "replays.context.startplay": "Start",
   "replays.context.stop": "Stop",
   "replays.context.edit": "Edit",
-  "replays.context.delete": "Delete"
+  "replays.context.delete": "Delete",
+  "replays.error.start": "Failed to start: '{{name}}' - {{message}}",
+  "replays.error.stop": "Failed to stop: '{{name}}' - {{message}}",
+  "replays.error.delete": "Replay deletion error: '{{name}}' - {{message}}",
+  "replays.success.start": "Replay start success: '{{name}}'",
+  "replays.success.stop": "Replay stop success: '{{name}}'",
+  "replays.success.delete": "Replay deletion success: '{{name}}'"
 }

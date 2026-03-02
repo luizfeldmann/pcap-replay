@@ -8,7 +8,7 @@ import type { PaginatedReplayListResponse, ReplayListItem } from "shared";
 import { REPLAYS_QUERY_KEY } from "./useReplaysList";
 import { itemsFilter } from "../pagedDataTransform";
 
-export const useDeleteFile = () => {
+export const useDeleteReplay = () => {
   const queryClient = useQueryClient();
 
   return useMutation({

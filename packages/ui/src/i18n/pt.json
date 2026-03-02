@@ -223,6 +223,16 @@
       "stop": "Parar",
       "edit": "Editar",
       "delete": "Deletar"
+    },
+    "error": {
+      "start": "Erro ao iniciar reprodução: '{{name}}' - {{message}}",
+      "stop": "Erro ao parar reprodução: '{{name}}' - {{message}}",
+      "delete": "Falha ao excluir reprodução: '{{name}}' - {{message}}"
+    },
+    "success": {
+      "start": "Reprodução iniciada: '{{name}}'",
+      "stop": "Reprodução parada: '{{name}}'",
+      "delete": "Reprodução excluída: '{{name}}'"
     }
   }
 }
