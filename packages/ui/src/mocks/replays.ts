@@ -1,6 +1,7 @@
 import { HttpResponse, RequestHandler, http } from "msw";
 import {
   PaginatedReplayListRequestSchema,
+  ReplayPatchSchema,
   ReplayPostSchema,
   type JobCommand,
   type PaginatedReplayListResponse,
@@ -188,6 +189,21 @@ const getReplays = http.get(`/api/jobs/replay`, ({ request }) => {
   } satisfies PaginatedReplayListResponse);
 });
 
+// Reads a single replay give it's ID
+const getSingleReplay = http.get<{ id: string }>(
+  `/api/jobs/replay/:id`,
+  ({ params }) => {
+    // Lazy generate list
+    if (!mockItemsCache) mockItemsCache = generateMockItems();
+
+    // Find the item
+    const replay = mockItemsCache.find((item) => item.id === params.id);
+    if (!replay) return new HttpResponse(null, { status: 404 });
+
+    return HttpResponse.json(replay);
+  },
+);
+
 // Creates a new replay and returns the object
 const postReplay = http.post(`/api/jobs/replay`, async ({ request }) => {
   // Validate request
@@ -235,8 +251,8 @@ const deleteReplay = http.delete<{ id: string }>(
 const postCommandReplay = http.post<{ id: string; command: JobCommand }>(
   `/api/jobs/replay/:id/:command`,
   async ({ params }) => {
-    // List must have been accessed first
-    if (!mockItemsCache) return new HttpResponse(null, { status: 500 });
+    // Lazy generate list
+    if (!mockItemsCache) mockItemsCache = generateMockItems();
 
     // Try to find the item
     const item = mockItemsCache.find((item) => item.id === params.id);
@@ -267,9 +283,47 @@ const postCommandReplay = http.post<{ id: string; command: JobCommand }>(
   },
 );
 
+// Modify the data of one replay
+const patchReplay = http.patch<{ id: string }>(
+  `/api/jobs/replay/:id`,
+  async ({ params, request }) => {
+    // Validate request
+    const requestBody = await request.json();
+    const { success, data: requestData } =
+      ReplayPatchSchema.safeParse(requestBody);
+    if (!success) return new HttpResponse(null, { status: 400 });
+
+    // Lazy generate list
+    if (!mockItemsCache) mockItemsCache = generateMockItems();
+
+    // Try to find the item
+    const item = mockItemsCache.find((item) => item.id === params.id);
+    if (!item) return new HttpResponse(null, { status: 404 });
+
+    // Job cannot be modified while running
+    if (item.status === "RUNNING")
+      return new HttpResponse(null, { status: 409 });
+
+    // Apply changes only to the data given in the patch
+    if (requestData.name) item.name = requestData.name;
+    if (requestData.fileId) item.fileId = requestData.fileId;
+    if (requestData.interface) item.interface = requestData.interface;
+    if (requestData.limit) item.limit = requestData.limit;
+    if (requestData.load) item.load = requestData.load;
+    if (requestData.repeat) item.repeat = requestData.repeat;
+    if (requestData.srcRemap) item.srcRemap = requestData.srcRemap;
+    if (requestData.dstRemap) item.dstRemap = requestData.dstRemap;
+    if (requestData.portRemap) item.portRemap = requestData.portRemap;
+
+    return HttpResponse.json(item);
+  },
+);
+
 export const replayMocks: RequestHandler[] = [
   getReplays,
+  getSingleReplay,
   postReplay,
+  patchReplay,
   deleteReplay,
   postCommandReplay,
 ];

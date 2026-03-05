@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Alert, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ReplayForm } from "../../components/ReplayForm/ReplayForm";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -39,8 +39,10 @@ export const ReplayFormPageCreate = () => {
         labelSubmit={t("replays.form.button.create")}
         onSubmit={onSubmit}
         isLoading={postMutation.isPending}
-        error={postMutation.error?.message ?? undefined}
       />
+      {postMutation.isError && (
+        <Alert severity="error">{postMutation.error.message}</Alert>
+      )}
     </Stack>
   );
 };

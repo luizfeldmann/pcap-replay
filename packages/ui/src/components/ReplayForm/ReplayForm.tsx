@@ -1,7 +1,6 @@
 import {
   Accordion,
   AccordionDetails,
-  Alert,
   Button,
   CircularProgress,
   Divider,
@@ -34,7 +33,6 @@ export const ReplayForm = (props: {
   initState: ReplayPost;
   labelSubmit: string;
   isLoading: boolean;
-  error?: string;
   onSubmit(formData: ReplayPost): void;
 }) => {
   // Query required options
@@ -235,7 +233,6 @@ export const ReplayForm = (props: {
         </Accordion>
       </Stack>
       <Divider flexItem />
-      {props.error && <Alert severity="error">{props.error}</Alert>}
       <Stack direction="row" spacing={2} justifyContent="flex-start">
         <Button
           startIcon={<Icons.Confirm />}

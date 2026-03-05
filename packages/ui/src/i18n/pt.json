@@ -225,6 +225,9 @@
       "delete": "Deletar"
     },
     "error": {
+      "statecannotedit": "A reprodução não pode ser editada enquanto estiver executando",
+      "notspecified": "A reprodução não foi especificada",
+      "fetcherror": "Erro ao obter dados da reprodução: {{message}}",
       "start": "Erro ao iniciar reprodução: '{{name}}' - {{message}}",
       "stop": "Erro ao parar reprodução: '{{name}}' - {{message}}",
       "delete": "Falha ao excluir reprodução: '{{name}}' - {{message}}"

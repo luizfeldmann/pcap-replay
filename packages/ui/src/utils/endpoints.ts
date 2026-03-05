@@ -48,9 +48,17 @@ export const endpoints = {
     },
     method: "GET",
   },
+  getSingleReplay: {
+    path: (id: string) => `/api/jobs/replay/${id}`,
+    method: "GET",
+  },
   postReplay: {
     path: "/api/jobs/replay",
     method: "POST",
+  },
+  patchReplay: {
+    path: (id: string) => `/api/jobs/replay/${id}`,
+    method: "PATCH",
   },
   deleteReplay: {
     path: (id: string) => `/api/jobs/replay/${id}`,
