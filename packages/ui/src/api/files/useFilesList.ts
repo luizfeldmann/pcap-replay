@@ -9,6 +9,7 @@ export const useFilesList = (options?: { enabled?: boolean }) =>
     queryKey: [QUERY_KEY_FILES],
     queryFn: async ({ pageParam }) => {
       const resp = await fetch(endpoints.getFiles.path("50", pageParam));
+      if (!resp.ok) throw new Error(resp.statusText);
       const body = await resp.json();
       const page = PaginatedFileListResponseSchema.parse(body);
       return page;

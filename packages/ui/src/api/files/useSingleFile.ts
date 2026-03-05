@@ -12,6 +12,7 @@ export const useSingleFile = (options: {
     queryKey: [QUERY_KEY_FILES, options.id],
     queryFn: async () => {
       const resp = await fetch(endpoints.getSingleFile.path(options.id));
+      if (!resp.ok) throw new Error(resp.statusText);
       const body = await resp.json();
       const file = FileListItemSchema.parse(body);
       return file;
