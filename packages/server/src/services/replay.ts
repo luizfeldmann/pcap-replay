@@ -8,6 +8,9 @@ import {
   ReplayStatus,
   PaginatedReplayListRequest,
   PaginatedReplayListResponse,
+  RepeatSettings,
+  LengthSettings,
+  LoadSettings,
 } from "shared";
 import { db } from "../models/db.js";
 import {
@@ -20,13 +23,11 @@ import {
 } from "../models/replay.js";
 import { eq, lt, desc } from "drizzle-orm";
 import {
-  AppError,
   ConflictError,
   ResourceLockedError,
   ResourceNotFoundError,
   UnknownError,
 } from "../utils/error.js";
-import { StatusCodes } from "http-status-codes";
 import { getLastItem } from "../utils/utils.js";
 
 const transformPortRemap = (portRemap: PortRemapRow): PortRemap =>
@@ -78,7 +79,7 @@ const transformListItem = (
   };
 
   // Port remapping
-  if (addrRemaps.length) item.portRemap = portRemaps.map(transformPortRemap);
+  if (portRemaps.length) item.portRemap = portRemaps.map(transformPortRemap);
 
   // Separate sourc and destination remaps
   const remapPartition = addrRemaps.reduce<{
@@ -217,31 +218,72 @@ const deleteSingle = (id: string) => {
   });
 };
 
-const insertNew = (post: ReplayPost): ReplayListItem => {
-  const id = crypto.randomUUID();
-
-  // Transform the job data
+const getRepeatSettings = (settings?: RepeatSettings) => {
   let loop = false;
   let repeat = null;
 
-  if (post.repeat?.type === "loop") loop = true;
-  else if (post.repeat?.type === "times") repeat = post.repeat.times;
+  if (settings?.type === "loop") loop = true;
+  else if (settings?.type === "times") repeat = settings.times;
 
+  return { loop, repeat };
+};
+
+const getLengthSettings = (settings?: LengthSettings) => {
   let limitDuration = null;
   let limitPackets = null;
 
-  if (post?.limit?.type === "duration") limitDuration = post.limit.maxDuration;
-  else if (post.limit?.type === "packets") limitPackets = post.limit.maxPackets;
+  if (settings?.type === "duration") limitDuration = settings.maxDuration;
+  else if (settings?.type === "packets") limitPackets = settings.maxPackets;
 
+  return { limitDuration, limitPackets };
+};
+
+const getSpeedSettings = (settings?: LoadSettings) => {
   let speedMultiplier = null;
   let dataRate = null;
   let packetRate = null;
 
-  if (post?.load?.type === "multiplier") speedMultiplier = post.load?.speed;
-  else if (post?.load?.type === "mbps") dataRate = post.load.dataRate;
-  else if (post.load?.type === "pps") packetRate = post.load.packetRate;
+  if (settings?.type === "multiplier") speedMultiplier = settings?.speed;
+  else if (settings?.type === "mbps") dataRate = settings.dataRate;
+  else if (settings?.type === "pps") packetRate = settings.packetRate;
 
-  // Create the job itself
+  return { speedMultiplier, dataRate, packetRate };
+};
+
+const getRemapAddr = (
+  id: string,
+  remaps: AddressRemap[],
+  direction: "src" | "dst",
+): AddressRemapRow[] =>
+  remaps.map((remap) => ({
+    replayId: id,
+    from: remap.from,
+    to: remap.to,
+    ip: remap.ip,
+    direction,
+  }));
+
+const getRemapPort = (id: string, remaps: PortRemap[]) =>
+  remaps.map((item): PortRemapRow => {
+    // From can be a range or a single number
+    const { start, end } =
+      typeof item.from === "number"
+        ? { start: item.from, end: item.from }
+        : item.from;
+
+    // make row
+    return {
+      replayId: id,
+      start,
+      end,
+      to: item.to,
+    };
+  });
+
+const insertNew = (post: ReplayPost): ReplayListItem => {
+  const id = crypto.randomUUID();
+
+  // Transform the job data
   const replayJob: ReplayRow = {
     id,
     name: post.name,
@@ -251,60 +293,29 @@ const insertNew = (post: ReplayPost): ReplayListItem => {
     createdTime: new Date(),
     startTime: null,
     endTime: null,
-    loop,
-    repeat,
-    limitDuration,
-    limitPackets,
-    speedMultiplier,
-    dataRate,
-    packetRate,
+    ...getRepeatSettings(post.repeat),
+    ...getLengthSettings(post.limit),
+    ...getSpeedSettings(post.load),
   };
 
   // Create port remaps
   const portRemaps: PortRemapRow[] = [];
 
   if (post.portRemap) {
-    // In parallel, insert all port remaps in DB
-    const remapRows = post.portRemap.map((remap): PortRemapRow => {
-      // From can be a range or a single number
-      const { start, end } =
-        typeof remap.from === "number"
-          ? { start: remap.from, end: remap.from }
-          : remap.from;
-
-      // make row
-      return {
-        replayId: id,
-        start,
-        end,
-        to: remap.to,
-      };
-    });
-
+    const remapRows = getRemapPort(id, post.portRemap);
     portRemaps.push(...remapRows);
   }
 
-  // Create address remaps
-  const remapAddrTransform = (
-    remaps: AddressRemap[],
-    direction: "src" | "dst",
-  ): AddressRemapRow[] =>
-    remaps.map((remap) => ({
-      replayId: id,
-      from: remap.from,
-      to: remap.to,
-      ip: remap.ip,
-      direction,
-    }));
-
+  // Create address remaps for source and destination
   const addrRemaps: AddressRemapRow[] = [];
 
   if (post.dstRemap) {
-    const remapRows = remapAddrTransform(post.dstRemap, "dst");
+    const remapRows = getRemapAddr(id, post.dstRemap, "dst");
     addrRemaps.push(...remapRows);
   }
+
   if (post.srcRemap) {
-    const remapRows = remapAddrTransform(post.srcRemap, "src");
+    const remapRows = getRemapAddr(id, post.srcRemap, "src");
     addrRemaps.push(...remapRows);
   }
 
@@ -324,13 +335,95 @@ const insertNew = (post: ReplayPost): ReplayListItem => {
   return transformListItem(replayJob, portRemaps, addrRemaps);
 };
 
-const modifyItem = (_patch: ReplayPatch): Promise<ReplayListItem> => {
-  // TODO: not implemented
-  throw new AppError(
-    "Not implemented",
-    StatusCodes.NOT_IMPLEMENTED,
-    "INTERNAL_ERROR",
-  );
+const modifyItem = async (
+  id: string,
+  patch: ReplayPatch,
+): Promise<ReplayListItem> => {
+  // Add only changed items to the patch
+  let updateValues: Partial<ReplayRow> = {};
+
+  if (patch.name) updateValues.name = patch.name;
+  if (patch.fileId) updateValues.file = patch.fileId;
+  if (patch.interface) updateValues.interface = patch.interface;
+
+  if (patch.limit) {
+    updateValues = {
+      ...updateValues,
+      ...getLengthSettings(patch.limit),
+    };
+  }
+
+  if (patch.load) {
+    updateValues = {
+      ...updateValues,
+      ...getSpeedSettings(patch.load),
+    };
+  }
+
+  if (patch.repeat) {
+    updateValues = {
+      ...updateValues,
+      ...getRepeatSettings(patch.repeat),
+    };
+  }
+
+  // Create port remaps
+  let portRemaps: PortRemapRow[] | undefined;
+  if (patch.portRemap) portRemaps = getRemapPort(id, patch.portRemap);
+
+  // Create address remaps for source and destination
+  let addrRemaps: AddressRemapRow[] | undefined;
+
+  if (patch.srcRemap) addrRemaps = getRemapAddr(id, patch.srcRemap, "src");
+  if (patch.dstRemap) {
+    const dstRemap = getRemapAddr(id, patch.dstRemap, "dst");
+    if (!addrRemaps) addrRemaps = dstRemap;
+    else addrRemaps.push(...dstRemap);
+  }
+
+  // Invoke the transaction
+  db.transaction((tx) => {
+    // Find the job and its current status
+    const job = tx
+      .select({ status: ReplaysTable.status })
+      .from(ReplaysTable)
+      .where(eq(ReplaysTable.id, id))
+      .get();
+
+    if (!job) throw new ResourceNotFoundError();
+
+    if (job.status === "RUNNING")
+      throw new ConflictError("Cannot modify while running");
+
+    // If given address remaps, delete an recreate
+    if (addrRemaps) {
+      tx.delete(AddressRemapTable)
+        .where(eq(AddressRemapTable.replayId, id))
+        .run();
+
+      addrRemaps.forEach((item) =>
+        tx.insert(AddressRemapTable).values(item).run(),
+      );
+    }
+
+    // If give port remaps are given, delete and recreate
+    if (portRemaps) {
+      tx.delete(PortRemapTable).where(eq(PortRemapTable.replayId, id)).run();
+
+      portRemaps.forEach((item) =>
+        tx.insert(PortRemapTable).values(item).run(),
+      );
+    }
+
+    // Update the main replay table
+    tx.update(ReplaysTable)
+      .set(updateValues)
+      .where(eq(ReplaysTable.id, id))
+      .run();
+  });
+
+  // Perform a regular get on the item after the update
+  return getSingle(id);
 };
 
 const commandStatus = (id: string, command: JobCommand) => {

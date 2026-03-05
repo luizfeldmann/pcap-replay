@@ -104,8 +104,9 @@ const modifyReplayJob = {
     },
   } satisfies ZodOpenApiOperationObject,
   handler: async (req: Request, resp: Response) => {
+    const params = JobIdSchema.parse(req.params);
     const patchData = ReplayPatchSchema.parse(req.body);
-    const changedItem = await ReplayService.modifyItem(patchData);
+    const changedItem = await ReplayService.modifyItem(params.id, patchData);
     resp.json(changedItem);
   },
 };
