@@ -218,7 +218,7 @@ const deleteSingle = (id: string) => {
   });
 };
 
-const getRepeatSettings = (settings?: RepeatSettings) => {
+const getRepeatSettings = (settings: RepeatSettings | null | undefined) => {
   let loop = false;
   let repeat = null;
 
@@ -228,7 +228,7 @@ const getRepeatSettings = (settings?: RepeatSettings) => {
   return { loop, repeat };
 };
 
-const getLengthSettings = (settings?: LengthSettings) => {
+const getLengthSettings = (settings: LengthSettings | null | undefined) => {
   let limitDuration = null;
   let limitPackets = null;
 
@@ -238,7 +238,7 @@ const getLengthSettings = (settings?: LengthSettings) => {
   return { limitDuration, limitPackets };
 };
 
-const getSpeedSettings = (settings?: LoadSettings) => {
+const getSpeedSettings = (settings: LoadSettings | null | undefined) => {
   let speedMultiplier = null;
   let dataRate = null;
   let packetRate = null;
@@ -346,21 +346,21 @@ const modifyItem = async (
   if (patch.fileId) updateValues.file = patch.fileId;
   if (patch.interface) updateValues.interface = patch.interface;
 
-  if (patch.limit) {
+  if (patch.limit !== undefined) {
     updateValues = {
       ...updateValues,
       ...getLengthSettings(patch.limit),
     };
   }
 
-  if (patch.load) {
+  if (patch.load !== undefined) {
     updateValues = {
       ...updateValues,
       ...getSpeedSettings(patch.load),
     };
   }
 
-  if (patch.repeat) {
+  if (patch.repeat !== undefined) {
     updateValues = {
       ...updateValues,
       ...getRepeatSettings(patch.repeat),

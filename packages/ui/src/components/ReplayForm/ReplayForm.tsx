@@ -16,7 +16,7 @@ import {
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import type { ReplayPost } from "shared";
+import type { ReplayPatch, ReplayPost } from "shared";
 import { useNetworkInterfaces } from "../../api/networkInterfaces";
 import { Icons } from "../../utils/Icons";
 import { ReplayRepetitionEdit } from "../ReplayRepetitionEdit/ReplayRepetitionEdit";
@@ -29,11 +29,14 @@ import { SectionHeader } from "./ReplayForm.styles";
 import { AddressRemapEdit } from "../AddressRemapEdit/AddressRemapEdit";
 import { FileSelectBox } from "../FileSelectBox/FileSelectBox";
 
+export type ReplayFormData = Omit<ReplayPost, "load" | "limit" | "repeat"> &
+  Pick<ReplayPatch, "load" | "limit" | "repeat">;
+
 export const ReplayForm = (props: {
-  initState: ReplayPost;
+  initState: ReplayFormData;
   labelSubmit: string;
   isLoading: boolean;
-  onSubmit(formData: ReplayPost): void;
+  onSubmit(formData: ReplayFormData): void;
 }) => {
   // Query required options
   const interfaces = useNetworkInterfaces();
@@ -45,7 +48,7 @@ export const ReplayForm = (props: {
     reset,
     control,
     formState: { isValid },
-  } = useForm<ReplayPost>({
+  } = useForm<ReplayFormData>({
     mode: "onTouched",
     defaultValues: props.initState,
   });

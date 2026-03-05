@@ -12,8 +12,8 @@ import type { ChangeEvent } from "react";
 type RepeatButtonValues = "none" | RepeatSettings["type"];
 
 export const ReplayRepetitionEdit = (props: {
-  value?: RepeatSettings;
-  onChange(value?: RepeatSettings): void;
+  value: RepeatSettings | null | undefined;
+  onChange(value: RepeatSettings | null): void;
 }) => {
   const { t } = useTranslation();
 
@@ -29,7 +29,7 @@ export const ReplayRepetitionEdit = (props: {
 
   // Set the new mode when clicking one of the toggle buttons
   const onChangeMode = (mode: RepeatButtonValues) => {
-    if (mode === "none") props.onChange(undefined);
+    if (mode === "none") props.onChange(null);
     else if (mode === "loop") props.onChange({ type: "loop" });
     else if (mode === "times") props.onChange({ type: "times", times: 1 });
   };

@@ -13,8 +13,8 @@ import type { ChangeEvent } from "react";
 type LengthModes = "none" | LengthSettings["type"];
 
 export const ReplayLengthEdit = (props: {
-  value?: LengthSettings;
-  onChange(value?: LengthSettings): void;
+  value: LengthSettings | null | undefined;
+  onChange(value: LengthSettings | null): void;
 }) => {
   const { t } = useTranslation();
 
@@ -23,7 +23,7 @@ export const ReplayLengthEdit = (props: {
 
   // Set the new mode when clicking one of the toggle buttons
   const onChangeMode = (mode: LengthModes) => {
-    if (mode === "none") props.onChange(undefined);
+    if (mode === "none") props.onChange(null);
     else if (mode === "packets")
       props.onChange({ type: "packets", maxPackets: 1 });
     else if (mode === "duration")

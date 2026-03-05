@@ -308,9 +308,18 @@ const patchReplay = http.patch<{ id: string }>(
     if (requestData.name) item.name = requestData.name;
     if (requestData.fileId) item.fileId = requestData.fileId;
     if (requestData.interface) item.interface = requestData.interface;
-    if (requestData.limit) item.limit = requestData.limit;
-    if (requestData.load) item.load = requestData.load;
-    if (requestData.repeat) item.repeat = requestData.repeat;
+
+    // Undefined = not part of patch
+    // Null = clear the field
+    if (requestData.limit !== undefined)
+      item.limit = requestData.limit ?? undefined;
+    if (requestData.load !== undefined)
+      item.load = requestData.load ?? undefined;
+    if (requestData.repeat !== undefined)
+      item.repeat = requestData.repeat ?? undefined;
+
+    // Undefined = not part of patch
+    // Empty array = clear the field
     if (requestData.srcRemap) item.srcRemap = requestData.srcRemap;
     if (requestData.dstRemap) item.dstRemap = requestData.dstRemap;
     if (requestData.portRemap) item.portRemap = requestData.portRemap;

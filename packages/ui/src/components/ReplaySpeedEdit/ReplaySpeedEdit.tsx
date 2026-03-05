@@ -41,8 +41,8 @@ const roundTo = (x: number, n: number = 2) => {
 };
 
 export const ReplaySpeedEdit = (props: {
-  value?: LoadSettings;
-  onChange(value?: LoadSettings): void;
+  value: LoadSettings | null | undefined;
+  onChange(value: LoadSettings | null): void;
 }) => {
   const { t } = useTranslation();
 
@@ -61,7 +61,7 @@ export const ReplaySpeedEdit = (props: {
 
   // Change speed mode from button click
   const onChangeMode = (mode: SpeedModes) => {
-    if (mode === "none") props.onChange(undefined);
+    if (mode === "none") props.onChange(null);
     else if (mode === "multiplier") onChangeMultiplier(1);
     else if (mode === "pps") onChangePacketRate(1);
     else if (mode === "mbps") onChangeDataRate(1);

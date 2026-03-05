@@ -1,6 +1,9 @@
 import { Alert, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { ReplayForm } from "../../components/ReplayForm/ReplayForm";
+import {
+  ReplayForm,
+  type ReplayFormData,
+} from "../../components/ReplayForm/ReplayForm";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { routes } from "../../utils/routes";
 import { usePostReplay } from "../../api/replays/usePostReplay";
@@ -17,9 +20,17 @@ export const ReplayFormPageCreate = () => {
   const file = searchParams.get(routes.replaysCreatePage.searchParams.file);
 
   // Handle submitting of the form
-  const onSubmit = (formData: ReplayPost) => {
+  const onSubmit = (formData: ReplayFormData) => {
+    // Handle nullable fields
+    const postData: ReplayPost = {
+      ...formData,
+      load: formData.load ?? undefined,
+      limit: formData.limit ?? undefined,
+      repeat: formData.repeat ?? undefined,
+    };
+
     // Invoke POST
-    postMutation.mutate(formData, {
+    postMutation.mutate(postData, {
       onSuccess: (_data, variables) => {
         // Show a snackbar on success
         enqueueSnackbar(t("replays.create.success", { name: variables.name }), {
