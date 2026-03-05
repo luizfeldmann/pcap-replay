@@ -1,10 +1,4 @@
-import {
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Link,
-} from "@mui/material";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Icons } from "../../utils/Icons";
 import { routes } from "../../utils/routes";
@@ -13,6 +7,7 @@ import type {
   FileContextState,
 } from "./useFileContextMenu";
 import { endpoints } from "../../utils/endpoints";
+import { Link } from "react-router-dom";
 
 export const FileContextMenu = (props: {
   state: FileContextState;
@@ -29,8 +24,7 @@ export const FileContextMenu = (props: {
     >
       <MenuItem
         component={Link}
-        underline="none"
-        href={routes.replaysCreatePage.location(props.state.selected?.id)}
+        to={routes.replaysCreatePage.location(props.state.selected?.id)}
       >
         <ListItemIcon>
           <Icons.FileAddToJob />
@@ -40,9 +34,8 @@ export const FileContextMenu = (props: {
       <MenuItem
         component={Link}
         target="_blank"
-        underline="none"
         download={props.state.selected?.name}
-        href={endpoints.downloadFile.path(props.state.selected?.id || "")}
+        to={endpoints.downloadFile.path(props.state.selected?.id || "")}
       >
         <ListItemIcon>
           <Icons.DownloadFile />

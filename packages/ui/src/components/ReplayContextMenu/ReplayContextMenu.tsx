@@ -1,10 +1,4 @@
-import {
-  Link,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import type {
   ReplayContextMenuActions,
   ReplayContextMenuState,
@@ -12,6 +6,7 @@ import type {
 import { useTranslation } from "react-i18next";
 import { Icons } from "../../utils/Icons";
 import { ReplayCommandMenuItem } from "../ReplayCommand/ReplayCommandMenuItem";
+import { Link } from "react-router-dom";
 
 export const ReplayContextMenu = (props: {
   actions: ReplayContextMenuActions;
@@ -37,8 +32,7 @@ export const ReplayContextMenu = (props: {
       )}
       <MenuItem
         component={Link}
-        underline="none"
-        href={props.actions.getEditUrl()}
+        to={props.actions.getEditUrl()}
         disabled={!isEditable}
       >
         <ListItemIcon>

@@ -4,7 +4,7 @@ import {
   Navigate,
   Outlet,
   useLocation,
-  useNavigate,
+  Link,
 } from "react-router-dom";
 import {
   AppBar,
@@ -53,7 +53,6 @@ const tabs = [
 const AppLayout = () => {
   const { t } = useTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const currentTab = Math.max(
     0,
@@ -80,9 +79,6 @@ const AppLayout = () => {
             textColor="inherit"
             indicatorColor="secondary"
             value={currentTab}
-            onChange={(_, index) => {
-              void navigate(tabs[index].path);
-            }}
           >
             {tabs.map((tab) => (
               <Tab
@@ -91,6 +87,8 @@ const AppLayout = () => {
                 icon={tab.icon}
                 iconPosition="start"
                 sx={{ minHeight: "auto" }}
+                component={Link}
+                to={tab.location}
               />
             ))}
           </Tabs>
