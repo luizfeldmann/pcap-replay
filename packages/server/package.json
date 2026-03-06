@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon",
+    "dev:inspect": "tsx --inspect-brk src/index.ts",
     "build": "tsc",
     "start": "node dist/src/index.js",
-    "inspect": "node --inspect-brk dist/src/index.js",
+    "start:inspect": "node --inspect-brk dist/src/index.js",
     "migrate": "drizzle-kit generate && drizzle-kit migrate"
   },
   "dependencies": {

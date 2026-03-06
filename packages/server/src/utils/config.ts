@@ -16,6 +16,8 @@ const envSchema = z.object({
     .string()
     .transform((val) => parseInt(val, 10))
     .default(100),
+  // Period to run soft delete background tasks
+  WORKER_PERIOD_SOFT_DELETE: z.int().min(0).default(5000),
 });
 
 // Parse environment variables into the object

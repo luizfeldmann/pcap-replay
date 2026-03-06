@@ -21,7 +21,7 @@ import {
   PortRemapRow,
   AddressRemapRow,
 } from "../models/replay.js";
-import { eq, lt, desc } from "drizzle-orm";
+import { eq, lt, desc, inArray } from "drizzle-orm";
 import {
   ConflictError,
   ResourceLockedError,
@@ -466,11 +466,34 @@ const commandStatus = (id: string, command: JobCommand) => {
   });
 };
 
+/** Housekeeping */
+
+// Stops jobs which were left running as the server stopped or crashed
+const cancelStaleJobs = async () => {
+  const cancelledJobs = await db
+    .update(ReplaysTable)
+    .set({ status: "STOPPED" })
+    .where(
+      inArray(ReplaysTable.status, ["RUNNING", "REQUEST_RUN", "REQUEST_STOP"]),
+    )
+    .returning({
+      id: ReplaysTable.id,
+      name: ReplaysTable.name,
+    });
+
+  cancelledJobs.forEach((item) =>
+    console.log(`cancelled stale job '${item.id}': '${item.name}'`),
+  );
+};
+
 export const ReplayService = {
+  // API
   getJobsList,
   getSingle,
   deleteSingle,
   insertNew,
   modifyItem,
   commandStatus,
+  // Internal use
+  cancelStaleJobs,
 };

@@ -216,9 +216,9 @@ const deleteFile = {
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, resp: Response) => {
+  handler: (req: Request, resp: Response) => {
     const params = FileIdSchema.parse(req.params);
-    await FilesService.deleteFile(params.id);
+    FilesService.deleteFile(params.id);
     resp.sendStatus(StatusCodes.NO_CONTENT);
   },
 };

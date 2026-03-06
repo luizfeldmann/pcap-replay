@@ -7,7 +7,7 @@ import {
 import { db } from "../models/db.js";
 import path from "path";
 import fs from "fs/promises";
-import { FileRow, FilesTable } from "../models/files.js";
+import { DeletedFilesTable, FileRow, FilesTable } from "../models/files.js";
 import { eq, lt, desc } from "drizzle-orm";
 import {
   RequestValidationError,
@@ -105,14 +105,14 @@ const getFilePathOnDisk = (id: string) =>
   path.resolve(path.join(configData.UPLOAD_DIR, id));
 
 //! Deletes a file from disk
-const deleteFile = async (id: string) => {
-  // Delete from disk
-  const filePath = getFilePathOnDisk(id);
-  await fs.unlink(filePath).catch(handleFsError);
+const deleteFile = (id: string) => {
+  db.transaction((tx) => {
+    // Delete file from active table
+    tx.delete(FilesTable).where(eq(FilesTable.id, id)).run();
 
-  // Delete from DB
-  const numRows = await db.delete(FilesTable).where(eq(FilesTable.id, id));
-  if (!numRows.changes) throw new ResourceNotFoundError();
+    // Move to soft delete table
+    tx.insert(DeletedFilesTable).values({ id: id }).run();
+  });
 };
 
 //! Gets the path to download a file
@@ -149,11 +149,39 @@ const saveFile = async (
   };
 };
 
+/** Housekeeping */
+
+//! Removes files marked for deletion
+const deleteSoftFiles = async () => {
+  // Get all files marked for deletion
+  const deletedFiles = await db.select().from(DeletedFilesTable);
+
+  // Execute all deletions
+  await Promise.allSettled(
+    deletedFiles.map(async (file) => {
+      console.log(`deleting: ${file.id}`);
+      // Remove from disk
+      const filepath = getFilePathOnDisk(file.id);
+      await fs.rm(filepath, { force: true });
+
+      // Remove from DB
+      await db
+        .delete(DeletedFilesTable)
+        .where(eq(DeletedFilesTable.id, file.id));
+      console.log(`deleted: ${file.id}`);
+    }),
+  );
+};
+
+// Export the service functions
 export const FilesService = {
+  // For API
   getFilesList,
   deleteFile,
   modifyFile,
   getFileInfo,
   downloadFile,
   saveFile,
+  // For internal use
+  deleteSoftFiles,
 };

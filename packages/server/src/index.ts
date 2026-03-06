@@ -5,6 +5,17 @@ import { configData } from "./utils/config.js";
 import { ApiRouter } from "./routers/api.js";
 import { setupSwagger } from "./utils/swagger.js";
 import { appErrorMiddleware, zodErrorMiddleware } from "./utils/error.js";
+import {
+  performHousekeeping,
+  startWorkers,
+  stopWorkers,
+} from "./workers/workers.js";
+
+// Perform housekeeping before startup
+await performHousekeeping();
+
+// Leave background workers ready
+startWorkers();
 
 // Main server
 const app = express();
@@ -28,6 +39,18 @@ app.use(zodErrorMiddleware);
 app.use(appErrorMiddleware);
 
 // Start the server
-app.listen(configData.PORT, () => {
+const server = app.listen(configData.PORT, () => {
   console.log(`Server running at ${configData.PORT}`);
 });
+
+// Register gracious shutdown hooks
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
+
+function shutdown() {
+  console.log("Begin shutdown...");
+  server.close(() => {
+    stopWorkers();
+    console.log("Shutdown finished");
+  });
+}
