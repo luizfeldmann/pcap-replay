@@ -146,3 +146,9 @@ export class FileTypeError extends AppError {
     );
   }
 }
+
+export class TimeoutError extends AppError {
+  constructor() {
+    super("Operation timed out", StatusCodes.GATEWAY_TIMEOUT, "TIMEOUT");
+  }
+}

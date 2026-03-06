@@ -11,6 +11,7 @@ import {
   RepeatSettings,
   LengthSettings,
   LoadSettings,
+  ReplayCommandResponse,
 } from "shared";
 import { db } from "../models/db.js";
 import {
@@ -20,8 +21,9 @@ import {
   AddressRemapTable,
   PortRemapRow,
   AddressRemapRow,
+  ReplayRowStatus,
 } from "../models/replay.js";
-import { eq, lt, desc, inArray } from "drizzle-orm";
+import { eq, lt, desc, inArray, and, sql } from "drizzle-orm";
 import {
   ConflictError,
   ResourceLockedError,
@@ -29,6 +31,8 @@ import {
   UnknownError,
 } from "../utils/error.js";
 import { getLastItem } from "../utils/utils.js";
+import { ReplayWorker } from "../workers/replay.js";
+import { SQLiteUpdateSetSource } from "drizzle-orm/sqlite-core";
 
 const transformPortRemap = (portRemap: PortRemapRow): PortRemap =>
   portRemap.start === portRemap.end
@@ -50,9 +54,7 @@ const transformAddrRemap = (addrRemap: AddressRemapRow): AddressRemap => ({
   ip: addrRemap.ip,
 });
 
-const statusTransformList: {
-  [K in (typeof ReplaysTable.status.enumValues)[number]]: ReplayStatus;
-} = {
+const statusTransformList: Record<ReplayRowStatus, ReplayStatus> = {
   ERROR: "ERROR",
   FINISHED: "FINISHED",
   REQUEST_RUN: "RUNNING",
@@ -429,49 +431,73 @@ const modifyItem = async (
   return getSingle(id);
 };
 
-const commandStatus = (id: string, command: JobCommand) => {
-  db.transaction((tx) => {
-    // Find the job and its current status
-    const job = tx
+const commandStatus = async (
+  id: string,
+  command: JobCommand,
+): Promise<ReplayCommandResponse> => {
+  // Stores which are the acceptable prior states for each state transition
+  const transitions = {
+    start: {
+      allowedStates: ["ERROR", "STOPPED", "FINISHED"],
+      nextState: "REQUEST_RUN",
+    },
+    stop: {
+      allowedStates: ["RUNNING"],
+      nextState: "REQUEST_STOP",
+    },
+  } satisfies Record<
+    JobCommand,
+    { allowedStates: ReplayRowStatus[]; nextState: ReplayRowStatus }
+  >;
+
+  const transition = transitions[command];
+
+  // To avoid a race where the status changes before registering the event,
+  // must create the promise before any changes in the DB
+  const statusChangePromise = ReplayWorker.waitForJobStatus(id);
+
+  // Apply the transition to the jobs
+  const [updatedRow] = await db
+    .update(ReplaysTable)
+    .set({ status: transition.nextState })
+    .where(
+      and(
+        eq(ReplaysTable.id, id),
+        inArray(ReplaysTable.status, transition.allowedStates),
+      ),
+    )
+    .returning();
+
+  // Check why it failed
+  if (!updatedRow) {
+    // Try to read the job which was NOT updated
+    const [job] = await db
       .select({ status: ReplaysTable.status })
       .from(ReplaysTable)
-      .where(eq(ReplaysTable.id, id))
-      .get();
+      .where(eq(ReplaysTable.id, id));
 
+    // Job ID does not exist
     if (!job) throw new ResourceNotFoundError();
 
-    switch (command) {
-      case "start":
-        // Verify it can be started
-        if (
-          job.status === "RUNNING" ||
-          job.status === "REQUEST_RUN" ||
-          job.status === "REQUEST_STOP"
-        )
-          throw new ConflictError("Cannot start from this state");
-        // Change to new state
-        tx.update(ReplaysTable)
-          .set({ status: "REQUEST_RUN" })
-          .where(eq(ReplaysTable.id, id))
-          .run();
-        break;
-      case "stop":
-        // Verify its running so it can be stopped
-        if (job.status != "RUNNING")
-          throw new ConflictError("Cannot stop because it's not running");
-        // Change to new state
-        tx.update(ReplaysTable)
-          .set({ status: "REQUEST_STOP" })
-          .where(eq(ReplaysTable.id, id))
-          .run();
-        break;
-    }
-  });
+    // State is not allowed for command
+    throw new ConflictError(`Cannot ${command} from state ${job.status}`);
+  }
+
+  // Wait for the background worker to start the job, and get the status (success/fail)
+  const snapshot = await statusChangePromise;
+
+  // Return the new status and times
+  return {
+    id: snapshot.id,
+    status: statusTransformList[snapshot.status],
+    startTime: snapshot.startTime?.toISOString(),
+    endTime: snapshot.endTime?.toISOString(),
+  };
 };
 
 /** Housekeeping */
 
-// Stops jobs which were left running as the server stopped or crashed
+//! Stops jobs which were left running as the server stopped or crashed
 const cancelStaleJobs = async () => {
   const cancelledJobs = await db
     .update(ReplaysTable)
@@ -489,6 +515,49 @@ const cancelStaleJobs = async () => {
   );
 };
 
+//! Gets the jobs in the REQUEST_* state
+const getScheduledJobs = async () =>
+  db
+    .select()
+    .from(ReplaysTable)
+    .where(inArray(ReplaysTable.status, ["REQUEST_RUN", "REQUEST_STOP"]));
+
+//! Updates the job to a new state
+const setJobState = async (id: string, status: ReplayRowStatus) => {
+  // Create a patch with the new state
+  const patch: SQLiteUpdateSetSource<typeof ReplaysTable> = { status };
+
+  // Change the timestamps according to the new state
+  switch (status) {
+    case "RUNNING":
+      patch.startTime = sql`CURRENT_TIMESTAMP`;
+      patch.endTime = null;
+      break;
+    case "FINISHED":
+    case "STOPPED":
+    case "ERROR":
+      patch.endTime = sql`CURRENT_TIMESTAMP`;
+      break;
+  }
+
+  // Update and return the data
+  const [updatedRow] = await db
+    .update(ReplaysTable)
+    .set(patch)
+    .where(eq(ReplaysTable.id, id))
+    .returning({
+      id: ReplaysTable.id,
+      status: ReplaysTable.status,
+      startTime: ReplaysTable.startTime,
+      endTime: ReplaysTable.endTime,
+    });
+
+  if (!updatedRow) throw new ResourceNotFoundError();
+
+  return updatedRow;
+};
+
+// Expose services
 export const ReplayService = {
   // API
   getJobsList,
@@ -498,5 +567,7 @@ export const ReplayService = {
   modifyItem,
   commandStatus,
   // Internal use
+  getScheduledJobs,
+  setJobState,
   cancelStaleJobs,
 };

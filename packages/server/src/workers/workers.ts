@@ -1,8 +1,9 @@
 import { FilesService } from "../services/files";
 import { ReplayService } from "../services/replay";
 import { configData } from "../utils/config";
+import { ReplayWorker } from "./replay";
 
-// Invokes all housekeeping tasks on startup
+// Invokes all housekeeping tasks on launch/startup of app
 export async function performHousekeeping() {
   await Promise.all([
     ReplayService.cancelStaleJobs(),
@@ -29,6 +30,14 @@ export function startWorkers() {
     configData.WORKER_PERIOD_SOFT_DELETE,
     FilesService.deleteSoftFiles,
   );
+
+  registerWorker(
+    "replay-startstop",
+    configData.WORKER_PERIOD_REPLAY_START_STOP,
+    ReplayWorker.checkStartStopJobs,
+  );
+
+  // ... register other workers here
 }
 
 //! Stops all background tasks

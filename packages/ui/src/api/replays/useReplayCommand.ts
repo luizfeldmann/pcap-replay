@@ -4,10 +4,11 @@ import {
   useQueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
-import type {
-  JobCommand,
-  PaginatedReplayListResponse,
-  ReplayListItem,
+import {
+  ReplayCommandResponseSchema,
+  type JobCommand,
+  type PaginatedReplayListResponse,
+  type ReplayListItem,
 } from "shared";
 import { endpoints } from "../../utils/endpoints";
 import { REPLAYS_QUERY_KEY } from "./useReplaysList";
@@ -28,8 +29,10 @@ export const useReplayCommand = (id: string) => {
         },
       );
       if (!resp.ok) throw new Error(resp.statusText);
+      const resBody = await resp.json();
+      return ReplayCommandResponseSchema.parse(resBody);
     },
-    onSuccess: (_, variables) =>
+    onSuccess: (responseData) =>
       // Change the status of the job according to the succeeded command
       queryClient.setQueryData<InfiniteData<PaginatedReplayListResponse>>(
         [REPLAYS_QUERY_KEY],
@@ -38,10 +41,13 @@ export const useReplayCommand = (id: string) => {
             oldData,
             "items",
             (item) => {
-              if (item.id !== id) return item;
-              const status =
-                variables.command === "start" ? "RUNNING" : "STOPPED";
-              return { ...item, status };
+              if (item.id !== responseData.id) return item;
+              return {
+                ...item,
+                status: responseData.status,
+                startTime: responseData.startTime,
+                endTime: responseData.endTime,
+              };
             },
           ),
       ),

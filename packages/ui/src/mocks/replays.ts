@@ -5,6 +5,7 @@ import {
   ReplayPostSchema,
   type JobCommand,
   type PaginatedReplayListResponse,
+  type ReplayCommandResponse,
   type ReplayListItem,
 } from "shared";
 import { getQueryParams } from "./utils";
@@ -266,6 +267,8 @@ const postCommandReplay = http.post<{ id: string; command: JobCommand }>(
           return new HttpResponse(null, { status: 409 });
         // Change to running
         item.status = "RUNNING";
+        item.startTime = new Date().toISOString();
+        item.endTime = undefined;
         break;
 
       case "stop":
@@ -274,12 +277,23 @@ const postCommandReplay = http.post<{ id: string; command: JobCommand }>(
           return new HttpResponse(null, { status: 409 });
         // Change to stopped
         item.status = "STOPPED";
+        item.endTime = new Date().toISOString();
         break;
     }
 
+    // Simulate delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Success
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // simulate delay
-    return new HttpResponse(null, { status: 202 });
+    return HttpResponse.json(
+      {
+        id: item.id,
+        status: item.status,
+        startTime: item.startTime,
+        endTime: item.endTime,
+      } satisfies ReplayCommandResponse,
+      { status: 202 },
+    );
   },
 );
 

@@ -33,6 +33,7 @@ export const ReplaysTable = sqliteTable("replays", {
 });
 
 export type ReplayRow = InferSelectModel<typeof ReplaysTable>;
+export type ReplayRowStatus = ReplayRow["status"];
 
 export const AddressRemapTable = sqliteTable("replays_addr_remap", {
   replayId: text("replayId").references(() => ReplaysTable.id, {

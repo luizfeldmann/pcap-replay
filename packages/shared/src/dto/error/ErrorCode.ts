@@ -8,6 +8,7 @@ export const ErrorCodeSchema = z.enum([
   "CONFLICT",
   "BAD_FILE_TYPE",
   "BAD_FILE_SIZE",
+  "TIMEOUT",
 ]);
 
 export type ErrorCode = z.infer<typeof ErrorCodeSchema>;

@@ -14,6 +14,7 @@ import {
   ReplayPostSchema,
   PaginatedReplayListRequestSchema,
   PaginatedReplayListResponseSchema,
+  ReplayCommandResponseSchema,
 } from "shared";
 
 // Tag for API docs
@@ -146,16 +147,14 @@ const commandReplayJob = {
       },
     ],
     responses: {
-      [StatusCodes.ACCEPTED]: {
-        description: "Command requested",
-      },
+      [StatusCodes.ACCEPTED]: jsonResponse(ReplayCommandResponseSchema),
       default: defaultErrorResponse(),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: (req: Request, resp: Response) => {
+  handler: async (req: Request, resp: Response) => {
     const params = JobCommandRequestSchema.parse(req.params);
-    ReplayService.commandStatus(params.id, params.command);
-    resp.sendStatus(StatusCodes.ACCEPTED);
+    const result = await ReplayService.commandStatus(params.id, params.command);
+    resp.status(StatusCodes.ACCEPTED).json(result);
   },
 };
 

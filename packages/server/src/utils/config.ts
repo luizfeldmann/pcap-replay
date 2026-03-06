@@ -18,6 +18,8 @@ const envSchema = z.object({
     .default(100),
   // Period to run soft delete background tasks
   WORKER_PERIOD_SOFT_DELETE: z.int().min(0).default(5000),
+  // Period to check for start/stop of replay jobs
+  WORKER_PERIOD_REPLAY_START_STOP: z.int().min(0).default(2000),
 });
 
 // Parse environment variables into the object
