@@ -4,7 +4,11 @@ import cors from "cors";
 import { configData } from "./utils/config.js";
 import { ApiRouter } from "./routers/api.js";
 import { setupSwagger } from "./utils/swagger.js";
-import { appErrorMiddleware, zodErrorMiddleware } from "./utils/error.js";
+import {
+  appErrorMiddleware,
+  zodErrorMiddleware,
+  sqlErrorMiddleware,
+} from "./utils/error.js";
 import {
   performHousekeeping,
   startWorkers,
@@ -36,6 +40,7 @@ setupSwagger(app, ApiRouter.getDocs(API_PREFIX));
 // *MUST BE LAST*
 // Error handling middleware
 app.use(zodErrorMiddleware);
+app.use(sqlErrorMiddleware);
 app.use(appErrorMiddleware);
 
 // Start the server

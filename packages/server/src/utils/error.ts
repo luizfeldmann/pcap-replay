@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ZodError } from "zod";
 import { ErrorCode, ErrorResponse } from "shared";
+import { SqliteError } from "better-sqlite3";
 
 //! General error class
 export class AppError extends Error {
@@ -56,6 +57,28 @@ export const zodErrorMiddleware = (
 ) => {
   if (err instanceof ZodError) next(new RequestValidationError(err.message));
   else next(err);
+};
+
+//! Middleware to handle SQL errors
+export const sqlErrorMiddleware = (
+  err: unknown,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  // Check if SQL error
+  if (err instanceof SqliteError) {
+    switch (err.code) {
+      // Trying to delete an row referenced by another table
+      case "SQLITE_CONSTRAINT_FOREIGNKEY":
+      case "SQLITE_CONSTRAINT_TRIGGER":
+        next(new ResourceLockedError());
+        break;
+    }
+  }
+
+  // Fallback to the next error middleware
+  next(err);
 };
 
 export class UnknownError extends AppError {

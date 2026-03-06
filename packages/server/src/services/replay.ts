@@ -209,10 +209,13 @@ const deleteSingle = (id: string) => {
       .where(eq(ReplaysTable.id, id))
       .get();
 
+    // Job with this ID does not exist
     if (!job) throw new ResourceNotFoundError();
 
+    // Job is running and cannot be deleted
     if (job.status === "RUNNING") throw new ResourceLockedError();
 
+    // Perform actual deletion
     const result = tx.delete(ReplaysTable).where(eq(ReplaysTable.id, id)).run();
     if (!result.changes) throw new UnknownError();
   });
