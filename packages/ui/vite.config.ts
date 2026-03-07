@@ -6,7 +6,10 @@ import path from "path";
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
   define: {
+    // Check if was run as 'npm run mock'
     __MOCK__: JSON.stringify(mode === "mock"),
+    // Build timestamp
+    __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
   },
   optimizeDeps: {
     include: [

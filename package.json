@@ -3,11 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "author": {
-    "name": "Luiz Feldmann"
+    "name": "Luiz Gustavo Pfitscher e Feldmann",
+    "url": "https://linkedin.com/in/luizgustavopf"
   },
   "license": "MIT",
   "repository": {
-    "type": "git"
+    "type": "git",
+    "url": "https://github.com/luizfeldmann/pcap-replay"
   },
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace ui\" \"npm run dev --workspace server\"",

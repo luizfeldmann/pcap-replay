@@ -1,4 +1,8 @@
 export const routes = {
+  about: {
+    path: "about",
+    location: "/about",
+  },
   apiDocs: {
     location: "/api/docs",
   },

@@ -18,6 +18,18 @@
       "apidocs": "Documentação da API"
     }
   },
+  "about": {
+    "label": "Sobre",
+    "title": "Sobre o <b>pcap-replay</b>",
+    "headline": "Uma ferramenta de desenvolvimento containerizada para reproduzir e analisar arquivos PCAP em redes remotas. Faça upload de arquivos, crie tarefas de reprodução com opções avançadas como repetição, remapeamento de portas e endereços.",
+    "contributors": "Contribuidores",
+    "license": "Licença",
+    "version": {
+      "label": "Versão",
+      "value": "v{{version}} ({{build}})",
+      "viewsource": "Acessar código fonte no <a>repositório do GitHub</a>."
+    }
+  },
   "network": {
     "interfaces": "Interfaces",
     "nic": {

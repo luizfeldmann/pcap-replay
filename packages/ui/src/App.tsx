@@ -25,6 +25,7 @@ import { Icons } from "./utils/Icons";
 import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector";
 import { ReplayFormPageEdit } from "./pages/replay/ReplayFormPageEdit";
 import { ReplayFormPageCreate } from "./pages/replay/ReplayFormPageCreate";
+import { AboutPage } from "./pages/about/AboutPage";
 
 const tabs = [
   {
@@ -54,10 +55,10 @@ const AppLayout = () => {
   const { t } = useTranslation();
   const location = useLocation();
 
-  const currentTab = Math.max(
-    0,
-    tabs.findIndex((t) => location.pathname.startsWith(t.location)),
+  let currentTab: number | false = tabs.findIndex((t) =>
+    location.pathname.startsWith(t.location),
   );
+  if (currentTab === -1) currentTab = false;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -103,6 +104,15 @@ const AppLayout = () => {
               <Icons.ApiDocs />
             </IconButton>
           </Tooltip>
+          <Tooltip title={t("about.label")}>
+            <IconButton
+              color="inherit"
+              size="small"
+              href={routes.about.location}
+            >
+              <Icons.About />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </AppBar>
       <Box component="main" sx={{ p: 2, flexGrow: 1, display: "flex" }}>
@@ -131,6 +141,7 @@ export const App = () => {
           path={routes.replaysEditPage.path}
           element={<ReplayFormPageEdit />}
         />
+        <Route path={routes.about.path} element={<AboutPage />} />
       </Route>
     </Routes>
   );

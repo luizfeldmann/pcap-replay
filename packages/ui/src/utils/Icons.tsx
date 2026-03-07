@@ -14,6 +14,7 @@ import {
   Folder,
   FormatListBulletedAdd,
   GridOn,
+  Help,
   HourglassTop,
   InfoOutline,
   InputRounded,
@@ -45,6 +46,7 @@ import {
 } from "@mui/icons-material";
 
 export const Icons = {
+  About: Help,
   ApiDocs: DataObject,
   Language: Language,
   Name: ShortText,
