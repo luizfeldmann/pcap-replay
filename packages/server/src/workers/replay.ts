@@ -1,8 +1,8 @@
-import { configData } from "../utils/config";
+import { configData } from "../utils/config.js";
 import EventEmitter from "events";
-import { TimeoutError } from "../utils/error";
-import { ReplayService } from "../services/replay";
-import { ReplayRow, ReplayRowStatus } from "../models/replay";
+import { TimeoutError } from "../utils/error.js";
+import { ReplayService } from "../services/replay.js";
+import { ReplayRow, ReplayRowStatus } from "../models/replay.js";
 
 //! Notifies when the status of a job has changed
 const statusChange = new EventEmitter();

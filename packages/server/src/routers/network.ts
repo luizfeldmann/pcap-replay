@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { IDocumentedRouter } from "./IDocumentedRouter";
+import { IDocumentedRouter } from "./IDocumentedRouter.js";
+import { NetworkController } from "../controllers/network.js";
 import { ZodOpenApiPathsObject } from "zod-openapi";
-import { NetworkController } from "../controllers/network";
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { InferSelectModel } from "drizzle-orm";
 import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
-import { FilesTable } from "./files";
+import { FilesTable } from "./files.js";
 
 export const ReplaysTable = sqliteTable("replays", {
   id: text().primaryKey(),

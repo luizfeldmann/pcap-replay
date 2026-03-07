@@ -1,5 +1,5 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { ReplaysTable } from "./replay";
+import { ReplaysTable } from "./replay.js";
 import { InferSelectModel } from "drizzle-orm";
 
 export const AddressRemapTable = sqliteTable("replays_addr_remap", {

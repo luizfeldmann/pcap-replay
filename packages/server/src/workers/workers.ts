@@ -1,7 +1,7 @@
-import { FilesService } from "../services/files";
-import { ReplayService } from "../services/replay";
-import { configData } from "../utils/config";
-import { ReplayWorker } from "./replay";
+import { FilesService } from "../services/files.js";
+import { ReplayService } from "../services/replay.js";
+import { configData } from "../utils/config.js";
+import { ReplayWorker } from "./replay.js";
 
 // Invokes all housekeeping tasks on launch/startup of app
 export async function performHousekeeping() {

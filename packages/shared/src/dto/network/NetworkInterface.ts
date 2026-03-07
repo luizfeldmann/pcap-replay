@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NetworkInterfaceAddressSchema } from "./NetworkInterfaceAddress";
+import { NetworkInterfaceAddressSchema } from "./NetworkInterfaceAddress.js";
 
 export const NetworkInterfaceSchema = z.object({
   name: z.string(),

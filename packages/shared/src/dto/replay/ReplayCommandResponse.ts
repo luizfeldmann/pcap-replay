@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ReplayListItemSchema } from "./ReplayListItem";
+import { ReplayListItemSchema } from "./ReplayListItem.js";
 
 export const ReplayCommandResponseSchema = ReplayListItemSchema.pick({
   id: true,

@@ -2,9 +2,9 @@ import { z } from "zod";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ZodOpenApiOperationObject } from "zod-openapi";
-import { jsonResponse } from "../utils/openapi";
-import { NetworkService } from "../services/network";
 import { NetworkInterfaceSchema } from "shared";
+import { jsonResponse } from "../utils/openapi.js";
+import { NetworkService } from "../services/network.js";
 
 // Tag for API docs
 const NETWORK_TAG = "Network";
