@@ -3,13 +3,13 @@ import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 import { FilesTable } from "./files";
 
 export const ReplaysTable = sqliteTable("replays", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  file: text("file")
+  id: text().primaryKey(),
+  name: text().notNull(),
+  file: text()
     .notNull()
     .references(() => FilesTable.id, { onDelete: "restrict" }),
-  interface: text("interface").notNull(),
-  status: text("status", {
+  interface: text().notNull(),
+  status: text({
     // prettier-ignore
     enum: [
       "REQUEST_STOP",
@@ -20,40 +20,17 @@ export const ReplaysTable = sqliteTable("replays", {
       "ERROR",
     ],
   }).notNull(),
-  startTime: integer("startTime", { mode: "timestamp_ms" }),
-  endTime: integer("endTime", { mode: "timestamp_ms" }),
-  createdTime: integer("createdTime", { mode: "timestamp_ms" }).notNull(),
-  loop: integer("loop", { mode: "boolean" }),
-  repeat: integer("repeat"),
-  limitDuration: integer("limitDuration"),
-  limitPackets: integer("limitPackets"),
-  speedMultiplier: real("speedMultiplier"),
-  dataRate: real("dataRate"),
-  packetRate: real("packetRate"),
+  startTime: integer({ mode: "timestamp_ms" }),
+  endTime: integer({ mode: "timestamp_ms" }),
+  createdTime: integer({ mode: "timestamp_ms" }).notNull(),
+  loop: integer({ mode: "boolean" }),
+  repeat: integer(),
+  limitDuration: integer(),
+  limitPackets: integer(),
+  speedMultiplier: real(),
+  dataRate: real(),
+  packetRate: real(),
 });
 
 export type ReplayRow = InferSelectModel<typeof ReplaysTable>;
 export type ReplayRowStatus = ReplayRow["status"];
-
-export const AddressRemapTable = sqliteTable("replays_addr_remap", {
-  replayId: text("replayId").references(() => ReplaysTable.id, {
-    onDelete: "cascade",
-  }),
-  direction: text("direction", { enum: ["src", "dst"] }).notNull(),
-  ip: text("ip", { enum: ["v4", "v6"] }).notNull(),
-  from: text("from").notNull(),
-  to: text("to").notNull(),
-});
-
-export type AddressRemapRow = InferSelectModel<typeof AddressRemapTable>;
-
-export const PortRemapTable = sqliteTable("replays_port_remap", {
-  replayId: text("replayId").references(() => ReplaysTable.id, {
-    onDelete: "cascade",
-  }),
-  start: integer("start").notNull(),
-  end: integer("end").notNull(),
-  to: integer("to").notNull(),
-});
-
-export type PortRemapRow = InferSelectModel<typeof PortRemapTable>;

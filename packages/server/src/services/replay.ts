@@ -14,15 +14,9 @@ import {
   ReplayCommandResponse,
 } from "shared";
 import { db } from "../models/db.js";
-import {
-  ReplaysTable,
-  ReplayRow,
-  PortRemapTable,
-  AddressRemapTable,
-  PortRemapRow,
-  AddressRemapRow,
-  ReplayRowStatus,
-} from "../models/replay.js";
+import { ReplaysTable, ReplayRow, ReplayRowStatus } from "../models/replay.js";
+import { PortRemapTable, PortRemapRow } from "../models/portremap.js";
+import { AddressRemapTable, AddressRemapRow } from "../models/addressremap.js";
 import { eq, lt, desc, inArray, and, sql } from "drizzle-orm";
 import {
   ConflictError,
