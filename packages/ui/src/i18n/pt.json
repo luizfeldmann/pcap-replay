@@ -94,6 +94,9 @@
     "edit": {
       "title": "Editar reprodução"
     },
+    "logs": {
+      "title": "Logs da reprodução"
+    },
     "status": {
       "stopped": "Parado",
       "finished": "Concluído",
@@ -235,7 +238,8 @@
       "startplay": "Iniciar",
       "stop": "Parar",
       "edit": "Editar",
-      "delete": "Deletar"
+      "delete": "Deletar",
+      "logs": "Observar logs"
     },
     "error": {
       "statecannotedit": "A reprodução não pode ser editada enquanto estiver executando",

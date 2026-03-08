@@ -250,11 +250,14 @@ export const ReplayJobsCard = (props: {
                 replayName={props.data.name}
                 currentStatus={props.data.status}
               />
-              <IconButton onClick={(e) => props.onMore(e.currentTarget)}>
+              <IconButton
+                size="small"
+                onClick={(e) => props.onMore(e.currentTarget)}
+              >
                 <Icons.MoreContext />
               </IconButton>
             </Stack>
-            <IconButton onClick={() => setExpanded((v) => !v)}>
+            <IconButton size="small" onClick={() => setExpanded((v) => !v)}>
               <Icons.ExpandChevron
                 sx={{
                   transform: expanded ? "rotate(180deg)" : "rotate(0deg)",

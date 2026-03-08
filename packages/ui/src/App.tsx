@@ -26,6 +26,7 @@ import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector
 import { ReplayFormPageEdit } from "./pages/replay/ReplayFormPageEdit";
 import { ReplayFormPageCreate } from "./pages/replay/ReplayFormPageCreate";
 import { AboutPage } from "./pages/about/AboutPage";
+import { ReplayLogsPage } from "./pages/replay/ReplayLogsPage";
 
 const tabs = [
   {
@@ -53,6 +54,8 @@ const tabs = [
 
 const AppLayout = () => {
   const { t } = useTranslation();
+
+  // Decide the currently active tab
   const location = useLocation();
 
   let currentTab: number | false = tabs.findIndex((t) =>
@@ -140,6 +143,10 @@ export const App = () => {
         <Route
           path={routes.replaysEditPage.path}
           element={<ReplayFormPageEdit />}
+        />
+        <Route
+          path={routes.replaysLogsPage.path}
+          element={<ReplayLogsPage />}
         />
         <Route path={routes.about.path} element={<AboutPage />} />
       </Route>

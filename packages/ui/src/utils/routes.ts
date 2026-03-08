@@ -33,4 +33,8 @@ export const routes = {
     path: "replays/edit/:id",
     location: (id: string) => `/replays/edit/${id}`,
   },
+  replaysLogsPage: {
+    path: "replays/logs/:id",
+    location: (id: string) => `/replays/logs/${id}`,
+  },
 };

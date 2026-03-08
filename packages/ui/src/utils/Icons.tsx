@@ -36,6 +36,7 @@ import {
   Speed,
   SportsScore,
   Stop,
+  Subject,
   SwapHoriz,
   SwapVert,
   Timer,
@@ -91,4 +92,5 @@ export const Icons = {
   StatusRunning: PlayArrow,
   StatusError: PriorityHigh,
   StatusFinished: Done,
+  WatchLogs: Subject,
 };

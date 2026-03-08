@@ -18,6 +18,7 @@ export type ReplayContextMenuActions = {
   onClose(): void;
   onDelete(): void;
   getEditUrl(): string;
+  getLogsUrl(): string;
 };
 
 export const useReplayContextMenu = () => {
@@ -79,6 +80,8 @@ export const useReplayContextMenu = () => {
       getEditUrl: () =>
         routes.replaysEditPage.location(state.selected?.id ?? ""),
       onDelete,
+      getLogsUrl: () =>
+        routes.replaysLogsPage.location(state.selected?.id ?? ""),
       onClose,
     } satisfies ReplayContextMenuActions,
   };

@@ -8,9 +8,12 @@ import { Icons } from "../../utils/Icons";
 import { ReplayCommandMenuItem } from "../ReplayCommand/ReplayCommandMenuItem";
 import { Link } from "react-router-dom";
 
+export type ReplayContextMenuButtons = "startstop" | "edit" | "logs" | "delete";
+
 export const ReplayContextMenu = (props: {
   actions: ReplayContextMenuActions;
   state: ReplayContextMenuState;
+  disableItems?: ReplayContextMenuButtons[];
 }) => {
   const { t } = useTranslation();
 
@@ -22,7 +25,7 @@ export const ReplayContextMenu = (props: {
       open={!!props.state.anchor}
       onClose={props.actions.onClose}
     >
-      {props.state.selected && (
+      {props.state.selected && !props.disableItems?.includes("startstop") && (
         <ReplayCommandMenuItem
           replayId={props.state.selected.id}
           replayName={props.state.selected.name}
@@ -30,22 +33,34 @@ export const ReplayContextMenu = (props: {
           onSettled={props.actions.onClose}
         />
       )}
-      <MenuItem
-        component={Link}
-        to={props.actions.getEditUrl()}
-        disabled={!isEditable}
-      >
-        <ListItemIcon>
-          <Icons.Edit />
-        </ListItemIcon>
-        <ListItemText>{t("replays.context.edit")}</ListItemText>
-      </MenuItem>
-      <MenuItem onClick={props.actions.onDelete} disabled={!isEditable}>
-        <ListItemIcon>
-          <Icons.Delete />
-        </ListItemIcon>
-        <ListItemText>{t("replays.context.delete")}</ListItemText>
-      </MenuItem>
+      {!props.disableItems?.includes("edit") && (
+        <MenuItem
+          component={Link}
+          to={props.actions.getEditUrl()}
+          disabled={!isEditable}
+        >
+          <ListItemIcon>
+            <Icons.Edit />
+          </ListItemIcon>
+          <ListItemText>{t("replays.context.edit")}</ListItemText>
+        </MenuItem>
+      )}
+      {!props.disableItems?.includes("logs") && (
+        <MenuItem component={Link} to={props.actions.getLogsUrl()}>
+          <ListItemIcon>
+            <Icons.WatchLogs />
+          </ListItemIcon>
+          <ListItemText>{t("replays.context.logs")}</ListItemText>
+        </MenuItem>
+      )}
+      {!props.disableItems?.includes("delete") && (
+        <MenuItem onClick={props.actions.onDelete} disabled={!isEditable}>
+          <ListItemIcon>
+            <Icons.Delete />
+          </ListItemIcon>
+          <ListItemText>{t("replays.context.delete")}</ListItemText>
+        </MenuItem>
+      )}
     </Menu>
   );
 };
