@@ -184,4 +184,5 @@ export const FilesService = {
   saveFile,
   // For internal use
   deleteSoftFiles,
+  getFilePathOnDisk,
 };

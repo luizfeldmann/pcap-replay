@@ -182,17 +182,29 @@ const getJobsList = async (
   };
 };
 
+const getJobAddressRemaps = async (id: string) =>
+  db.select().from(AddressRemapTable).where(eq(AddressRemapTable.replayId, id));
+
+const getJobPortRemaps = async (id: string) =>
+  db.select().from(PortRemapTable).where(eq(PortRemapTable.replayId, id));
+
 const getSingle = async (id: string): Promise<ReplayListItem> => {
   const [[replayJob], portRemaps, addrRemaps] = await Promise.all([
     db.select().from(ReplaysTable).where(eq(ReplaysTable.id, id)),
-    db.select().from(PortRemapTable).where(eq(PortRemapTable.replayId, id)),
-    db
-      .select()
-      .from(AddressRemapTable)
-      .where(eq(AddressRemapTable.replayId, id)),
+    getJobPortRemaps(id),
+    getJobAddressRemaps(id),
   ]);
 
   if (!replayJob) throw new ResourceNotFoundError();
+
+  return transformListItem(replayJob, portRemaps, addrRemaps);
+};
+
+const getJobDetails = async (replayJob: ReplayRow) => {
+  const [portRemaps, addrRemaps] = await Promise.all([
+    getJobPortRemaps(replayJob.id),
+    getJobAddressRemaps(replayJob.id),
+  ]);
 
   return transformListItem(replayJob, portRemaps, addrRemaps);
 };
@@ -561,6 +573,7 @@ export const ReplayService = {
   modifyItem,
   commandStatus,
   // Internal use
+  getJobDetails,
   getScheduledJobs,
   setJobState,
   cancelStaleJobs,
