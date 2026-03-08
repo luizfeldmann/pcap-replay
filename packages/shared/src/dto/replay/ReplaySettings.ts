@@ -14,6 +14,7 @@ export const ReplaySettingsSchema = z.object({
   load: LoadSettingsSchema.optional(),
   limit: LengthSettingsSchema.optional(),
   repeat: RepeatSettingsSchema.optional(),
+  verbose: z.boolean().optional(),
 });
 
 export type ReplaySettings = z.infer<typeof ReplaySettingsSchema>;

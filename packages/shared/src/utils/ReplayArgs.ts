@@ -66,5 +66,8 @@ export const GetReplayArgs = (settings: ReplaySettings): string[] => {
       break;
   }
 
+  // Verbosity
+  if (settings.verbose) args.push("--verbose");
+
   return args;
 };

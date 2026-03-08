@@ -23,6 +23,7 @@ export const ReplaysTable = sqliteTable("replays", {
   startTime: integer({ mode: "timestamp_ms" }),
   endTime: integer({ mode: "timestamp_ms" }),
   createdTime: integer({ mode: "timestamp_ms" }).notNull(),
+  verbose: integer({ mode: "boolean" }),
   loop: integer({ mode: "boolean" }),
   repeat: integer(),
   limitDuration: integer(),

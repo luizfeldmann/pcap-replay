@@ -68,6 +68,7 @@
   "replays.form.file.validate.required": "Requires a recorded capture file",
   "replays.form.interface.label": "Network Interface",
   "replays.form.interface.required": "The network interface name is required",
+  "replays.form.verbose": "Verbose",
   "replays.form.repeat.label": "Repetition",
   "replays.form.repeat.loop": "Loop",
   "replays.form.repeat.times": "Times",

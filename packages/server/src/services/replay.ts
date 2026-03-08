@@ -72,6 +72,7 @@ const transformListItem = (
     createdTime: replayJob.createdTime.toISOString(),
     startTime: replayJob.startTime?.toISOString(),
     endTime: replayJob.endTime?.toISOString(),
+    verbose: replayJob.verbose ?? false,
   };
 
   // Port remapping
@@ -304,6 +305,7 @@ const insertNew = (post: ReplayPost): ReplayListItem => {
     createdTime: new Date(),
     startTime: null,
     endTime: null,
+    verbose: post.verbose ?? false,
     ...getRepeatSettings(post.repeat),
     ...getLengthSettings(post.limit),
     ...getSpeedSettings(post.load),
@@ -376,6 +378,10 @@ const modifyItem = async (
       ...updateValues,
       ...getRepeatSettings(patch.repeat),
     };
+  }
+
+  if (patch.verbose !== undefined) {
+    updateValues.verbose = patch.verbose;
   }
 
   // Create port remaps

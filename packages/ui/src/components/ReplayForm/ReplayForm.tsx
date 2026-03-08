@@ -2,9 +2,11 @@ import {
   Accordion,
   AccordionDetails,
   Button,
+  Checkbox,
   CircularProgress,
   Divider,
   FormControl,
+  FormControlLabel,
   FormHelperText,
   InputLabel,
   MenuItem,
@@ -124,6 +126,16 @@ export const ReplayForm = (props: {
         )}
       />
       <Divider flexItem sx={{ margin: 2 }} />
+      <Controller
+        control={control}
+        name="verbose"
+        render={({ field }) => (
+          <FormControlLabel
+            label={t("replays.form.verbose")}
+            control={<Checkbox checked={field.value} {...field} />}
+          />
+        )}
+      />
       <Stack spacing={0}>
         <Accordion>
           <SectionHeader>

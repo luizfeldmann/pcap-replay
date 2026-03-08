@@ -122,6 +122,7 @@
         "label": "Interface de rede",
         "required": "Obrigatório informar a interface de rede"
       },
+      "verbose": "Verboso",
       "repeat": {
         "label": "Repetição",
         "loop": "Loop",
