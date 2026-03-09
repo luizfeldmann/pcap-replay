@@ -5,7 +5,7 @@ import { ReplayService } from "../services/replay.js";
 import { ReplayRow, ReplayRowStatus } from "../models/replay.js";
 import { GetReplayArgs } from "shared";
 import { FilesService } from "../services/files.js";
-import { spawn } from "child_process";
+import pty from "node-pty";
 import { ReplayEvents } from "../events/replays.js";
 
 //! Notifies when the status of a job has changed
@@ -14,13 +14,39 @@ const statusChange = new EventEmitter();
 //! The data stored on the status change events queue
 type StatusChangeEventSnapshot = ReturnType<typeof ReplayService.setJobState>;
 
-// Abort signals per job ID
-const abortHandles: Record<string, AbortController> = {};
+//! Store the information of the spawned processes
+type ProcessInfo = {
+  pty: pty.IPty;
+  isStop?: boolean;
+};
+
+const processes = new Map<string, ProcessInfo>();
 
 //! Sets the new state of a job in DB and notifies observers
 async function setStateAndNotify(id: string, state: ReplayRowStatus) {
   const snapshot = await ReplayService.setJobState(id, state);
   statusChange.emit(id, snapshot);
+}
+
+//! Called when the job returns
+async function onJobExit(id: string, exitCode: number) {
+  // Unregister the process from the working map
+  const process = processes.get(id);
+  if (!process) return;
+  processes.delete(id);
+
+  if (process.isStop) {
+    // Process was stopped by a command
+    await setStateAndNotify(id, "STOPPED");
+  } else if (exitCode === 0) {
+    // Exit with success code
+    console.error(`completed successfully: '${id}'`);
+    await setStateAndNotify(id, "FINISHED");
+  } else {
+    // Exit with error code
+    console.error(`exited with error: code ${exitCode} for '${id}'`);
+    await setStateAndNotify(id, "ERROR");
+  }
 }
 
 async function runJobUnsafe(jobRow: ReplayRow) {
@@ -32,51 +58,27 @@ async function runJobUnsafe(jobRow: ReplayRow) {
   const args = [...GetReplayArgs(job), filepath];
 
   // Spawn the process
-  const controller = new AbortController();
-  abortHandles[job.id] = controller;
-
-  const process = spawn("tcpreplay-edit", args, { signal: controller.signal });
+  const proc = {
+    pty: pty.spawn("tcpreplay-edit", args, {
+      name: "xterm-color",
+      cols: 80,
+      rows: 24,
+      cwd: process.cwd(),
+      env: process.env,
+    }),
+  };
+  processes.set(job.id, proc);
 
   // Collect console prints
-  const onPipe = (chunk: any) => {
-    const text = chunk.toString() as string;
-    const lines = text.split("\n");
+  proc.pty.onData((text) =>
     ReplayEvents.emitLogEventData({
       id: job.id,
-      logs: lines,
-    });
-  };
-
-  process.stdout.on("data", onPipe);
-  process.stderr.on("data", onPipe);
+      logs: text.split("\n"),
+    }),
+  );
 
   // Handle exist code
-  process.once("close", async (code, signal) => {
-    // Unregister the abort signal
-    delete abortHandles[job.id];
-
-    // Treat the exit condition
-    if (signal) {
-      // Process was stopped by a signal
-      await setStateAndNotify(job.id, "STOPPED");
-    } else if (code === 0) {
-      // Exit with success code
-      console.error(`completed successfully: '${job.id}' - '${job.name}'`);
-      await setStateAndNotify(job.id, "FINISHED");
-    } else {
-      // Exit with error code
-      console.error(
-        `exited with error: code ${code} for '${job.id}' - '${job.name}'`,
-      );
-      await setStateAndNotify(job.id, "ERROR");
-    }
-  });
-
-  // Return a promise attached to the result of the process startup
-  return new Promise<void>((resolve, reject) => {
-    process.once("spawn", resolve);
-    process.once("error", reject);
-  });
+  proc.pty.onExit(async ({ exitCode }) => onJobExit(job.id, exitCode));
 }
 
 async function runJob(job: ReplayRow) {
@@ -95,7 +97,13 @@ async function runJob(job: ReplayRow) {
 }
 
 async function stopJob(job: ReplayRow) {
-  abortHandles[job.id]?.abort();
+  // Get the process from the ID
+  const proc = processes.get(job.id);
+  if (!proc) return;
+
+  // Kill the process and flag it as purposefully stopped
+  proc.isStop = true;
+  proc.pty.kill();
 }
 
 //! Periodically check status of jobs and performs the start/stop
