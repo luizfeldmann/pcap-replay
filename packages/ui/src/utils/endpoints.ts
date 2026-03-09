@@ -75,6 +75,9 @@ export const endpoints = {
   subscribeReplaysEvents: {
     path: "/api/jobs/replay/events",
   },
+  subscribeSingleReplayItemEvents: {
+    path: (id: string) => `/api/jobs/replay/${id}/events`,
+  },
   subscribeReplayLogs: {
     path: (id: string) => `/api/jobs/replay/${id}/logs`,
   },

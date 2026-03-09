@@ -8,14 +8,19 @@ export type OptionsUseSSE = {
   key: string;
   url: string;
   handler: Listener;
+  disabled?: boolean;
 };
 
 //! Subscribes to server-sent-events
-export const useSSE = ({ key, url, handler }: OptionsUseSSE) => {
+export const useSSE = ({ key, url, handler, disabled }: OptionsUseSSE) => {
   useEffect(() => {
+    // No-op if disabled
+    if (disabled) return () => {};
+
+    // Subscribe and return the unsubscribe as cleanup
     subscribe(key, url, handler);
     return () => unsubscribe(key, handler);
-  }, [key, url, handler]);
+  }, [key, url, handler, disabled]);
 };
 
 //! Stores the state of the de-dupped event source and it's subscribers

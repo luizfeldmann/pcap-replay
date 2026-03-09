@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, LinearProgress, Stack, Typography } from "@mui/material";
 import { ReplayLogsHeader } from "../../components/ReplayLogs/ReplayLogsHeader";
 import { ReplayLogsText } from "../../components/ReplayLogs/ReplayLogsText";
+import { useSingleReplayEvents } from "../../api/replays/useSingleReplayEvents";
 
 export const ReplayLogsPage = () => {
   const { t } = useTranslation();
@@ -14,6 +15,9 @@ export const ReplayLogsPage = () => {
 
   // Query the replay item data
   const replayData = useSingleReplay({ id: replayId });
+
+  // Receive SSE events on the replay item
+  useSingleReplayEvents(replayId);
 
   return (
     <Stack

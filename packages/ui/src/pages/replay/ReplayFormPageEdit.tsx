@@ -9,6 +9,7 @@ import { useSingleReplay } from "../../api/replays/useSingleReplay";
 import { usePatchReplay } from "../../api/replays/usePatchReplay";
 import type { ReplayPatch } from "shared";
 import { routes } from "../../utils/routes";
+import { useSingleReplayEvents } from "../../api/replays/useSingleReplayEvents";
 
 export const ReplayFormPageEdit = () => {
   const { t } = useTranslation();
@@ -21,8 +22,11 @@ export const ReplayFormPageEdit = () => {
   const params = useParams();
   const replayId = params["id"] ?? "";
 
-  // Query the replay item data
+  // Query the replay item data via REST
   const replayData = useSingleReplay({ id: replayId });
+
+  // Get SSE updates on the replay
+  useSingleReplayEvents(replayId);
 
   // Handle submitting of the form
   const onSubmit = (formData: ReplayFormData) => {

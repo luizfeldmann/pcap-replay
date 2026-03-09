@@ -55,6 +55,8 @@ export const onReplayDeleted = (qc: QueryClient, event: ReplayDeleteEvent) => {
     [REPLAYS_QUERY_KEY, event.data.id],
     undefined,
   );
+
+  qc.invalidateQueries({ queryKey: [REPLAYS_QUERY_KEY, event.data.id] });
 };
 
 export const onReplayStatus = (qc: QueryClient, event: ReplayStatusEvent) => {
