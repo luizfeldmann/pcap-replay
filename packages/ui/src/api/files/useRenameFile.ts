@@ -1,17 +1,7 @@
-import {
-  useMutation,
-  useQueryClient,
-  type InfiniteData,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "../../utils/endpoints";
-import {
-  FileListItemSchema,
-  type FileListItem,
-  type FilePatch,
-  type PaginatedFileListResponse,
-} from "shared";
-import { QUERY_KEY_FILES } from "./useFilesList";
-import { itemsMap } from "../pagedDataTransform";
+import { FileListItemSchema, type FilePatch } from "shared";
+import { onFilePatch } from "./useFileNormalization";
 
 export const useRenameFile = () => {
   const queryClient = useQueryClient();
@@ -31,17 +21,6 @@ export const useRenameFile = () => {
       return FileListItemSchema.parse(body);
     },
     onSuccess: (data) =>
-      // Rename the file in the query cache
-      queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
-        [QUERY_KEY_FILES],
-        (oldData) =>
-          itemsMap<PaginatedFileListResponse, FileListItem>(
-            oldData,
-            "items",
-            // The renamed file maps to the new data
-            // the other files map to themselves
-            (item) => (item.id === data.id ? data : item),
-          ),
-      ),
+      onFilePatch(queryClient, { topic: "file", operation: "patch", data }),
   });
 };

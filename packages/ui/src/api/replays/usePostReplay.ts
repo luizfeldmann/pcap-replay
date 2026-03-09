@@ -1,16 +1,7 @@
-import {
-  useMutation,
-  useQueryClient,
-  type InfiniteData,
-} from "@tanstack/react-query";
-import {
-  ReplayListItemSchema,
-  type PaginatedReplayListResponse,
-  type ReplayPost,
-} from "shared";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ReplayListItemSchema, type ReplayPost } from "shared";
 import { endpoints } from "../../utils/endpoints";
-import { REPLAYS_QUERY_KEY } from "./useReplaysList";
-import { itemPrepend } from "../pagedDataTransform";
+import { onReplayCreated } from "./useReplayNormalization";
 
 export const usePostReplay = () => {
   const queryClient = useQueryClient();
@@ -31,12 +22,11 @@ export const usePostReplay = () => {
       const resBody = await res.json();
       return ReplayListItemSchema.parse(resBody);
     },
-    onSuccess: (data) => {
-      // Prepend the returned file data in the cache list
-      queryClient.setQueryData<InfiniteData<PaginatedReplayListResponse>>(
-        [REPLAYS_QUERY_KEY],
-        (oldData) => itemPrepend(oldData, "items", data),
-      );
-    },
+    onSuccess: (data) =>
+      onReplayCreated(queryClient, {
+        topic: "replay",
+        operation: "create",
+        data,
+      }),
   });
 };

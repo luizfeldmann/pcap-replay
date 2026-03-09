@@ -1,12 +1,6 @@
-import {
-  useMutation,
-  useQueryClient,
-  type InfiniteData,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "../../utils/endpoints";
-import type { FileListItem, PaginatedFileListResponse } from "shared";
-import { QUERY_KEY_FILES } from "./useFilesList";
-import { itemsFilter } from "../pagedDataTransform";
+import { onFileDeleted } from "./useFileNormalization";
 
 export const useDeleteFile = () => {
   const queryClient = useQueryClient();
@@ -18,18 +12,11 @@ export const useDeleteFile = () => {
       });
       if (!resp.ok) throw new Error(resp.statusText);
     },
-    onSuccess: (_data, variables) => {
-      // Remove the file from the query cache
-      queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
-        [QUERY_KEY_FILES],
-        (oldData) =>
-          itemsFilter<PaginatedFileListResponse, FileListItem>(
-            oldData,
-            "items",
-            // Filter (keep) all files whose IDs are NOT the deleted file
-            (item) => item.id !== variables.id,
-          ),
-      );
-    },
+    onSuccess: (_data, variables) =>
+      onFileDeleted(queryClient, {
+        topic: "file",
+        operation: "delete",
+        data: { id: variables.id },
+      }),
   });
 };

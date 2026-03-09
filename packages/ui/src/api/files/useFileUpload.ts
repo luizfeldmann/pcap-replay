@@ -1,12 +1,7 @@
-import {
-  useMutation,
-  useQueryClient,
-  type InfiniteData,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "../../utils/endpoints";
-import { FileListItemSchema, type PaginatedFileListResponse } from "shared";
-import { QUERY_KEY_FILES } from "./useFilesList";
-import { itemPrepend } from "../pagedDataTransform";
+import { FileListItemSchema } from "shared";
+import { onFileCreated } from "./useFileNormalization";
 
 export const useFileUpload = () => {
   const queryClient = useQueryClient();
@@ -31,12 +26,7 @@ export const useFileUpload = () => {
       const body = await res.json();
       return FileListItemSchema.parse(body);
     },
-    onSuccess: (data) => {
-      // Prepend the returned file data in the cache list
-      queryClient.setQueryData<InfiniteData<PaginatedFileListResponse>>(
-        [QUERY_KEY_FILES],
-        (oldData) => itemPrepend(oldData, "items", data),
-      );
-    },
+    onSuccess: (data) =>
+      onFileCreated(queryClient, { topic: "file", operation: "create", data }),
   });
 };

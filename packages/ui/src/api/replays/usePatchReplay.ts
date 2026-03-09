@@ -1,17 +1,7 @@
-import {
-  useMutation,
-  useQueryClient,
-  type InfiniteData,
-} from "@tanstack/react-query";
-import {
-  ReplayListItemSchema,
-  type PaginatedReplayListResponse,
-  type ReplayListItem,
-  type ReplayPatch,
-} from "shared";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ReplayListItemSchema, type ReplayPatch } from "shared";
 import { endpoints } from "../../utils/endpoints";
-import { REPLAYS_QUERY_KEY } from "./useReplaysList";
-import { itemsMap } from "../pagedDataTransform";
+import { onReplayPatch } from "./useReplayNormalization";
 
 export const usePatchReplay = () => {
   const queryClient = useQueryClient();
@@ -30,15 +20,6 @@ export const usePatchReplay = () => {
       return ReplayListItemSchema.parse(body);
     },
     onSuccess: (data) =>
-      // Rename the file in the query cache
-      queryClient.setQueryData<InfiniteData<PaginatedReplayListResponse>>(
-        [REPLAYS_QUERY_KEY],
-        (oldData) =>
-          itemsMap<PaginatedReplayListResponse, ReplayListItem>(
-            oldData,
-            "items",
-            (item) => (item.id === data.id ? data : item),
-          ),
-      ),
+      onReplayPatch(queryClient, { topic: "replay", operation: "patch", data }),
   });
 };

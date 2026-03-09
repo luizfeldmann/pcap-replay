@@ -1,5 +1,12 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { PaginatedReplayListResponseSchema } from "shared";
+import {
+  QueryClient,
+  useInfiniteQuery,
+  type InfiniteData,
+} from "@tanstack/react-query";
+import {
+  PaginatedReplayListResponseSchema,
+  type PaginatedReplayListResponse,
+} from "shared";
 import { endpoints } from "../../utils/endpoints";
 
 export const REPLAYS_QUERY_KEY = "replays";
@@ -18,3 +25,18 @@ export const useReplaysList = (options?: { enabled?: boolean }) =>
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     enabled: options?.enabled,
   });
+
+export const getReplayFromListCache = (
+  queryClient: QueryClient,
+  id: string,
+) => {
+  const data = queryClient.getQueryData<
+    InfiniteData<PaginatedReplayListResponse>
+  >([REPLAYS_QUERY_KEY]);
+  if (!data) return undefined;
+
+  for (const page of data.pages) {
+    const found = page.items.find((f) => f.id === id);
+    if (found) return found;
+  }
+};
