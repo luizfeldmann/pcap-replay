@@ -23,6 +23,7 @@ import {
 import { useMemo } from "react";
 import { useReplayContextMenu } from "../ReplayContextMenu/useReplayContextMenu";
 import { ReplayContextMenu } from "../ReplayContextMenu/ReplayContextMenu";
+import { useReplayEvents } from "../../api/replays/useReplayEvents";
 
 export const ReplayJobsTable = (props: {
   visibility: Record<ReplayColumnId, boolean>;
@@ -32,6 +33,9 @@ export const ReplayJobsTable = (props: {
 
   // Query the items from API
   const jobs = useReplaysList();
+
+  // Get reactive updates
+  useReplayEvents();
 
   // Single context menu for all items
   const { open: openContextMenu, ...contextMenu } = useReplayContextMenu();

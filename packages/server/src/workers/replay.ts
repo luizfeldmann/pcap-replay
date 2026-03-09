@@ -3,16 +3,13 @@ import EventEmitter from "events";
 import { TimeoutError } from "../utils/error.js";
 import { ReplayService } from "../services/replay.js";
 import { ReplayRow, ReplayRowStatus } from "../models/replay.js";
-import { GetReplayArgs } from "shared";
+import { GetReplayArgs, ReplayCommandResponse } from "shared";
 import { FilesService } from "../services/files.js";
 import pty from "node-pty";
 import { ReplayEvents } from "../events/replays.js";
 
 //! Notifies when the status of a job has changed
 const statusChange = new EventEmitter();
-
-//! The data stored on the status change events queue
-type StatusChangeEventSnapshot = ReturnType<typeof ReplayService.setJobState>;
 
 //! Store the information of the spawned processes
 type ProcessInfo = {
@@ -122,14 +119,12 @@ async function checkStartStopJobs() {
 }
 
 //! Waits for the job status to change and returns it
-async function waitForJobStatus(
-  id: string,
-): Promise<StatusChangeEventSnapshot> {
+async function waitForJobStatus(id: string): Promise<ReplayCommandResponse> {
   // The timeout is 2 cycles of the worker
   const timeout = 2 * configData.WORKER_PERIOD_REPLAY_START_STOP;
 
-  return new Promise<StatusChangeEventSnapshot>((resolve, reject) => {
-    const onEvent = (data: StatusChangeEventSnapshot) => {
+  return new Promise<ReplayCommandResponse>((resolve, reject) => {
+    const onEvent = (data: ReplayCommandResponse) => {
       // Cancels the timeout timer
       clearTimeout(timer);
       // Return successfull data

@@ -5,10 +5,14 @@ import { ReplayJobsCard } from "./ReplayJobsCard";
 import { ReplayContextMenu } from "../ReplayContextMenu/ReplayContextMenu";
 import { useMemo } from "react";
 import { useReplayContextMenu } from "../ReplayContextMenu/useReplayContextMenu";
+import { useReplayEvents } from "../../api/replays/useReplayEvents";
 
 export const ReplayJobsList = () => {
-  // Query items from API
+  // Query items from REST API
   const queryReplay = useReplaysList();
+
+  // Get reactive updates
+  useReplayEvents();
 
   // Single context menu for any of the items
   const contextMenu = useReplayContextMenu();

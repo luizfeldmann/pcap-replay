@@ -27,6 +27,7 @@ import {
 import { getLastItem } from "../utils/utils.js";
 import { ReplayWorker } from "../workers/replay.js";
 import { SQLiteUpdateSetSource } from "drizzle-orm/sqlite-core";
+import { ReplayEvents } from "../events/replays.js";
 
 const transformPortRemap = (portRemap: PortRemapRow): PortRemap =>
   portRemap.start === portRemap.end
@@ -211,6 +212,7 @@ const getJobDetails = async (replayJob: ReplayRow) => {
 };
 
 const deleteSingle = (id: string) => {
+  // Delete item from DB
   db.transaction((tx) => {
     const job = tx
       .select({ status: ReplaysTable.status })
@@ -228,6 +230,9 @@ const deleteSingle = (id: string) => {
     const result = tx.delete(ReplaysTable).where(eq(ReplaysTable.id, id)).run();
     if (!result.changes) throw new UnknownError();
   });
+
+  // Notify all observers of this collection
+  ReplayEvents.emitReplayDeletedEvent({ id });
 };
 
 const getRepeatSettings = (settings: RepeatSettings | null | undefined) => {
@@ -345,7 +350,13 @@ const insertNew = (post: ReplayPost): ReplayListItem => {
     });
   });
 
-  return transformListItem(replayJob, portRemaps, addrRemaps);
+  const replayItem = transformListItem(replayJob, portRemaps, addrRemaps);
+
+  // Notify all observers of this collection
+  ReplayEvents.emitReplayCreatedEvent(replayItem);
+
+  // Send the created item to the caller
+  return replayItem;
 };
 
 const modifyItem = async (
@@ -440,7 +451,13 @@ const modifyItem = async (
   });
 
   // Perform a regular get on the item after the update
-  return getSingle(id);
+  const replayItem = await getSingle(id);
+
+  // Notify all observers of this collection
+  ReplayEvents.emitReplayPatchEvent(replayItem);
+
+  // Return the item to the caller
+  return replayItem;
 };
 
 const commandStatus = async (
@@ -497,14 +514,7 @@ const commandStatus = async (
 
   // Wait for the background worker to start the job, and get the status (success/fail)
   const snapshot = await statusChangePromise;
-
-  // Return the new status and times
-  return {
-    id: snapshot.id,
-    status: statusTransformList[snapshot.status],
-    startTime: snapshot.startTime?.toISOString(),
-    endTime: snapshot.endTime?.toISOString(),
-  };
+  return snapshot;
 };
 
 /** Housekeeping */
@@ -535,7 +545,10 @@ const getScheduledJobs = async () =>
     .where(inArray(ReplaysTable.status, ["REQUEST_RUN", "REQUEST_STOP"]));
 
 //! Updates the job to a new state
-const setJobState = async (id: string, status: ReplayRowStatus) => {
+const setJobState = async (
+  id: string,
+  status: ReplayRowStatus,
+): Promise<ReplayCommandResponse> => {
   // Create a patch with the new state
   const patch: SQLiteUpdateSetSource<typeof ReplaysTable> = { status };
 
@@ -566,7 +579,18 @@ const setJobState = async (id: string, status: ReplayRowStatus) => {
 
   if (!updatedRow) throw new ResourceNotFoundError();
 
-  return updatedRow;
+  const snapshot = {
+    id: updatedRow.id,
+    status: statusTransformList[updatedRow.status],
+    startTime: updatedRow.startTime?.toISOString(),
+    endTime: updatedRow.endTime?.toISOString(),
+  };
+
+  // Notify all other observers
+  ReplayEvents.emitReplayStatusEvent(snapshot);
+
+  // Return resulting row to the caller
+  return snapshot;
 };
 
 // Expose services

@@ -17,6 +17,7 @@ import {
   PaginatedReplayListResponseSchema,
   ReplayCommandResponseSchema,
   ReplayLogEventSchema,
+  ReplayEventSchema,
 } from "shared";
 import { ReplayEvents } from "../events/replays.js";
 import { prepareHeadersForSSE, sendEventSSE } from "../events/events.js";
@@ -185,6 +186,50 @@ const getWatchLogs = {
   },
 };
 
+const getWatchItemEvents = {
+  docs: {
+    tags: [REPLAY_TAG],
+    summary: "Streams the events on a single replay job",
+    parameters: [
+      { in: "path", name: "id", required: true, schema: { type: "string" } },
+    ],
+    responses: {
+      [StatusCodes.OK]: eventStreamResponse(ReplayEventSchema),
+    },
+  } satisfies ZodOpenApiOperationObject,
+  handler: async (req: Request, res: Response) => {
+    const params = JobIdSchema.parse(req.params);
+    prepareHeadersForSSE(res);
+
+    const { unsubscribe } = ReplayEvents.subscribeSingleReplay(
+      params.id,
+      (event) => sendEventSSE(res, event),
+    );
+
+    res.on("close", unsubscribe);
+  },
+};
+
+const getWatchListEvents = {
+  docs: {
+    tags: [REPLAY_TAG],
+    summary: "Streams the events of the collection/list of replays",
+    parameters: [],
+    responses: {
+      [StatusCodes.OK]: eventStreamResponse(ReplayEventSchema),
+    },
+  } satisfies ZodOpenApiOperationObject,
+  handler: async (req: Request, res: Response) => {
+    prepareHeadersForSSE(res);
+
+    const { unsubscribe } = ReplayEvents.subscribeCollection((event) =>
+      sendEventSSE(res, event),
+    );
+
+    res.on("close", unsubscribe);
+  },
+};
+
 export const ReplayController = {
   getAll: getReplayJobs,
   getSingle: getSingleReplayJob,
@@ -192,5 +237,7 @@ export const ReplayController = {
   modifyJob: modifyReplayJob,
   deleteJob: deleteReplayJob,
   statusCommand: commandReplayJob,
+  watchListEvents: getWatchListEvents,
+  watchItemEvents: getWatchItemEvents,
   watchLogs: getWatchLogs,
 };

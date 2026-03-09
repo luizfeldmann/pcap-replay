@@ -6,17 +6,22 @@ import { IDocumentedRouter } from "./IDocumentedRouter.js";
 const router = Router();
 
 router.get("/", ReplayController.getAll.handler);
+router.get("/events", ReplayController.watchListEvents.handler);
 router.post("/", ReplayController.createJob.handler);
 router.get("/:id", ReplayController.getSingle.handler);
 router.patch("/:id", ReplayController.modifyJob.handler);
 router.delete("/:id", ReplayController.deleteJob.handler);
 router.get("/:id/logs", ReplayController.watchLogs.handler);
+router.get("/:id/events", ReplayController.watchItemEvents.handler);
 router.post("/:id/:command", ReplayController.statusCommand.handler);
 
 const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
   [`${prefix}`]: {
     get: ReplayController.getAll.docs,
     post: ReplayController.createJob.docs,
+  },
+  [`${prefix}/events`]: {
+    get: ReplayController.watchListEvents.docs,
   },
   [`${prefix}/{id}`]: {
     get: ReplayController.getSingle.docs,
@@ -25,6 +30,9 @@ const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
   },
   [`${prefix}/{id}/logs`]: {
     get: ReplayController.watchLogs.docs,
+  },
+  [`${prefix}/{id}/events`]: {
+    get: ReplayController.watchItemEvents.docs,
   },
   [`${prefix}/{id}/{command}`]: {
     post: ReplayController.statusCommand.docs,
