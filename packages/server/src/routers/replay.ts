@@ -10,6 +10,7 @@ router.post("/", ReplayController.createJob.handler);
 router.get("/:id", ReplayController.getSingle.handler);
 router.patch("/:id", ReplayController.modifyJob.handler);
 router.delete("/:id", ReplayController.deleteJob.handler);
+router.get("/:id/logs", ReplayController.watchLogs.handler);
 router.post("/:id/:command", ReplayController.statusCommand.handler);
 
 const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
@@ -21,6 +22,9 @@ const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
     get: ReplayController.getSingle.docs,
     patch: ReplayController.modifyJob.docs,
     delete: ReplayController.deleteJob.docs,
+  },
+  [`${prefix}/{id}/logs`]: {
+    get: ReplayController.watchLogs.docs,
   },
   [`${prefix}/{id}/{command}`]: {
     post: ReplayController.statusCommand.docs,

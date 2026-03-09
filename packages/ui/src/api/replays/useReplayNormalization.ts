@@ -96,10 +96,6 @@ export const onReplayStatus = (qc: QueryClient, event: ReplayStatusEvent) => {
   }
 };
 
-export const onReplayLog = (qc: QueryClient, event: ReplayLogEvent) => {
-  /** TODO */
-};
-
 export const onReplayEvent = (qc: QueryClient, event: ReplayEvent) => {
   switch (event.operation) {
     case "create":
@@ -115,7 +111,7 @@ export const onReplayEvent = (qc: QueryClient, event: ReplayEvent) => {
       onReplayStatus(qc, event);
       break;
     case "log":
-      onReplayLog(qc, event);
+      /** This is handled separatly */
       break;
   }
 };

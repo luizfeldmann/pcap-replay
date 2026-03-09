@@ -69,4 +69,7 @@ export const endpoints = {
       `/api/jobs/replay/${id}/${command}`,
     method: "POST",
   },
+  subscribeReplayLogs: {
+    path: (id: string) => `/api/jobs/replay/${id}/logs`,
+  },
 };

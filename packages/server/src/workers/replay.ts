@@ -6,6 +6,7 @@ import { ReplayRow, ReplayRowStatus } from "../models/replay.js";
 import { GetReplayArgs } from "shared";
 import { FilesService } from "../services/files.js";
 import { spawn } from "child_process";
+import { ReplayEvents } from "../events/replays.js";
 
 //! Notifies when the status of a job has changed
 const statusChange = new EventEmitter();
@@ -38,7 +39,12 @@ async function runJobUnsafe(jobRow: ReplayRow) {
 
   // Collect console prints
   const onPipe = (chunk: any) => {
-    console.log(chunk.toString());
+    const text = chunk.toString() as string;
+    const lines = text.split("\n");
+    ReplayEvents.emitLogEventData({
+      id: job.id,
+      logs: lines,
+    });
   };
 
   process.stdout.on("data", onPipe);

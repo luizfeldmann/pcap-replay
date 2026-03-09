@@ -21,6 +21,21 @@ export const jsonResponse = (
   };
 };
 
+export const eventStreamResponse = (
+  zodSchema: z.ZodTypeAny,
+  description = "Event Stream",
+): ZodOpenApiResponseObject => {
+  const openSchema = createSchema(zodSchema);
+  return {
+    description,
+    content: {
+      "text/event-stream": {
+        schema: openSchema.schema,
+      },
+    },
+  };
+};
+
 export const jsonRequestBody = (
   zodSchema: z.ZodTypeAny,
   description = "Request body",

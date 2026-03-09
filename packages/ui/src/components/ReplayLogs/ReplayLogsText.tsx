@@ -1,14 +1,14 @@
+import { useReplayLogs } from "../../api/replays/useReplayLogs";
 import { LogTextContainer, LogTextPreformatted } from "./ReplayLogsText.style";
 import { Virtuoso } from "react-virtuoso";
-import { useReplayLogsText } from "./useReplayLogsText";
 
 export const ReplayLogsText = (props: { id: string }) => {
-  const { logLines } = useReplayLogsText(props.id);
+  const { logs } = useReplayLogs(props.id);
 
   return (
     <LogTextContainer>
       <Virtuoso
-        data={logLines}
+        data={logs}
         followOutput={true}
         itemContent={(index, lineText) => (
           <LogTextPreformatted key={index}>{lineText}</LogTextPreformatted>

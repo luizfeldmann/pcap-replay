@@ -4,6 +4,7 @@ import { ReplayService } from "../services/replay.js";
 import { StatusCodes } from "http-status-codes";
 import {
   defaultErrorResponse,
+  eventStreamResponse,
   jsonRequestBody,
   jsonResponse,
 } from "../utils/openapi.js";
@@ -15,7 +16,10 @@ import {
   PaginatedReplayListRequestSchema,
   PaginatedReplayListResponseSchema,
   ReplayCommandResponseSchema,
+  ReplayLogEventSchema,
 } from "shared";
+import { ReplayEvents } from "../events/replays.js";
+import { prepareHeadersForSSE, sendEventSSE } from "../events/events.js";
 
 // Tag for API docs
 const REPLAY_TAG = "Replay";
@@ -158,6 +162,29 @@ const commandReplayJob = {
   },
 };
 
+const getWatchLogs = {
+  docs: {
+    tags: [REPLAY_TAG],
+    summary: "Streams the logs from a replay job",
+    parameters: [
+      { in: "path", name: "id", required: true, schema: { type: "string" } },
+    ],
+    responses: {
+      [StatusCodes.OK]: eventStreamResponse(ReplayLogEventSchema),
+    },
+  } satisfies ZodOpenApiOperationObject,
+  handler: async (req: Request, res: Response) => {
+    const params = JobIdSchema.parse(req.params);
+    prepareHeadersForSSE(res);
+
+    const { unsubscribe } = ReplayEvents.subscribeLogs(params.id, (event) =>
+      sendEventSSE(res, event),
+    );
+
+    res.on("close", unsubscribe);
+  },
+};
+
 export const ReplayController = {
   getAll: getReplayJobs,
   getSingle: getSingleReplayJob,
@@ -165,4 +192,5 @@ export const ReplayController = {
   modifyJob: modifyReplayJob,
   deleteJob: deleteReplayJob,
   statusCommand: commandReplayJob,
+  watchLogs: getWatchLogs,
 };
