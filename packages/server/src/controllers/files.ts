@@ -7,16 +7,20 @@ import multer from "multer";
 import { StatusCodes } from "http-status-codes";
 import {
   defaultErrorResponse,
+  eventStreamResponse,
   fileDownloadResponse,
   jsonResponse,
 } from "../utils/openapi.js";
 import {
+  FileEventSchema,
   FileListItemSchema,
   FilePatchSchema,
   PaginatedFileListRequestSchema,
   PaginatedFileListResponseSchema,
 } from "shared";
 import { ZodOpenApiOperationObject } from "zod-openapi";
+import { prepareHeadersForSSE, sendEventSSE } from "../events/events.js";
+import { FileEvents } from "../events/files.js";
 
 // Tag for API docs
 const FILES_TAG = "Files";
@@ -223,6 +227,26 @@ const deleteFile = {
   },
 };
 
+const watchFilesEvents = {
+  docs: {
+    tags: [FILES_TAG],
+    summary: "Streams the mutations in the collection of files",
+    parameters: [],
+    responses: {
+      [StatusCodes.OK]: eventStreamResponse(FileEventSchema),
+    },
+  } satisfies ZodOpenApiOperationObject,
+  handler: async (req: Request, res: Response) => {
+    prepareHeadersForSSE(res);
+
+    const { unsubscribe } = FileEvents.subscribeToAllFiles((event) =>
+      sendEventSSE(res, event),
+    );
+
+    res.on("close", unsubscribe);
+  },
+};
+
 export const FilesController = {
   getFilesList,
   getFileById,
@@ -230,4 +254,5 @@ export const FilesController = {
   modifyFile,
   deleteFile,
   uploadFile,
+  watchFilesEvents,
 };

@@ -11,6 +11,7 @@ router.post(
   FilesController.uploadFile.middleware,
   FilesController.uploadFile.handler,
 );
+router.get("/events", FilesController.watchFilesEvents.handler);
 router.get("/:id", FilesController.getFileById.handler);
 router.patch("/:id", FilesController.modifyFile.handler);
 router.delete("/:id", FilesController.deleteFile.handler);
@@ -20,6 +21,9 @@ const getDocs = (prefix: string): ZodOpenApiPathsObject => ({
   [`${prefix}`]: {
     get: FilesController.getFilesList.docs,
     post: FilesController.uploadFile.docs,
+  },
+  [`${prefix}/events`]: {
+    get: FilesController.watchFilesEvents.docs,
   },
   [`${prefix}/{id}`]: {
     get: FilesController.getFileById.docs,

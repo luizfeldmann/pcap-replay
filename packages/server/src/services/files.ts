@@ -17,6 +17,7 @@ import {
 import { configData } from "../utils/config.js";
 import { getLastItem } from "../utils/utils.js";
 import { SQLiteUpdateSetSource } from "drizzle-orm/sqlite-core/index.js";
+import { FileEvents } from "../events/files.js";
 
 //! Handles FS error from node
 const handleFsError = (err: unknown) => {
@@ -71,7 +72,8 @@ const modifyFile = (id: string, patch: FilePatch): FileListItem => {
   // Ensure there is something to be updated
   if (Object.keys(patch).length === 0) throw new RequestValidationError();
 
-  return db.transaction((tx) => {
+  // Perform the change in the DB
+  const file = db.transaction((tx) => {
     // Compute the set of updates based on the data provided by the patch
     const updateValues: SQLiteUpdateSetSource<typeof FilesTable> = {};
 
@@ -98,6 +100,12 @@ const modifyFile = (id: string, patch: FilePatch): FileListItem => {
     // Return the updated file
     return transformListItem(dbFile);
   });
+
+  // Notify all other observers
+  FileEvents.emitFilePatchEvent(file);
+
+  // Return info to the caller
+  return file;
 };
 
 //! Gets the name of the path on disk
@@ -113,6 +121,9 @@ const deleteFile = (id: string) => {
     // Move to soft delete table
     tx.insert(DeletedFilesTable).values({ id: id }).run();
   });
+
+  // Notify all observers
+  FileEvents.emitFileDeletedEvent({ id });
 };
 
 //! Gets the path to download a file
@@ -134,19 +145,23 @@ const saveFile = async (
   size: number,
 ): Promise<FileListItem> => {
   const uploadedAt = new Date();
-  await db.insert(FilesTable).values({
-    id,
-    filename,
-    size,
-    uploadedAt,
-  });
+  const [insertedRow] = await db
+    .insert(FilesTable)
+    .values({
+      id,
+      filename,
+      size,
+      uploadedAt,
+    })
+    .returning();
 
-  return {
-    id,
-    name: filename,
-    size,
-    time: uploadedAt.toISOString(),
-  };
+  const file = transformListItem(insertedRow);
+
+  // Notify all other observers
+  FileEvents.emitFileCreatedEvent(file);
+
+  // Return the file info to the caller
+  return file;
 };
 
 /** Housekeeping */

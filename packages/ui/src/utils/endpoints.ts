@@ -37,6 +37,9 @@ export const endpoints = {
     path: "/api/files",
     method: "POST",
   },
+  subscribeFilesEvents: {
+    path: "/api/files/events",
+  },
   /** REPLAY */
   getReplays: {
     path: (limit: string, cursor?: string) => {

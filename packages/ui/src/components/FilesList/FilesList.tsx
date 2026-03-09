@@ -19,11 +19,21 @@ import { useFileContextMenu } from "../FileContextMenu/useFileContextMenu";
 import { FileContextMenu } from "../FileContextMenu/FileContextMenu";
 import { LocaleDateTime } from "../LocaleDateTime/LocaleDateTime";
 import { FileRenameDialog } from "../FileRenameDialog/FileRenameDialog";
+import { useFilesEvents } from "../../api/files/useFilesEvents";
 
 export const FilesList = () => {
   const { t } = useTranslation();
+
+  // Logic to open/close/select files context menu
   const filesMenu = useFileContextMenu();
+
+  // Reactive subscription to live changes in files list
+  useFilesEvents();
+
+  // REST query for list of files
   const filesQuery = useFilesList();
+
+  // Flatten all pages into a contiguous list
   const rows = filesQuery.data?.pages.flatMap((p) => p.items) ?? [];
 
   if (filesQuery.isError)
