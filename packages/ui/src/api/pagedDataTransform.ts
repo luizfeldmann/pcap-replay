@@ -28,11 +28,14 @@ const itemsTransform = <TPage, TItem>(
 export const itemPrepend = <TPage, TItem>(
   prevData: InfiniteData<TPage> | undefined,
   itemsKey: KeysOfType<TPage, TItem[]>,
-  item: TItem,
+  itemId: keyof TItem,
+  prependItem: TItem,
 ): InfiniteData<TPage> | undefined =>
-  itemsTransform<TPage, TItem>(prevData, itemsKey, (list, pageIndex) =>
-    pageIndex === 0 ? [item, ...list] : list,
-  );
+  itemsTransform<TPage, TItem>(prevData, itemsKey, (list, pageIndex) => {
+    if (pageIndex !== 0) return list;
+    if (list.find((f) => f[itemId] === prependItem[itemId])) return list;
+    return [prependItem, ...list];
+  });
 
 export const itemsFilter = <TPage, TItem>(
   prevData: InfiniteData<TPage> | undefined,

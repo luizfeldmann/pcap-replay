@@ -5,7 +5,6 @@ import type {
   ReplayDeleteEvent,
   ReplayEvent,
   ReplayListItem,
-  ReplayLogEvent,
   ReplayPatchEvent,
   ReplayStatusEvent,
 } from "shared";
@@ -15,7 +14,7 @@ import { itemsFilter, itemsMap, itemPrepend } from "../pagedDataTransform";
 export const onReplayCreated = (qc: QueryClient, event: ReplayCreatedEvent) => {
   qc.setQueryData<InfiniteData<PaginatedReplayListResponse>>(
     [REPLAYS_QUERY_KEY],
-    (oldData) => itemPrepend(oldData, "items", event.data),
+    (oldData) => itemPrepend(oldData, "items", "id", event.data),
   );
 
   qc.setQueryData<ReplayListItem>(

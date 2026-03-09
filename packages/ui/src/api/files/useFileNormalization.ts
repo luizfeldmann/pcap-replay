@@ -14,7 +14,7 @@ export const onFileCreated = (qc: QueryClient, event: FileCreatedEvent) => {
   qc.setQueryData<InfiniteData<PaginatedFileListResponse>>(
     [QUERY_KEY_FILES],
     // Prepend the created file on the top of the first page
-    (oldData) => itemPrepend(oldData, "items", event.data),
+    (oldData) => itemPrepend(oldData, "items", "id", event.data),
   );
 
   qc.setQueryData<FileListItem>([QUERY_KEY_FILES, event.data.id], event.data);
