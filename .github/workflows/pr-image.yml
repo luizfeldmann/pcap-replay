@@ -32,5 +32,3 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
