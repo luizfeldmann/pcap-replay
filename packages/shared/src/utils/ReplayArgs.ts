@@ -1,7 +1,7 @@
 import {
-  AddressRemap,
-  PortRemap,
-  ReplaySettings,
+  type AddressRemap,
+  type PortRemap,
+  type ReplaySettings,
 } from "../dto/replay/index.js";
 
 const getPortRemap = (portRemap?: PortRemap[]) =>

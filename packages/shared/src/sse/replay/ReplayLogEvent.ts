@@ -1,4 +1,4 @@
-import z, { ZodAny } from "zod";
+import z from "zod";
 
 export const ReplayLogEventSchema = z.object({
   topic: z.literal("replay"),

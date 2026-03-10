@@ -14,6 +14,9 @@ import {
   startWorkers,
   stopWorkers,
 } from "./workers/workers.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { spaFallbackMiddleware } from "./utils/spa.js";
 
 // Perform housekeeping before startup
 await performHousekeeping();
@@ -36,6 +39,16 @@ app.use(API_PREFIX, ApiRouter.router);
 
 // Server the documentation UI
 setupSwagger(app, ApiRouter.getDocs(API_PREFIX));
+
+// Serve static files
+const indexFilename = fileURLToPath(import.meta.url);
+const indexDirectory = path.dirname(indexFilename);
+const publicDir = path.resolve(indexDirectory, "..", "public");
+console.log(`serving client from ${publicDir}`);
+app.use(express.static(publicDir));
+
+// SPA fallback
+app.use(spaFallbackMiddleware(API_PREFIX, publicDir));
 
 // *MUST BE LAST*
 // Error handling middleware
