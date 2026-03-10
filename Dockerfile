@@ -1,11 +1,17 @@
 # --- Base image ---
-FROM node:24 AS base
+FROM node:24-slim AS base
 
 WORKDIR /app
 
-# Install tcpreplay and give capabilities
+# Install dependencies & tools
 RUN apt-get update && \
-    apt-get install -y tcpdump tcpreplay libcap2-bin && \
+    apt-get install -y \
+    tcpdump \
+    tcpreplay \
+    libcap2-bin \
+    python3 \
+    build-essential \
+    && \
     setcap cap_net_raw,cap_net_admin=eip $(which tcpreplay-edit) && \
     rm -rf /var/lib/apt/lists/*
 
@@ -24,6 +30,13 @@ RUN npm ci
 # --- Production deps ---
 FROM deps AS depsprod
 RUN npm ci --omit=dev
+
+# Remove build tools to slim image
+RUN apt-get purge -y \
+    python3 \
+    build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # --- Build stage ---
 FROM depsbuild AS build
