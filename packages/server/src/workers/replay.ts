@@ -55,8 +55,9 @@ async function runJobUnsafe(jobRow: ReplayRow) {
   const args = [...GetReplayArgs(job), filepath];
 
   // Spawn the process
+  const executableName = "tcpreplay-edit";
   const proc = {
-    pty: pty.spawn("tcpreplay-edit", args, {
+    pty: pty.spawn(executableName, args, {
       name: "xterm-color",
       cols: 80,
       rows: 24,
@@ -65,6 +66,12 @@ async function runJobUnsafe(jobRow: ReplayRow) {
     }),
   };
   processes.set(job.id, proc);
+
+  // Log the command line which launched the process
+  ReplayEvents.emitLogEventData({
+    id: job.id,
+    logs: [[executableName, ...args].join(" ")],
+  });
 
   // Collect console prints
   proc.pty.onData((text) =>

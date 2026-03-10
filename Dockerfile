@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install tcpreplay and give capabilities
 RUN apt-get update && \
-    apt-get install -y tcpreplay libcap2-bin && \
+    apt-get install -y tcpdump tcpreplay libcap2-bin && \
     setcap cap_net_raw,cap_net_admin=eip $(which tcpreplay-edit) && \
     rm -rf /var/lib/apt/lists/*
 

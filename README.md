@@ -16,7 +16,12 @@ To run the image:
 
 ```bash
 docker volume create pcap-replay-data
-docker run -p 3000:3000 -v pcap-replay-data:/app/packages/server/data pcap-replay:latest
+docker run \
+    -p 3000:3000 \
+    -v pcap-replay-data:/app/packages/server/data \
+    --cap-add=NET_ADMIN \
+    --cap-add=NET_RAW \
+    pcap-replay:latest
 ```
 
 ## Troubleshooting
