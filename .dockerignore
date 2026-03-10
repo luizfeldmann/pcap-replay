@@ -1,0 +1,30 @@
+# Node deps
+node_modules
+**/node_modules
+
+# Build artifacts
+**/dist
+
+# Local DBs
+packages/server/data
+packages/server/data/**
+*.db
+
+# Env files
+.env
+.env.*
+
+# Git
+.git
+.gitignore
+
+# IDEs
+.vscode
+
+# Test reports
+**/coverage
+**/reports
+
+# Docker
+.dockerignore
+Dockerfile*
