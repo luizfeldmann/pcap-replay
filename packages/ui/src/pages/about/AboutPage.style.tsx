@@ -14,6 +14,7 @@ export const VersionTypography = ({ sx, ...props }: TypographyProps) => (
     {...props}
     variant="body1"
     sx={{
+      ...sx,
       fontFamily: "Monospace",
     }}
   />

@@ -174,7 +174,7 @@ const getWatchLogs = {
       [StatusCodes.OK]: eventStreamResponse(ReplayLogEventSchema),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, res: Response) => {
+  handler: (req: Request, res: Response) => {
     const params = JobIdSchema.parse(req.params);
     prepareHeadersForSSE(res);
 
@@ -197,7 +197,7 @@ const getWatchItemEvents = {
       [StatusCodes.OK]: eventStreamResponse(ReplayEventSchema),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, res: Response) => {
+  handler: (req: Request, res: Response) => {
     const params = JobIdSchema.parse(req.params);
     prepareHeadersForSSE(res);
 
@@ -219,7 +219,7 @@ const getWatchListEvents = {
       [StatusCodes.OK]: eventStreamResponse(ReplayEventSchema),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, res: Response) => {
+  handler: (req: Request, res: Response) => {
     prepareHeadersForSSE(res);
 
     const { unsubscribe } = ReplayEvents.subscribeCollection((event) =>
