@@ -45,9 +45,7 @@ FROM depsbuild AS build
 COPY . .
 
 # Run builds
-RUN npm run build --workspace=shared
-RUN npm run build --workspace=server
-RUN npm run build --workspace=ui
+RUN npm run build
 
 # Initialize DB
 RUN mkdir -p /app/packages/server/data
