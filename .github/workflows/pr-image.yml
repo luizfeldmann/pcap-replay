@@ -9,7 +9,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pre-checks:
+    uses: ./.github/workflows/pre-checks.yml
+
   build:
+    needs: pre-checks
     runs-on: ubuntu-latest
 
     permissions:

@@ -1,8 +1,8 @@
 # PCAP REPLAY
 
-Tool app to replay PCAP files inside a docker network.
+[![Build Status](https://github.com/luizfeldmann/pcap-replay/actions/workflows/master-image.yml/badge.svg?branch=master)](https://github.com/luizfeldmann/pcap-replay/actions/workflows/master-image.yml)
 
----
+Tool app to replay PCAP files inside a docker network.
 
 ## Features
 

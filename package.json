@@ -14,7 +14,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace ui\" \"npm run dev --workspace server\"",
     "build": "npm run build --workspaces",
-    "lint": "eslint .",
+    "test": "npm run test --workspaces --if-present",
+    "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "format:fix": "prettier . --write",
     "format:check": "prettier . --check"
