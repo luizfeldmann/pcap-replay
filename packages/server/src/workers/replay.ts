@@ -3,7 +3,7 @@ import EventEmitter from "events";
 import { TimeoutError } from "../utils/error.js";
 import { ReplayService } from "../services/replay.js";
 import { ReplayRow, ReplayRowStatus } from "../models/replay.js";
-import { GetReplayArgs, ReplayCommandResponse } from "shared";
+import { getReplayArgs, ReplayCommandResponse } from "shared";
 import { FilesService } from "../services/files.js";
 import pty from "node-pty";
 import { ReplayEvents } from "../events/replays.js";
@@ -34,10 +34,11 @@ async function onJobExit(id: string, exitCode: number) {
 
   if (process.isStop) {
     // Process was stopped by a command
+    console.log(`stopped by command: '${id}'`);
     await setStateAndNotify(id, "STOPPED");
   } else if (exitCode === 0) {
     // Exit with success code
-    console.error(`completed successfully: '${id}'`);
+    console.log(`completed successfully: '${id}'`);
     await setStateAndNotify(id, "FINISHED");
   } else {
     // Exit with error code
@@ -52,7 +53,7 @@ async function runJobUnsafe(jobRow: ReplayRow) {
 
   // Compile the arguments
   const filepath = FilesService.getFilePathOnDisk(job.fileId);
-  const args = [...GetReplayArgs(job), filepath];
+  const args = [...getReplayArgs(job), filepath];
 
   // Spawn the process
   const executableName = "tcpreplay-edit";
@@ -82,7 +83,7 @@ async function runJobUnsafe(jobRow: ReplayRow) {
   );
 
   // Handle exist code
-  proc.pty.onExit(async ({ exitCode }) => onJobExit(job.id, exitCode));
+  proc.pty.onExit(({ exitCode }) => void onJobExit(job.id, exitCode));
 }
 
 async function runJob(job: ReplayRow) {
@@ -100,15 +101,27 @@ async function runJob(job: ReplayRow) {
   }
 }
 
-async function stopJob(job: ReplayRow) {
-  // Get the process from the ID
-  const proc = processes.get(job.id);
-  if (!proc) return;
+const stopJob = (job: ReplayRow) =>
+  new Promise<void>((resolve, reject) => {
+    // Get the process from the ID
+    const proc = processes.get(job.id);
+    if (!proc) return reject(new Error(`job is not running: ${job.id}`));
 
-  // Kill the process and flag it as purposefully stopped
-  proc.isStop = true;
-  proc.pty.kill();
-}
+    // Timeout to kill the process
+    const timeout = setTimeout(() => {
+      reject(`timeout stopping job: ${job.id}`);
+    }, configData.WORKER_PERIOD_REPLAY_START_STOP);
+
+    // Resolve the promise when the job exits
+    proc.pty.onExit(() => {
+      clearTimeout(timeout);
+      resolve();
+    });
+
+    // Request to kill the process and flag it as purposefully stopped
+    proc.isStop = true;
+    proc.pty.kill();
+  });
 
 //! Periodically check status of jobs and performs the start/stop
 async function checkStartStopJobs() {

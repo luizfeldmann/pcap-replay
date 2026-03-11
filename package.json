@@ -13,13 +13,17 @@
   },
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace ui\" \"npm run dev --workspace server\"",
-    "lint": "eslint .",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces --if-present",
+    "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier . --write",
+    "format:fix": "prettier . --write",
     "format:check": "prettier . --check"
   },
   "workspaces": [
-    "packages/*"
+    "packages/shared",
+    "packages/server",
+    "packages/ui"
   ],
   "devDependencies": {
     "@eslint/js": "^9.39.2",

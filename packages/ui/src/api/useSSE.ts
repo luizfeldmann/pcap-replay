@@ -39,29 +39,31 @@ const broadcast = (sub: Subscription, e: MessageEvent) => {
   sub.listeners.forEach((listener) => listener(e));
 };
 
+//! Creates a new subscription object
+const createSubscription = (key: string, url: string) => {
+  const sub = {
+    url,
+    evtsrc: new EventSource(url),
+    listeners: new Set<Listener>(),
+  };
+
+  // Register general handler for the event source
+  sub.evtsrc.onmessage = (e) => broadcast(sub, e);
+
+  // Keep the subscription mapped
+  subscriptions.set(key, sub);
+
+  return sub;
+};
+
 //! Creates or reuses an event source to listen for the SSE events
 const subscribe = (key: string, url: string, handler: Listener) => {
   // Try to find existing subscription
-  let sub = subscriptions.get(key);
+  const sub = subscriptions.get(key) ?? createSubscription(key, url);
 
-  if (!sub) {
-    // A new subscription must be created
-    sub = {
-      url,
-      evtsrc: new EventSource(url),
-      listeners: new Set(),
-    };
-
-    // Register general handler for the event source
-    sub.evtsrc.onmessage = (e) => broadcast(sub!, e);
-
-    // Keep the subscription mapped
-    subscriptions.set(key, sub);
-  } else {
-    // Check that the key always use the same url
-    if (sub.url !== url)
-      throw new Error(`SSE key '${key}' reused with different URL`);
-  }
+  // Check that the key always use the same url
+  if (sub.url !== url)
+    throw new Error(`SSE key '${key}' reused with different URL`);
 
   // Register the new subscriber
   sub.listeners.add(handler);

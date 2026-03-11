@@ -26,7 +26,7 @@ export const AboutPage = () => {
         timeStyle: "medium",
         dateStyle: "medium",
       }).format(new Date(__BUILD_TIMESTAMP__)),
-    [],
+    [i18n.language],
   );
 
   return (

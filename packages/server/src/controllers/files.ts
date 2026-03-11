@@ -236,7 +236,7 @@ const watchFilesEvents = {
       [StatusCodes.OK]: eventStreamResponse(FileEventSchema),
     },
   } satisfies ZodOpenApiOperationObject,
-  handler: async (req: Request, res: Response) => {
+  handler: (req: Request, res: Response) => {
     prepareHeadersForSSE(res);
 
     const { unsubscribe } = FileEvents.subscribeToAllFiles((event) =>

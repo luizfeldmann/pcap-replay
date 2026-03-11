@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { GetReplayArgs } from "../src/utils/ReplayArgs";
+import { getReplayArgs } from "../src/utils/ReplayArgs";
 
 describe("Get CLI flags for Replay job", () => {
   it("Interface name", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
     });
 
@@ -11,7 +11,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Speed multiplier", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       load: {
         type: "multiplier",
@@ -23,7 +23,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Data rate", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       load: {
         type: "mbps",
@@ -35,7 +35,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Packet throttle", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       load: {
         type: "pps",
@@ -47,7 +47,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Limit duration", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       limit: {
         type: "duration",
@@ -59,7 +59,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Limit count", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       limit: {
         type: "packets",
@@ -71,7 +71,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Loop forever", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       repeat: {
         type: "loop",
@@ -82,7 +82,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Loop N times", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       repeat: {
         type: "times",
@@ -94,7 +94,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Port remap single", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       portRemap: [
         {
@@ -108,7 +108,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Port remap multi", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       portRemap: [
         {
@@ -129,7 +129,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Src remap IPv4 single", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       srcRemap: [
         {
@@ -144,7 +144,7 @@ describe("Get CLI flags for Replay job", () => {
   });
 
   it("Dst remap IPv6 multi", () => {
-    const args = GetReplayArgs({
+    const args = getReplayArgs({
       interface: "eth0",
       dstRemap: [
         {

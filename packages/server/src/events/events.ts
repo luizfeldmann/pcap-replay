@@ -9,5 +9,5 @@ export const prepareHeadersForSSE = (res: Response) => {
 };
 
 //! Sends an event to the response stream
-export const sendEventSSE = (res: Response, event: Object) =>
+export const sendEventSSE = (res: Response, event: object) =>
   res.write(`data: ${JSON.stringify(event)}\n\n`);
