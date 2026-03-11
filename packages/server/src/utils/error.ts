@@ -1,8 +1,6 @@
-import { NextFunction, Request, Response } from "express";
+import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ZodError } from "zod";
 import { ErrorCode, ErrorResponse } from "shared";
-import { SqliteError } from "better-sqlite3";
 
 //! General error class
 export class AppError extends Error {
@@ -31,55 +29,6 @@ export class AppError extends Error {
     return resp.status(this.status).json(this.toResponse());
   }
 }
-
-//! Middleware to handle generic errors
-export const appErrorMiddleware = (
-  err: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  // Check if an instance of our app's error implementation
-  if (err instanceof AppError) {
-    return err.respond(res);
-  }
-
-  // Fallback to next error handler
-  next(err);
-};
-
-//! Middleware to handle ZOD validations
-export const zodErrorMiddleware = (
-  err: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  if (err instanceof ZodError) next(new RequestValidationError(err.message));
-  else next(err);
-};
-
-//! Middleware to handle SQL errors
-export const sqlErrorMiddleware = (
-  err: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  // Check if SQL error
-  if (err instanceof SqliteError) {
-    switch (err.code) {
-      // Trying to delete an row referenced by another table
-      case "SQLITE_CONSTRAINT_FOREIGNKEY":
-      case "SQLITE_CONSTRAINT_TRIGGER":
-        next(new ResourceLockedError());
-        break;
-    }
-  }
-
-  // Fallback to the next error middleware
-  next(err);
-};
 
 export class UnknownError extends AppError {
   constructor(message?: string) {

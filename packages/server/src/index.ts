@@ -4,11 +4,10 @@ import cors from "cors";
 import { configData } from "./utils/config.js";
 import { ApiRouter } from "./routers/api.js";
 import { setupSwagger } from "./utils/swagger.js";
-import {
-  appErrorMiddleware,
-  zodErrorMiddleware,
-  sqlErrorMiddleware,
-} from "./utils/error.js";
+import { appErrorMiddleware } from "./middleware/appErrorMiddleware.js";
+import { spaFallbackMiddleware } from "./middleware/spaFallbackMiddleware.js";
+import { sqlErrorMiddleware } from "./middleware/sqlErrorMiddleware.js";
+import { zodErrorMiddleware } from "./middleware/zodErrorMiddleware.js";
 import {
   performHousekeeping,
   startWorkers,
@@ -16,7 +15,6 @@ import {
 } from "./workers/workers.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import { spaFallbackMiddleware } from "./utils/spa.js";
 
 // Perform housekeeping before startup
 await performHousekeeping();
