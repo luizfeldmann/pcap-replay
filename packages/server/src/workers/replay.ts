@@ -3,7 +3,7 @@ import EventEmitter from "events";
 import { TimeoutError } from "../utils/error.js";
 import { ReplayService } from "../services/replay.js";
 import { ReplayRow, ReplayRowStatus } from "../models/replay.js";
-import { GetReplayArgs, ReplayCommandResponse } from "shared";
+import { getReplayArgs, ReplayCommandResponse } from "shared";
 import { FilesService } from "../services/files.js";
 import pty from "node-pty";
 import { ReplayEvents } from "../events/replays.js";
@@ -53,7 +53,7 @@ async function runJobUnsafe(jobRow: ReplayRow) {
 
   // Compile the arguments
   const filepath = FilesService.getFilePathOnDisk(job.fileId);
-  const args = [...GetReplayArgs(job), filepath];
+  const args = [...getReplayArgs(job), filepath];
 
   // Spawn the process
   const executableName = "tcpreplay-edit";

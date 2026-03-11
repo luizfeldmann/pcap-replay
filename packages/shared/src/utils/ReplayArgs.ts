@@ -25,7 +25,7 @@ const getListArgs = (flag: string, args?: string[]) => {
   return [`--${flag}=${args.join(",")}`];
 };
 
-export const GetReplayArgs = (settings: ReplaySettings): string[] => {
+export const getReplayArgs = (settings: ReplaySettings): string[] => {
   const args: string[] = [
     `--intf1=${settings.interface}`,
     ...getListArgs("portmap", getPortRemap(settings.portRemap)),
