@@ -1,6 +1,9 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
+import fs from "fs";
+import http from "http";
+import https from "https";
 import { configData } from "./utils/config.js";
 import { ApiRouter } from "./routers/api.js";
 import { setupSwagger } from "./utils/swagger.js";
@@ -26,7 +29,14 @@ startWorkers();
 const app = express();
 
 // Middlewares
-app.use(helmet());
+app.use(
+  helmet({
+    // Configure security headers depending if HTTPS or plain HTTP
+    hsts: configData.ENABLE_HTTPS,
+    contentSecurityPolicy: configData.ENABLE_HTTPS,
+  }),
+);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -54,8 +64,18 @@ app.use(zodErrorMiddleware);
 app.use(sqlErrorMiddleware);
 app.use(appErrorMiddleware);
 
+// Create the server according to the configured protocol
+let server: http.Server | https.Server;
+if (configData.ENABLE_HTTPS) {
+  const key = fs.readFileSync(configData.TLS_KEY_PATH);
+  const cert = fs.readFileSync(configData.TLS_CERT_PATH);
+  server = https.createServer({ key, cert }, app);
+} else {
+  server = http.createServer(app);
+}
+
 // Start the server
-const server = app.listen(configData.PORT, () => {
+server.listen(configData.PORT, () => {
   console.log(`Server running at ${configData.PORT}`);
 });
 
