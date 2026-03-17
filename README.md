@@ -51,6 +51,22 @@ docker run \
     pcap-replay:latest
 ```
 
+## Configuration
+
+Use the following environment variables to configure the service:
+
+| Variable                          | Default          | Description        |
+| --------------------------------- | ---------------- | ------------------ |
+| `ENABLE_HTTPS`                    | `false`          | Select protocol    |
+| `PORT`                            | `3000` / `3443`  | Server port        |
+| `TLS_KEY_PATH`                    | —                | Private key path   |
+| `TLS_CERT_PATH`                   | —                | Certificate path   |
+| `UPLOAD_DIR`                      | `data/uploads`   | Upload storage dir |
+| `DATABASE_FILE`                   | `data/sqlite.db` | Embedded DB file   |
+| `MAX_FILE_SIZE_MB`                | `100`            | Max upload size    |
+| `WORKER_PERIOD_SOFT_DELETE`       | `5000`           | Delete job period  |
+| `WORKER_PERIOD_REPLAY_START_STOP` | `2000`           | Job runner checker |
+
 ## Troubleshooting
 
 If you get permission errors running `tcpreplay-edit`,

@@ -17,6 +17,12 @@ packages/server/data/**
 .env
 .env.*
 
+# Secrets
+**/certs
+*.pem
+*.key
+*.crt
+
 # Git
 .git
 .gitignore
