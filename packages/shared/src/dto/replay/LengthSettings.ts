@@ -9,16 +9,28 @@ export const ReplayLengthLimits = {
   },
 };
 
+//! Defines a maximum tume duration of a replay job
+export const LimitDurationSettingsSchema = z.object({
+  type: z.literal("duration"),
+  maxDuration: z.number().min(ReplayLengthLimits.duration.min),
+});
+
+export type LimitDurationSettings = z.infer<typeof LimitDurationSettingsSchema>;
+
+//! Defines a maximum number of packets of a replay job
+export const LimitMaxPacketsSettingsSchema = z.object({
+  type: z.literal("packets"),
+  maxPackets: z.number().min(ReplayLengthLimits.packets.min),
+});
+
+export type LimitMaxPacketsSettings = z.infer<
+  typeof LimitMaxPacketsSettingsSchema
+>;
+
 //! Defines length limitations, only one may be present
-export const LengthSettingsSchema = z.union([
-  z.object({
-    type: z.literal("duration"),
-    maxDuration: z.number().min(ReplayLengthLimits.duration.min),
-  }),
-  z.object({
-    type: z.literal("packets"),
-    maxPackets: z.number().min(ReplayLengthLimits.packets.min),
-  }),
+export const LengthSettingsSchema = z.discriminatedUnion("type", [
+  LimitDurationSettingsSchema,
+  LimitMaxPacketsSettingsSchema,
 ]);
 
 export type LengthSettings = z.infer<typeof LengthSettingsSchema>;

@@ -125,6 +125,10 @@
         "label": "Interface de rede",
         "required": "Obrigatório informar a interface de rede"
       },
+      "provider": {
+        "label": "Provedor",
+        "required": "Requer informar o provedor"
+      },
       "verbose": "Verboso",
       "repeat": {
         "label": "Repetição",

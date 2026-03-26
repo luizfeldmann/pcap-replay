@@ -81,7 +81,8 @@ export const ReplayJobsTableRow = (props: {
           )}
           {props.visibility.interface && (
             <TableCell rowSpan={props.data.rowSpan}>
-              {props.data.interface}
+              {props.data.settings.provider === "tcpreplay" &&
+                props.data.settings.interface}
             </TableCell>
           )}
           {props.visibility.file && (
@@ -91,17 +92,17 @@ export const ReplayJobsTableRow = (props: {
           )}
           {props.visibility.repeat && (
             <TableCell rowSpan={props.data.rowSpan}>
-              <RepeatSettingsText value={props.data.repeat} />
+              <RepeatSettingsText value={props.data.settings.repeat} />
             </TableCell>
           )}
           {props.visibility.speed && (
             <TableCell rowSpan={props.data.rowSpan}>
-              <LoadSettingsText value={props.data.load} />
+              <LoadSettingsText value={props.data.settings.load} />
             </TableCell>
           )}
           {props.visibility.length && (
             <TableCell rowSpan={props.data.rowSpan}>
-              <LengthSettingsText value={props.data.limit} />
+              <LengthSettingsText value={props.data.settings.limit} />
             </TableCell>
           )}
         </>

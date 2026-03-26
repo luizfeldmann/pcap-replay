@@ -72,9 +72,9 @@ const TimesInfo = (props: {
 
 // Settings for repeating, duration and speed
 export const SettingsInfo = (props: {
-  load?: LoadSettings;
-  length?: LengthSettings;
-  repeat?: RepeatSettings;
+  load: LoadSettings | null | undefined;
+  length: LengthSettings | null | undefined;
+  repeat: RepeatSettings | null | undefined;
 }) => {
   const { t } = useTranslation();
 
@@ -231,10 +231,14 @@ export const ReplayJobsCard = (props: {
         }
         subheader={
           <Stack direction="row" spacing={2}>
-            <Stack direction="column">
-              {t("replays.table.interface")}
-              <Typography fontWeight="bold">{props.data.interface}</Typography>
-            </Stack>
+            {props.data.settings.provider === "tcpreplay" && (
+              <Stack direction="column">
+                {t("replays.table.interface")}
+                <Typography fontWeight="bold">
+                  {props.data.settings.interface}
+                </Typography>
+              </Stack>
+            )}
             <Stack direction="column">
               {t("replays.table.file")}
               <Typography fontWeight="bold">{fileInfo.data?.name}</Typography>
@@ -284,19 +288,21 @@ export const ReplayJobsCard = (props: {
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <SettingsInfo
-              load={props.data.load}
-              length={props.data.limit}
-              repeat={props.data.repeat}
+              load={props.data.settings.load}
+              length={props.data.settings.limit}
+              repeat={props.data.settings.repeat}
             />
           </Box>
+          {props.data.settings.provider === "tcpreplay" && (
+            <Box flexGrow={0}>
+              <SourceRemapTable srcRemap={props.data.settings.srcRemap} />
+            </Box>
+          )}
           <Box flexGrow={0}>
-            <SourceRemapTable srcRemap={props.data.srcRemap} />
+            <DestRemapTable dstRemap={props.data.settings.dstRemap} />
           </Box>
           <Box flexGrow={0}>
-            <DestRemapTable dstRemap={props.data.dstRemap} />
-          </Box>
-          <Box flexGrow={0}>
-            <PortRemapTable portRemap={props.data.portRemap} />
+            <PortRemapTable portRemap={props.data.settings.portRemap} />
           </Box>
         </CardContent>
       </Collapse>

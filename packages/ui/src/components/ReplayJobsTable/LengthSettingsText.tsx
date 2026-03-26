@@ -2,7 +2,9 @@ import { useTranslation } from "react-i18next";
 import type { LengthSettings } from "shared";
 
 // Text displayed in the limit/length cell
-export const LengthSettingsText = (props: { value?: LengthSettings }) => {
+export const LengthSettingsText = (props: {
+  value: LengthSettings | null | undefined;
+}) => {
   const { t } = useTranslation();
 
   let text = "";

@@ -1,7 +1,7 @@
 import {
+  ReplaySettingsTcpReplay,
   type AddressRemap,
   type PortRemap,
-  type ReplaySettings,
 } from "../dto/replay/index.js";
 
 const getPortRemap = (portRemap?: PortRemap[]) =>
@@ -25,7 +25,7 @@ const getListArgs = (flag: string, args?: string[]) => {
   return [`--${flag}=${args.join(",")}`];
 };
 
-export const getReplayArgs = (settings: ReplaySettings): string[] => {
+export const getReplayArgs = (settings: ReplaySettingsTcpReplay): string[] => {
   const args: string[] = [
     `--intf1=${settings.interface}`,
     ...getListArgs("portmap", getPortRemap(settings.portRemap)),

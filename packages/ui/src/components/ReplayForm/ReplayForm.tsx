@@ -18,7 +18,7 @@ import {
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import type { ReplayPatch, ReplayPost } from "shared";
+import type { ReplayPost } from "shared";
 import { useNetworkInterfaces } from "../../api/networkInterfaces";
 import { Icons } from "../../utils/Icons";
 import { ReplayRepetitionEdit } from "../ReplayRepetitionEdit/ReplayRepetitionEdit";
@@ -31,8 +31,7 @@ import { SectionHeader } from "./ReplayForm.styles";
 import { AddressRemapEdit } from "../AddressRemapEdit/AddressRemapEdit";
 import { FileSelectBox } from "../FileSelectBox/FileSelectBox";
 
-export type ReplayFormData = Omit<ReplayPost, "load" | "limit" | "repeat"> &
-  Pick<ReplayPatch, "load" | "limit" | "repeat">;
+export type ReplayFormData = ReplayPost;
 
 export const ReplayForm = (props: {
   initState: ReplayFormData;
@@ -49,11 +48,15 @@ export const ReplayForm = (props: {
     handleSubmit,
     reset,
     control,
+    watch,
     formState: { isValid },
   } = useForm<ReplayFormData>({
     mode: "onTouched",
     defaultValues: props.initState,
   });
+
+  // The currently active provider
+  const providerMode = watch("settings.provider");
 
   // Reset the form state when the initial values change
   useEffect(() => reset(props.initState), [reset, props.initState]);
@@ -83,25 +86,26 @@ export const ReplayForm = (props: {
       />
       <Controller
         control={control}
-        name="interface"
+        name="settings.provider"
         rules={{
-          required: t("replays.form.interface.required"),
+          required: t("replays.form.provider.required"),
         }}
         render={({ field, fieldState }) => (
           <FormControl fullWidth error={!!fieldState.error}>
-            <InputLabel id="replay-nic-select-label">
-              {t("replays.form.interface.label")}
+            <InputLabel id="replay-provider-select-label">
+              {t("replays.form.provider.label")}
             </InputLabel>
             <Select
               {...field}
-              labelId="replay-nic-select-label"
-              label={t("replays.form.interface.label")}
+              labelId="replay-nic-provider-label"
+              label={t("replays.form.provider.label")}
             >
-              {interfaces.data?.map((item, i) => (
-                <MenuItem key={i} value={item.name}>
-                  {item.name}
-                </MenuItem>
-              ))}
+              <MenuItem value="tcpreplay">
+                {t("replays.form.provider.tcpreplay")}
+              </MenuItem>
+              <MenuItem value="dgram">
+                {t("replays.form.provider.dgram")}
+              </MenuItem>
             </Select>
             {!!fieldState.error && (
               <FormHelperText>{fieldState.error.message}</FormHelperText>
@@ -109,6 +113,36 @@ export const ReplayForm = (props: {
           </FormControl>
         )}
       />
+      {providerMode === "tcpreplay" && (
+        <Controller
+          control={control}
+          name="settings.interface"
+          rules={{
+            required: t("replays.form.interface.required"),
+          }}
+          render={({ field, fieldState }) => (
+            <FormControl fullWidth error={!!fieldState.error}>
+              <InputLabel id="replay-nic-select-label">
+                {t("replays.form.interface.label")}
+              </InputLabel>
+              <Select
+                {...field}
+                labelId="replay-nic-select-label"
+                label={t("replays.form.interface.label")}
+              >
+                {interfaces.data?.map((item, i) => (
+                  <MenuItem key={i} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {!!fieldState.error && (
+                <FormHelperText>{fieldState.error.message}</FormHelperText>
+              )}
+            </FormControl>
+          )}
+        />
+      )}
       <Controller
         control={control}
         name="fileId"
@@ -128,7 +162,7 @@ export const ReplayForm = (props: {
       <Divider flexItem sx={{ margin: 2 }} />
       <Controller
         control={control}
-        name="verbose"
+        name="settings.verbose"
         render={({ field }) => (
           <FormControlLabel
             label={t("replays.form.verbose")}
@@ -145,7 +179,7 @@ export const ReplayForm = (props: {
           <AccordionDetails>
             <Controller
               control={control}
-              name="repeat"
+              name="settings.repeat"
               render={({ field }) => (
                 <ReplayRepetitionEdit
                   value={field.value}
@@ -163,7 +197,7 @@ export const ReplayForm = (props: {
           <AccordionDetails>
             <Controller
               control={control}
-              name="limit"
+              name="settings.limit"
               render={({ field }) => (
                 <ReplayLengthEdit
                   value={field.value}
@@ -181,7 +215,7 @@ export const ReplayForm = (props: {
           <AccordionDetails>
             <Controller
               control={control}
-              name="load"
+              name="settings.load"
               render={({ field }) => (
                 <ReplaySpeedEdit
                   value={field.value}
@@ -199,7 +233,7 @@ export const ReplayForm = (props: {
           <AccordionDetails>
             <Controller
               control={control}
-              name="portRemap"
+              name="settings.portRemap"
               render={({ field }) => (
                 <PortRemapEditor
                   value={field.value}
@@ -216,26 +250,30 @@ export const ReplayForm = (props: {
           </SectionHeader>
           <AccordionDetails>
             <Stack direction="column" spacing={2}>
-              <Typography variant="overline">
-                {t("replays.form.addressremap.source")}
-              </Typography>
-              <Controller
-                control={control}
-                name="srcRemap"
-                render={({ field }) => (
-                  <AddressRemapEdit
-                    value={field.value}
-                    onChange={field.onChange}
+              {providerMode === "tcpreplay" && (
+                <>
+                  <Typography variant="overline">
+                    {t("replays.form.addressremap.source")}
+                  </Typography>
+                  <Controller
+                    control={control}
+                    name="settings.srcRemap"
+                    render={({ field }) => (
+                      <AddressRemapEdit
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
                   />
-                )}
-              />
-              <Divider flexItem />
+                  <Divider flexItem />
+                </>
+              )}
               <Typography variant="overline">
                 {t("replays.form.addressremap.dest")}
               </Typography>
               <Controller
                 control={control}
-                name="dstRemap"
+                name="settings.dstRemap"
                 render={({ field }) => (
                   <AddressRemapEdit
                     value={field.value}
