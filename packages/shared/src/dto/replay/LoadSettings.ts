@@ -56,3 +56,6 @@ export const LoadSettingsSchema = z.discriminatedUnion("type", [
 ]);
 
 export type LoadSettings = z.infer<typeof LoadSettingsSchema>;
+
+//! Types of load limiting settings
+export type LoadSettingsType = LoadSettings["type"];

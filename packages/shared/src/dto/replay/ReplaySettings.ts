@@ -50,3 +50,6 @@ export const ReplaySettingsSchema = z.discriminatedUnion("provider", [
 ]);
 
 export type ReplaySettings = z.infer<typeof ReplaySettingsSchema>;
+
+//! Types of replay providers
+export type ReplayProviderEnum = ReplaySettings["provider"];
