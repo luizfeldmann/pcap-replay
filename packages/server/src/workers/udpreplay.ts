@@ -1,7 +1,6 @@
 import { getUdpReplayArgs, ReplaySettingsUdpReplay } from "shared";
 import { ReplayRow } from "../models/replay.js";
 import { ReplayService } from "../services/replay.js";
-import { IReplayProvider, ReplayJobExitCb } from "./replayProvider.js";
 import { SpawnProvider } from "./spawnprovider.js";
 
 //! Uses the udp-replay application as backend

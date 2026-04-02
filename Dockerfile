@@ -6,14 +6,23 @@ WORKDIR /app
 # Install dependencies & tools
 RUN apt-get update && \
     apt-get install -y \
+    curl \
     tcpdump \
     tcpreplay \
     libcap2-bin \
     python3 \
     build-essential \
-    && \
-    setcap cap_net_raw,cap_net_admin=eip $(which tcpreplay-edit) && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
+
+# Download release of udp-replay
+RUN set -eux; \
+    URL=$(curl -s https://api.github.com/repos/luizfeldmann/udp-replay/releases/latest \
+           | jq -r '.assets[] | select(.name=="linux-x86_64-udp-replay") | .browser_download_url'); \
+    curl -L "$URL" -o "/usr/local/bin/udp-replay"; \
+    chmod +x "/usr/local/bin/udp-replay"
+
+# Set capabilities for tcpreplay-edit
+RUN setcap cap_net_raw,cap_net_admin=eip $(which tcpreplay-edit)
 
 # --- Node deps ---
 FROM base AS deps
