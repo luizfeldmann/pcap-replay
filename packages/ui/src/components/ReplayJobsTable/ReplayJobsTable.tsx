@@ -24,6 +24,7 @@ import { useMemo } from "react";
 import { useReplayContextMenu } from "../ReplayContextMenu/useReplayContextMenu";
 import { ReplayContextMenu } from "../ReplayContextMenu/ReplayContextMenu";
 import { useReplayEvents } from "../../api/replays/useReplayEvents";
+import { hasSrcRemap } from "../../utils/providers";
 
 export const ReplayJobsTable = (props: {
   visibility: Record<ReplayColumnId, boolean>;
@@ -49,7 +50,7 @@ export const ReplayJobsTable = (props: {
           // Count number of rows needed for spanning
           const srcRows =
             (props.visibility.sourceremap &&
-              item.settings.provider === "tcpreplay" &&
+              hasSrcRemap(item.settings) &&
               item.settings.srcRemap?.length) ||
             0;
           const destRows =
@@ -64,10 +65,9 @@ export const ReplayJobsTable = (props: {
           return Array.from({ length: rowSpan }, (_, i) => {
             const common = {
               key: `${item.id}-${i}`,
-              srcRemap:
-                item.settings.provider === "tcpreplay"
-                  ? item.settings.srcRemap?.at(i)
-                  : undefined,
+              srcRemap: hasSrcRemap(item.settings)
+                ? item.settings.srcRemap?.at(i)
+                : undefined,
               dstRemap: item.settings.dstRemap?.at(i),
               portRemap: item.settings.portRemap?.at(i),
             };

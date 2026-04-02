@@ -35,6 +35,7 @@ import { LengthSettingsText } from "../ReplayJobsTable/LengthSettingsText";
 import { LoadSettingsText } from "../ReplayJobsTable/LoadSettingsText";
 import { AddressRemapCells } from "../ReplayJobsTable/AddressRemapCells";
 import { PortRemapCells } from "../ReplayJobsTable/PortRemapCells";
+import { hasSrcRemap, providerAttribs } from "../../utils/providers";
 
 // Renders creation, start and finish times
 const TimesInfo = (props: {
@@ -231,7 +232,8 @@ export const ReplayJobsCard = (props: {
         }
         subheader={
           <Stack direction="row" spacing={2}>
-            {props.data.settings.provider === "tcpreplay" && (
+            {providerAttribs[props.data.settings.provider].interface
+              .available && (
               <Stack direction="column">
                 {t("replays.table.interface")}
                 <Typography fontWeight="bold">
@@ -293,7 +295,7 @@ export const ReplayJobsCard = (props: {
               repeat={props.data.settings.repeat}
             />
           </Box>
-          {props.data.settings.provider === "tcpreplay" && (
+          {hasSrcRemap(props.data.settings) && (
             <Box flexGrow={0}>
               <SourceRemapTable srcRemap={props.data.settings.srcRemap} />
             </Box>

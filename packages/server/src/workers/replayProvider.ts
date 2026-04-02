@@ -11,5 +11,5 @@ export interface IReplayProvider {
   start(job: ReplayRow, onExit: ReplayJobExitCb): Promise<void>;
 
   //! Stops the job
-  stop(job: ReplayRow): void;
+  stop(job: ReplayRow): Promise<void>;
 }

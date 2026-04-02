@@ -16,9 +16,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import type { ReplayPost, ReplayProviderEnum, LoadSettingsType } from "shared";
+import type { ReplayPost } from "shared";
 import { useNetworkInterfaces } from "../../api/networkInterfaces";
 import { Icons } from "../../utils/Icons";
 import { ReplayRepetitionEdit } from "../ReplayRepetitionEdit/ReplayRepetitionEdit";
@@ -30,20 +30,7 @@ import { PortRemapEditor } from "../PortRemapEditor/PortRemapEditor";
 import { SectionHeader } from "./ReplayForm.styles";
 import { AddressRemapEdit } from "../AddressRemapEdit/AddressRemapEdit";
 import { FileSelectBox } from "../FileSelectBox/FileSelectBox";
-
-const allowedSettingsPerProvider: Record<
-  ReplayProviderEnum,
-  {
-    load: LoadSettingsType[];
-  }
-> = {
-  dgram: {
-    load: ["multiplier"],
-  },
-  tcpreplay: {
-    load: ["mbps", "pps", "multiplier"],
-  },
-};
+import { providerAttribs } from "../../utils/providers";
 
 export const ReplayForm = (props: {
   initState: ReplayPost;
@@ -60,7 +47,6 @@ export const ReplayForm = (props: {
     handleSubmit,
     reset,
     control,
-    watch,
     formState: { isValid },
   } = useForm<ReplayPost>({
     mode: "onTouched",
@@ -68,7 +54,10 @@ export const ReplayForm = (props: {
   });
 
   // The currently active provider
-  const providerMode = watch("settings.provider");
+  const providerMode = useWatch({
+    control,
+    name: "settings.provider",
+  });
 
   // Reset the form state when the initial values change
   useEffect(() => reset(props.initState), [reset, props.initState]);
@@ -125,12 +114,14 @@ export const ReplayForm = (props: {
           </FormControl>
         )}
       />
-      {providerMode === "tcpreplay" && (
+      {providerAttribs[providerMode].interface.available && (
         <Controller
           control={control}
           name="settings.interface"
           rules={{
-            required: t("replays.form.interface.required"),
+            required: providerAttribs[providerMode].interface.mandatory
+              ? t("replays.form.interface.required")
+              : false,
           }}
           render={({ field, fieldState }) => (
             <FormControl fullWidth error={!!fieldState.error}>
@@ -230,7 +221,7 @@ export const ReplayForm = (props: {
               name="settings.load"
               render={({ field }) => (
                 <ReplaySpeedEdit
-                  allowedTypes={allowedSettingsPerProvider[providerMode].load}
+                  allowedTypes={providerAttribs[providerMode].load.allowed}
                   value={field.value}
                   onChange={field.onChange}
                 />
@@ -263,7 +254,7 @@ export const ReplayForm = (props: {
           </SectionHeader>
           <AccordionDetails>
             <Stack direction="column" spacing={2}>
-              {providerMode === "tcpreplay" && (
+              {providerAttribs[providerMode].srcipmap.available && (
                 <>
                   <Typography variant="overline">
                     {t("replays.form.addressremap.source")}

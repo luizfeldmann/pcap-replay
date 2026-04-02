@@ -87,8 +87,8 @@ export class TcpReplayProvider implements IReplayProvider {
     );
   }
 
-  stop(job: ReplayRow) {
-    new Promise<void>((resolve, reject) => {
+  async stop(job: ReplayRow) {
+    return new Promise<void>((resolve, reject) => {
       // Get the process from the ID
       const proc = this.processes.get(job.id);
       if (!proc) return reject(new Error(`job is not running: ${job.id}`));

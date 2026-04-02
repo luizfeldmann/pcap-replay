@@ -11,6 +11,7 @@ import { LengthSettingsText } from "./LengthSettingsText";
 import { AddressRemapCells } from "./AddressRemapCells";
 import { PortRemapCells } from "./PortRemapCells";
 import type { MouseEventHandler } from "react";
+import { providerAttribs } from "../../utils/providers";
 
 // Renders the file name and link
 const FileCell = (props: { id: string }) => {
@@ -81,7 +82,7 @@ export const ReplayJobsTableRow = (props: {
           )}
           {props.visibility.interface && (
             <TableCell rowSpan={props.data.rowSpan}>
-              {props.data.settings.provider === "tcpreplay" &&
+              {providerAttribs[props.data.settings.provider] &&
                 props.data.settings.interface}
             </TableCell>
           )}
