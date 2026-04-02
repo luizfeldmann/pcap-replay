@@ -7,7 +7,6 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { routes } from "../../utils/routes";
 import { usePostReplay } from "../../api/replays/usePostReplay";
-import type { ReplayPost } from "shared";
 import { enqueueSnackbar } from "notistack";
 
 export const ReplayFormPageCreate = () => {
@@ -21,16 +20,8 @@ export const ReplayFormPageCreate = () => {
 
   // Handle submitting of the form
   const onSubmit = (formData: ReplayFormData) => {
-    // Handle nullable fields
-    const postData: ReplayPost = {
-      ...formData,
-      load: formData.load ?? undefined,
-      limit: formData.limit ?? undefined,
-      repeat: formData.repeat ?? undefined,
-    };
-
     // Invoke POST
-    postMutation.mutate(postData, {
+    postMutation.mutate(formData, {
       onSuccess: (_data, variables) => {
         // Show a snackbar on success
         enqueueSnackbar(t("replays.create.success", { name: variables.name }), {
@@ -46,7 +37,11 @@ export const ReplayFormPageCreate = () => {
     <Stack spacing={1} sx={{ display: "flex" }}>
       <Typography variant="h6">{t("replays.create.title")}</Typography>
       <ReplayForm
-        initState={{ name: "", fileId: file || "", interface: "" }}
+        initState={{
+          name: "",
+          fileId: file || "",
+          settings: { provider: "udpreplay" },
+        }}
         labelSubmit={t("replays.form.button.create")}
         onSubmit={onSubmit}
         isLoading={postMutation.isPending}

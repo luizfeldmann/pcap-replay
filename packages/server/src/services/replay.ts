@@ -12,6 +12,11 @@ import {
   LengthSettings,
   LoadSettings,
   ReplayCommandResponse,
+  ReplaySettings,
+  ReplaySettingsUdpReplay,
+  ReplaySettingsTcpReplay,
+  ReplaySettingsCommon,
+  MultiplierSettings,
 } from "shared";
 import { db } from "../models/db.js";
 import { ReplaysTable, ReplayRow, ReplayRowStatus } from "../models/replay.js";
@@ -62,22 +67,29 @@ const transformListItem = (
   replayJob: ReplayRow,
   portRemaps: PortRemapRow[],
   addrRemaps: AddressRemapRow[],
-) => {
-  // Base fields
-  const item: ReplayListItem = {
+): ReplayListItem => {
+  return {
+    // Base fields
     id: replayJob.id,
     fileId: replayJob.file,
     name: replayJob.name,
-    interface: replayJob.interface,
     status: statusTransformList[replayJob.status],
     createdTime: replayJob.createdTime.toISOString(),
     startTime: replayJob.startTime?.toISOString(),
     endTime: replayJob.endTime?.toISOString(),
-    verbose: replayJob.verbose ?? false,
+    // Depends on the strategy
+    settings: transformSettings(replayJob, portRemaps, addrRemaps),
   };
+};
 
+const transformSettings = (
+  replayJob: ReplayRow,
+  portRemaps: PortRemapRow[],
+  addrRemaps: AddressRemapRow[],
+): ReplaySettings => {
   // Port remapping
-  if (portRemaps.length) item.portRemap = portRemaps.map(transformPortRemap);
+  let portRemap;
+  if (portRemaps.length) portRemap = portRemaps.map(transformPortRemap);
 
   // Separate sourc and destination remaps
   const remapPartition = addrRemaps.reduce<{
@@ -99,56 +111,92 @@ const transformListItem = (
   );
 
   // Address remapping
+  let srcRemap;
   if (remapPartition.remapSrc.length)
-    item.srcRemap = remapPartition.remapSrc.map(transformAddrRemap);
+    srcRemap = remapPartition.remapSrc.map(transformAddrRemap);
 
+  let dstRemap;
   if (remapPartition.remapDst.length)
-    item.dstRemap = remapPartition.remapDst.map(transformAddrRemap);
+    dstRemap = remapPartition.remapDst.map(transformAddrRemap);
 
   // Repetition settings
+  let repeat: RepeatSettings | undefined;
   if (replayJob.loop) {
-    item.repeat = {
+    repeat = {
       type: "loop",
     };
   } else if (replayJob.repeat) {
-    item.repeat = {
+    repeat = {
       type: "times",
       times: replayJob.repeat,
     };
   }
 
   // Speed settings
+  let multiplier: MultiplierSettings | undefined;
   if (replayJob.speedMultiplier) {
-    item.load = {
+    multiplier = {
       type: "multiplier",
       speed: replayJob.speedMultiplier,
     };
-  } else if (replayJob.packetRate) {
-    item.load = {
+  }
+
+  let load: LoadSettings | undefined = multiplier;
+  if (replayJob.packetRate) {
+    load = {
       type: "pps",
       packetRate: replayJob.packetRate,
     };
   } else if (replayJob.dataRate) {
-    item.load = {
+    load = {
       type: "mbps",
       dataRate: replayJob.dataRate,
     };
   }
 
   // Limit settings
+  let limit: LengthSettings | undefined;
   if (replayJob.limitPackets) {
-    item.limit = {
+    limit = {
       type: "packets",
       maxPackets: replayJob.limitPackets,
     };
   } else if (replayJob.limitDuration) {
-    item.limit = {
+    limit = {
       type: "duration",
       maxDuration: replayJob.limitDuration,
     };
   }
 
-  return item;
+  // Common settings for all providers
+  const commonSettings: ReplaySettingsCommon = {
+    verbose: replayJob.verbose ?? false,
+    portRemap,
+    dstRemap,
+    repeat,
+    limit,
+  };
+
+  // Handle provider-specific fields
+  switch (replayJob.provider) {
+    case "tcpreplay":
+      return {
+        provider: replayJob.provider,
+        interface: replayJob.interface ?? "",
+        srcRemap,
+        load,
+        ...commonSettings,
+      } satisfies ReplaySettingsTcpReplay;
+      break;
+    case "udpreplay":
+      return {
+        provider: replayJob.provider,
+        interface: replayJob.interface || undefined,
+        load: multiplier,
+        ...commonSettings,
+      } satisfies ReplaySettingsUdpReplay;
+      break;
+  }
 };
 
 const getJobsList = async (
@@ -298,6 +346,7 @@ const getRemapPort = (id: string, remaps: PortRemap[]) =>
   });
 
 const insertNew = (post: ReplayPost): ReplayListItem => {
+  // Generate new unique id
   const id = crypto.randomUUID();
 
   // Transform the job data
@@ -305,35 +354,37 @@ const insertNew = (post: ReplayPost): ReplayListItem => {
     id,
     name: post.name,
     file: post.fileId,
-    interface: post.interface,
     status: "STOPPED",
     createdTime: new Date(),
     startTime: null,
     endTime: null,
-    verbose: post.verbose ?? false,
-    ...getRepeatSettings(post.repeat),
-    ...getLengthSettings(post.limit),
-    ...getSpeedSettings(post.load),
+    verbose: post.settings.verbose ?? false,
+    provider: post.settings.provider,
+    interface: post.settings.interface || null,
+    ...getRepeatSettings(post.settings.repeat),
+    ...getLengthSettings(post.settings.limit),
+    ...getSpeedSettings(post.settings.load),
   };
 
   // Create port remaps
   const portRemaps: PortRemapRow[] = [];
 
-  if (post.portRemap) {
-    const remapRows = getRemapPort(id, post.portRemap);
+  if (post.settings.portRemap) {
+    const remapRows = getRemapPort(id, post.settings.portRemap);
     portRemaps.push(...remapRows);
   }
 
   // Create address remaps for source and destination
   const addrRemaps: AddressRemapRow[] = [];
 
-  if (post.dstRemap) {
-    const remapRows = getRemapAddr(id, post.dstRemap, "dst");
+  if (post.settings.dstRemap) {
+    const remapRows = getRemapAddr(id, post.settings.dstRemap, "dst");
     addrRemaps.push(...remapRows);
   }
 
-  if (post.srcRemap) {
-    const remapRows = getRemapAddr(id, post.srcRemap, "src");
+  // Only 'tcpreplay' can remap the source
+  if (post.settings.provider === "tcpreplay" && post.settings.srcRemap) {
+    const remapRows = getRemapAddr(id, post.settings.srcRemap, "src");
     addrRemaps.push(...remapRows);
   }
 
@@ -366,47 +417,59 @@ const modifyItem = async (
   // Add only changed items to the patch
   let updateValues: Partial<ReplayRow> = {};
 
+  // Common fields
   if (patch.name) updateValues.name = patch.name;
   if (patch.fileId) updateValues.file = patch.fileId;
-  if (patch.interface) updateValues.interface = patch.interface;
 
-  if (patch.limit !== undefined) {
+  if (patch.settings?.interface)
+    updateValues.interface = patch.settings.interface;
+
+  // Settings
+  if (patch.settings?.provider) updateValues.provider = patch.settings.provider;
+
+  if (patch?.settings?.limit !== undefined) {
     updateValues = {
       ...updateValues,
-      ...getLengthSettings(patch.limit),
+      ...getLengthSettings(patch.settings.limit),
     };
   }
 
-  if (patch.load !== undefined) {
+  if (patch?.settings?.load !== undefined) {
     updateValues = {
       ...updateValues,
-      ...getSpeedSettings(patch.load),
+      ...getSpeedSettings(patch.settings?.load),
     };
   }
 
-  if (patch.repeat !== undefined) {
+  if (patch?.settings?.repeat !== undefined) {
     updateValues = {
       ...updateValues,
-      ...getRepeatSettings(patch.repeat),
+      ...getRepeatSettings(patch.settings.repeat),
     };
   }
 
-  if (patch.verbose !== undefined) {
-    updateValues.verbose = patch.verbose;
+  if (patch?.settings?.verbose !== undefined) {
+    updateValues.verbose = patch.settings.verbose;
   }
 
   // Create port remaps
   let portRemaps: PortRemapRow[] | undefined;
-  if (patch.portRemap) portRemaps = getRemapPort(id, patch.portRemap);
+  if (patch?.settings?.portRemap)
+    portRemaps = getRemapPort(id, patch.settings.portRemap);
 
-  // Create address remaps for source and destination
+  // Create address remaps for destination
   let addrRemaps: AddressRemapRow[] | undefined;
+  if (patch.settings?.dstRemap)
+    addrRemaps = getRemapAddr(id, patch.settings.dstRemap, "dst");
 
-  if (patch.srcRemap) addrRemaps = getRemapAddr(id, patch.srcRemap, "src");
-  if (patch.dstRemap) {
-    const dstRemap = getRemapAddr(id, patch.dstRemap, "dst");
-    if (!addrRemaps) addrRemaps = dstRemap;
-    else addrRemaps.push(...dstRemap);
+  // For tcp-replay only
+  if (patch?.settings?.provider === "tcpreplay") {
+    // Source remaps are only available from L2
+    if (patch.settings.srcRemap) {
+      const srcRemap = getRemapAddr(id, patch.settings.srcRemap, "src");
+      if (!addrRemaps) addrRemaps = srcRemap;
+      else addrRemaps.push(...srcRemap);
+    }
   }
 
   // Invoke the transaction
