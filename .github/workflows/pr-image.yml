@@ -23,16 +23,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
+      - name: Build
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          push: false
           tags: ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
+          outputs: type=docker,dest=/tmp/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.tar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: /tmp/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.tar
