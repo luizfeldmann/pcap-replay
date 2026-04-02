@@ -1,5 +1,5 @@
-import { configData } from "../utils/config.js";
 import EventEmitter from "events";
+import { configData } from "../utils/config.js";
 import { TimeoutError } from "../utils/error.js";
 import { ReplayService } from "../services/replay.js";
 import {

@@ -1,4 +1,4 @@
-import { ReplayRow, ReplayRowStatus } from "../models/replay";
+import { ReplayRow, ReplayRowStatus } from "../models/replay.js";
 
 export type ReplayJobExitCb = (
   id: string,

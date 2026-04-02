@@ -1,6 +1,7 @@
 import {
   ReplaySettingsCommon,
   ReplaySettingsTcpReplay,
+  ReplaySettingsUdpReplay,
   type AddressRemap,
   type PortRemap,
 } from "../dto/replay/index.js";
@@ -86,7 +87,7 @@ export const getTcpReplayArgs = (
 };
 
 export const getUdpReplayArgs = (
-  settings: ReplaySettingsTcpReplay,
+  settings: ReplaySettingsUdpReplay,
 ): string[] => {
   const args = getCommonReplayArgs(settings);
 

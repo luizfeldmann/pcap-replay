@@ -1,11 +1,26 @@
-import { ReplayRow } from "../models/replay";
-import { IReplayProvider, ReplayJobExitCb } from "./replayProvider";
+import { getUdpReplayArgs, ReplaySettingsUdpReplay } from "shared";
+import { ReplayRow } from "../models/replay.js";
+import { ReplayService } from "../services/replay.js";
+import { IReplayProvider, ReplayJobExitCb } from "./replayProvider.js";
+import { SpawnProvider } from "./spawnprovider.js";
 
-export class UdpReplayProvider implements IReplayProvider {
-  start(_job: ReplayRow, _onExit: ReplayJobExitCb): Promise<void> {
-    throw new Error("Method not implemented.");
+//! Uses the udp-replay application as backend
+export class UdpReplayProvider extends SpawnProvider {
+  //! Constructor
+  constructor() {
+    super();
   }
-  stop(_job: ReplayRow): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  //! Gets the arguments to call tcpreplay-edit
+  async getOptions(jobRow: ReplayRow) {
+    // Collect all the other tables related to the job
+    const job = await ReplayService.getJobDetails(jobRow);
+    const settings = job.settings as ReplaySettingsUdpReplay;
+
+    // Compile the arguments
+    return {
+      executableName: "udp-replay",
+      arguments: getUdpReplayArgs(settings),
+    };
   }
 }
