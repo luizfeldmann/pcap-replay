@@ -18,7 +18,7 @@ import {
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import type { ReplayPost } from "shared";
+import type { ReplayPost, ReplayProviderEnum, LoadSettingsType } from "shared";
 import { useNetworkInterfaces } from "../../api/networkInterfaces";
 import { Icons } from "../../utils/Icons";
 import { ReplayRepetitionEdit } from "../ReplayRepetitionEdit/ReplayRepetitionEdit";
@@ -31,13 +31,25 @@ import { SectionHeader } from "./ReplayForm.styles";
 import { AddressRemapEdit } from "../AddressRemapEdit/AddressRemapEdit";
 import { FileSelectBox } from "../FileSelectBox/FileSelectBox";
 
-export type ReplayFormData = ReplayPost;
+const allowedSettingsPerProvider: Record<
+  ReplayProviderEnum,
+  {
+    load: LoadSettingsType[];
+  }
+> = {
+  dgram: {
+    load: ["multiplier"],
+  },
+  tcpreplay: {
+    load: ["mbps", "pps", "multiplier"],
+  },
+};
 
 export const ReplayForm = (props: {
-  initState: ReplayFormData;
+  initState: ReplayPost;
   labelSubmit: string;
   isLoading: boolean;
-  onSubmit(formData: ReplayFormData): void;
+  onSubmit(formData: ReplayPost): void;
 }) => {
   // Query required options
   const interfaces = useNetworkInterfaces();
@@ -50,7 +62,7 @@ export const ReplayForm = (props: {
     control,
     watch,
     formState: { isValid },
-  } = useForm<ReplayFormData>({
+  } = useForm<ReplayPost>({
     mode: "onTouched",
     defaultValues: props.initState,
   });
@@ -218,6 +230,7 @@ export const ReplayForm = (props: {
               name="settings.load"
               render={({ field }) => (
                 <ReplaySpeedEdit
+                  allowedTypes={allowedSettingsPerProvider[providerMode].load}
                   value={field.value}
                   onChange={field.onChange}
                 />
