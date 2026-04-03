@@ -1,9 +1,6 @@
 import { Alert, LinearProgress, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import {
-  ReplayForm,
-  type ReplayFormData,
-} from "../../components/ReplayForm/ReplayForm";
+import { ReplayForm } from "../../components/ReplayForm/ReplayForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSingleReplay } from "../../api/replays/useSingleReplay";
 import { usePatchReplay } from "../../api/replays/usePatchReplay";
@@ -29,10 +26,9 @@ export const ReplayFormPageEdit = () => {
   useSingleReplayEvents(replayId);
 
   // Handle submitting of the form
-  const onSubmit = (formData: ReplayFormData) => {
-    const patchData: ReplayPatch = { ...formData };
+  const onSubmit = (formData: ReplayPatch) => {
     patchMutation.mutate(
-      { id: replayId, patch: patchData },
+      { id: replayId, patch: formData },
       {
         onSuccess: () => {
           // Navigate to the replays page

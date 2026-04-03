@@ -10,12 +10,6 @@ type ProcessInfo = {
   isStop?: boolean;
 };
 
-//! Arguments returned by the concrete provider
-export type SpawnProviderOptions = {
-  executableName: string;
-  arguments: string[];
-};
-
 //! Uses the a subprocess as backend
 export abstract class SpawnProvider implements IReplayProvider {
   //! Collection of all running processes
@@ -27,7 +21,7 @@ export abstract class SpawnProvider implements IReplayProvider {
   }
 
   //! Gets the arguments to spawn the process
-  abstract getOptions(jobRow: ReplayRow): Promise<SpawnProviderOptions>;
+  abstract getOptions(jobRow: ReplayRow): Promise<string[]>;
 
   //! Called when the job returns
   async onJobExit(id: string, exitCode: number, cb: ReplayJobExitCb) {
@@ -53,12 +47,11 @@ export abstract class SpawnProvider implements IReplayProvider {
 
   async start(jobRow: ReplayRow, onExit: ReplayJobExitCb) {
     // Get the arguments
-    const options = await this.getOptions(jobRow);
+    const [executableName, ...args] = await this.getOptions(jobRow);
 
     // Spawn the process
-    const executableName = "tcpreplay-edit";
     const proc = {
-      pty: pty.spawn(options.executableName, options.arguments, {
+      pty: pty.spawn(executableName, args, {
         name: "xterm-color",
         cols: 80,
         rows: 24,
@@ -71,7 +64,7 @@ export abstract class SpawnProvider implements IReplayProvider {
     // Log the command line which launched the process
     ReplayEvents.emitLogEventData({
       id: jobRow.id,
-      logs: [[executableName, ...options.arguments].join(" ")],
+      logs: [[executableName, ...args].join(" ")],
     });
 
     // Collect console prints

@@ -1,4 +1,5 @@
 import { ReplayRow } from "../models/replay.js";
+import { FilesService } from "../services/files.js";
 import { ReplayService } from "../services/replay.js";
 import { SpawnProvider } from "./spawnprovider.js";
 import { getTcpReplayArgs, ReplaySettingsTcpReplay } from "shared";
@@ -15,11 +16,9 @@ export class TcpReplayProvider extends SpawnProvider {
     // Collect all the other tables related to the job
     const job = await ReplayService.getJobDetails(jobRow);
     const settings = job.settings as ReplaySettingsTcpReplay;
+    const filepath = FilesService.getFilePathOnDisk(job.fileId);
 
     // Compile the arguments
-    return {
-      executableName: "tcpreplay-edit",
-      arguments: getTcpReplayArgs(settings),
-    };
+    return ["tcpreplay-edit", ...getTcpReplayArgs(settings), filepath];
   }
 }

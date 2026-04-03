@@ -360,7 +360,7 @@ const insertNew = (post: ReplayPost): ReplayListItem => {
     endTime: null,
     verbose: post.settings.verbose ?? false,
     provider: post.settings.provider,
-    interface: post.settings.interface || null,
+    interface: post.settings.interface || null, // empty string stores as null in DB
     ...getRepeatSettings(post.settings.repeat),
     ...getLengthSettings(post.settings.limit),
     ...getSpeedSettings(post.settings.load),
@@ -421,8 +421,10 @@ const modifyItem = async (
   if (patch.name) updateValues.name = patch.name;
   if (patch.fileId) updateValues.file = patch.fileId;
 
-  if (patch.settings?.interface)
-    updateValues.interface = patch.settings.interface;
+  if (patch.settings?.interface !== undefined) {
+    // ensure empty string saves as null in the db
+    updateValues.interface = patch.settings.interface || null;
+  }
 
   // Settings
   if (patch.settings?.provider) updateValues.provider = patch.settings.provider;

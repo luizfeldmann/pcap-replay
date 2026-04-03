@@ -133,6 +133,11 @@ export const ReplayForm = (props: {
                 labelId="replay-nic-select-label"
                 label={t("replays.form.interface.label")}
               >
+                {!providerAttribs[providerMode].interface.mandatory && (
+                  <MenuItem value="">
+                    {t("replays.form.interface.none")}
+                  </MenuItem>
+                )}
                 {interfaces.data?.map((item, i) => (
                   <MenuItem key={i} value={item.name}>
                     {item.name}

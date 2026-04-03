@@ -1,7 +1,7 @@
 import {
-  ReplaySettingsCommon,
-  ReplaySettingsTcpReplay,
-  ReplaySettingsUdpReplay,
+  type ReplaySettingsCommon,
+  type ReplaySettingsTcpReplay,
+  type ReplaySettingsUdpReplay,
   type AddressRemap,
   type PortRemap,
 } from "../dto/replay/index.js";

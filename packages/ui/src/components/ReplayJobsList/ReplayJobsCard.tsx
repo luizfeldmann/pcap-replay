@@ -237,7 +237,7 @@ export const ReplayJobsCard = (props: {
               <Stack direction="column">
                 {t("replays.table.interface")}
                 <Typography fontWeight="bold">
-                  {props.data.settings.interface}
+                  {props.data.settings.interface || t("replays.table.none")}
                 </Typography>
               </Stack>
             )}

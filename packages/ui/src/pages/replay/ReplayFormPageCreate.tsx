@@ -1,13 +1,11 @@
 import { Alert, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import {
-  ReplayForm,
-  type ReplayFormData,
-} from "../../components/ReplayForm/ReplayForm";
+import { ReplayForm } from "../../components/ReplayForm/ReplayForm";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { routes } from "../../utils/routes";
 import { usePostReplay } from "../../api/replays/usePostReplay";
 import { enqueueSnackbar } from "notistack";
+import type { ReplayPost } from "shared";
 
 export const ReplayFormPageCreate = () => {
   const { t } = useTranslation();
@@ -19,7 +17,7 @@ export const ReplayFormPageCreate = () => {
   const file = searchParams.get(routes.replaysCreatePage.searchParams.file);
 
   // Handle submitting of the form
-  const onSubmit = (formData: ReplayFormData) => {
+  const onSubmit = (formData: ReplayPost) => {
     // Invoke POST
     postMutation.mutate(formData, {
       onSuccess: (_data, variables) => {

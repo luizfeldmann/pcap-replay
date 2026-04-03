@@ -123,7 +123,8 @@
       },
       "interface": {
         "label": "Interface de rede",
-        "required": "Obrigatório informar a interface de rede"
+        "required": "Obrigatório informar a interface de rede",
+        "none": "-"
       },
       "provider": {
         "label": "Provedor",
@@ -201,6 +202,7 @@
     },
     "table": {
       "selectcolumns": "Selecionar colunas",
+      "none": "-",
       "name": "Nome",
       "status": "Estado",
       "createdtime": "Criado",
