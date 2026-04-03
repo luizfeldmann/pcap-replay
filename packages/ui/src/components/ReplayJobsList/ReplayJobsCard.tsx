@@ -15,6 +15,7 @@ import {
   Box,
   Tooltip,
   TableBody,
+  Chip,
 } from "@mui/material";
 import type {
   AddressRemap,
@@ -210,7 +211,7 @@ export const ReplayJobsCard = (props: {
   // Handle expander icon
   const [expanded, setExpanded] = useState(false);
 
-  // Query dname of the used file
+  // Query the name of the used file
   const fileInfo = useSingleFile({
     id: props.data.fileId,
     refetchOnMount: false,
@@ -245,6 +246,24 @@ export const ReplayJobsCard = (props: {
               {t("replays.table.file")}
               <Typography fontWeight="bold">{fileInfo.data?.name}</Typography>
             </Stack>
+            <Chip
+              size="small"
+              sx={{
+                borderRadius: 1,
+              }}
+              label={props.data.settings.provider}
+            />
+            {props.data.settings.verbose && (
+              <Tooltip title={t("replays.form.verbose")}>
+                <Chip
+                  size="small"
+                  sx={{
+                    borderRadius: 1,
+                  }}
+                  icon={<Icons.Verbose />}
+                />
+              </Tooltip>
+            )}
           </Stack>
         }
         action={
