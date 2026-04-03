@@ -6,6 +6,7 @@ WORKDIR /app
 # Install dependencies & tools
 RUN apt-get update && \
     apt-get install -y \
+    jq \
     curl \
     tcpdump \
     tcpreplay \
@@ -15,10 +16,11 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Download release of udp-replay
-RUN set -eux; \
-    URL=$(curl -s https://api.github.com/repos/luizfeldmann/udp-replay/releases/latest \
+RUN set -eu; \
+    URL=$(curl -fsSL https://api.github.com/repos/luizfeldmann/udp-replay/releases/latest \
            | jq -r '.assets[] | select(.name=="linux-x86_64-udp-replay") | .browser_download_url'); \
-    curl -L "$URL" -o "/usr/local/bin/udp-replay"; \
+    [ -n "$URL" ]; \
+    curl -fL "$URL" -o "/usr/local/bin/udp-replay"; \
     chmod +x "/usr/local/bin/udp-replay"
 
 # Set capabilities for tcpreplay-edit
@@ -42,6 +44,8 @@ RUN npm ci --omit=dev
 
 # Remove build tools to slim image
 RUN apt-get purge -y \
+    jq \
+    curl \
     python3 \
     build-essential \
     && apt-get autoremove -y \

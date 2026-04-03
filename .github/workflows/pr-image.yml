@@ -20,17 +20,24 @@ jobs:
       contents: read
       packages: write
 
+    env:
+      IMAGE_TAG: ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
+      IMAGE_TAR: ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.tar
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build
         uses: docker/build-push-action@v5
         with:
           context: .
           push: false
-          tags: ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
-          outputs: type=docker,dest=/tmp/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.tar
+          load: true
+          tags: ${{ env.IMAGE_TAG }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Save image
+        run: docker save $IMAGE_TAG -o $IMAGE_TAR
+
+      - uses: actions/upload-artifact@v6
         with:
-          path: /tmp/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.tar
+          path: ${{ env.IMAGE_TAR }}
