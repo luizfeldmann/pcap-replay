@@ -24,6 +24,7 @@ import { useMemo } from "react";
 import { useReplayContextMenu } from "../ReplayContextMenu/useReplayContextMenu";
 import { ReplayContextMenu } from "../ReplayContextMenu/ReplayContextMenu";
 import { useReplayEvents } from "../../api/replays/useReplayEvents";
+import { hasSrcRemap } from "../../utils/providers";
 
 export const ReplayJobsTable = (props: {
   visibility: Record<ReplayColumnId, boolean>;
@@ -48,20 +49,27 @@ export const ReplayJobsTable = (props: {
         .flatMap((item) => {
           // Count number of rows needed for spanning
           const srcRows =
-            (props.visibility.sourceremap && item.srcRemap?.length) || 0;
+            (props.visibility.sourceremap &&
+              hasSrcRemap(item.settings) &&
+              item.settings.srcRemap?.length) ||
+            0;
           const destRows =
-            (props.visibility.destremap && item.dstRemap?.length) || 0;
+            (props.visibility.destremap && item.settings?.dstRemap?.length) ||
+            0;
           const portRows =
-            (props.visibility.portremap && item.portRemap?.length) || 0;
+            (props.visibility.portremap && item.settings?.portRemap?.length) ||
+            0;
           const rowSpan = Math.max(1, srcRows, destRows, portRows);
 
           // Produce primary and secondary rows
           return Array.from({ length: rowSpan }, (_, i) => {
             const common = {
               key: `${item.id}-${i}`,
-              srcRemap: item.srcRemap?.at(i),
-              dstRemap: item.dstRemap?.at(i),
-              portRemap: item.portRemap?.at(i),
+              srcRemap: hasSrcRemap(item.settings)
+                ? item.settings.srcRemap?.at(i)
+                : undefined,
+              dstRemap: item.settings.dstRemap?.at(i),
+              portRemap: item.settings.portRemap?.at(i),
             };
 
             return i == 0

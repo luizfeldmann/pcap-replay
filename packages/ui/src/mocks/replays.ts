@@ -7,6 +7,7 @@ import {
   type PaginatedReplayListResponse,
   type ReplayCommandResponse,
   type ReplayListItem,
+  type ReplaySettingsTcpReplay,
 } from "shared";
 import { getQueryParams } from "./utils";
 
@@ -16,141 +17,145 @@ const generateMockItems = (): ReplayListItem[] => {
   return [
     {
       id: "0",
-      interface: "eth0",
       fileId: "0",
       name: "Lorem",
       status: "STOPPED",
       createdTime: "2026-01-10T12:13:14Z",
-      repeat: {
-        type: "times",
-        times: 10,
-      },
-      load: {
-        type: "multiplier",
-        speed: 1.5,
-      },
-      limit: {
-        type: "duration",
-        maxDuration: 120,
-      },
-      portRemap: [
-        {
-          from: {
-            start: 8080,
-            end: 8090,
-          },
-          to: 80,
+      settings: {
+        provider: "tcpreplay",
+        interface: "eth0",
+        repeat: {
+          type: "times",
+          times: 10,
         },
-      ],
+        load: {
+          type: "pps",
+          packetRate: 500,
+        },
+        limit: {
+          type: "duration",
+          maxDuration: 120,
+        },
+        portRemap: [
+          {
+            from: {
+              start: 8080,
+              end: 8090,
+            },
+            to: 80,
+          },
+        ],
+      },
     },
     {
       id: "1",
-      interface: "eth0",
       fileId: "1",
       name: "Ipsum",
       status: "RUNNING",
       createdTime: "2026-01-09T10:11:12Z",
       startTime: "2026-01-09T10:15:00Z",
-      repeat: {
-        type: "loop",
-      },
-      load: {
-        type: "mbps",
-        dataRate: 50,
-      },
-      limit: {
-        type: "packets",
-        maxPackets: 1000,
-      },
-      srcRemap: [
-        {
-          ip: "v4",
-          from: "192.168.0.0/16",
-          to: "172.16.0.0/16",
+      settings: {
+        provider: "tcpreplay",
+        interface: "eth0",
+        repeat: {
+          type: "loop",
         },
-        {
-          ip: "v4",
-          from: "10.10.10.0/8",
-          to: "10.255.255.0/8",
+        load: {
+          type: "mbps",
+          dataRate: 50,
         },
-      ],
+        limit: {
+          type: "packets",
+          maxPackets: 1000,
+        },
+        srcRemap: [
+          {
+            ip: "v4",
+            from: "192.168.0.0/16",
+            to: "172.16.0.0/16",
+          },
+          {
+            ip: "v4",
+            from: "10.10.10.0/8",
+            to: "10.255.255.0/8",
+          },
+        ],
+      },
     },
     {
       id: "2",
-      interface: "eth0",
       fileId: "2",
       name: "Dolor",
       status: "FINISHED",
       createdTime: "2026-01-08T08:09:10Z",
       startTime: "2026-01-08T15:15:00Z",
       endTime: "2026-01-08T15:20:00Z",
-      load: {
-        type: "pps",
-        packetRate: 500,
+      settings: {
+        provider: "udpreplay",
+        load: {
+          type: "multiplier",
+          speed: 1.5,
+        },
+        dstRemap: [
+          {
+            ip: "v4",
+            from: "10.10.0.0/16",
+            to: "172.31.0.0/16",
+          },
+          {
+            ip: "v4",
+            from: "192.168.100.0/8",
+            to: "192.168.200.0/8",
+          },
+        ],
       },
-      srcRemap: [
-        {
-          ip: "v4",
-          from: "192.168.0.0/16",
-          to: "172.16.0.0/16",
-        },
-      ],
-      dstRemap: [
-        {
-          ip: "v4",
-          from: "10.10.0.0/16",
-          to: "172.31.0.0/16",
-        },
-        {
-          ip: "v4",
-          from: "192.168.100.0/8",
-          to: "192.168.200.0/8",
-        },
-      ],
     },
     {
       id: "3",
-      interface: "eth0",
       fileId: "3",
       name: "Amet",
       status: "ERROR",
       createdTime: "2026-01-07T07:08:00Z",
       startTime: "2026-01-07T12:00:00Z",
       endTime: "2026-01-08T12:00:10Z",
-      srcRemap: [
-        {
-          ip: "v4",
-          from: "192.168.0.0/16",
-          to: "172.16.0.0/16",
-        },
-      ],
-      portRemap: [
-        {
-          from: 3000,
-          to: 5000,
-        },
-        {
-          from: 443,
-          to: 90,
-        },
-      ],
-      dstRemap: [
-        {
-          ip: "v4",
-          from: "192.168.0.0/16",
-          to: "172.16.0.0/16",
-        },
-        {
-          ip: "v4",
-          from: "10.10.0.0/16",
-          to: "172.31.0.0/16",
-        },
-        {
-          ip: "v4",
-          from: "192.168.100.0/8",
-          to: "192.168.200.0/8",
-        },
-      ],
+      settings: {
+        provider: "tcpreplay",
+        interface: "eth0",
+        srcRemap: [
+          {
+            ip: "v4",
+            from: "192.168.0.0/16",
+            to: "172.16.0.0/16",
+          },
+        ],
+        dstRemap: [
+          {
+            ip: "v4",
+            from: "192.168.0.0/16",
+            to: "172.16.0.0/16",
+          },
+          {
+            ip: "v4",
+            from: "10.10.0.0/16",
+            to: "172.31.0.0/16",
+          },
+          {
+            ip: "v4",
+            from: "192.168.100.0/8",
+            to: "192.168.200.0/8",
+          },
+        ],
+        portRemap: [
+          {
+            from: 3000,
+            to: 5000,
+          },
+          {
+            from: 443,
+            to: 90,
+          },
+        ],
+      },
     },
   ];
 };
@@ -321,22 +326,37 @@ const patchReplay = http.patch<{ id: string }>(
     // Apply changes only to the data given in the patch
     if (requestData.name) item.name = requestData.name;
     if (requestData.fileId) item.fileId = requestData.fileId;
-    if (requestData.interface) item.interface = requestData.interface;
+    if (requestData.settings?.interface)
+      item.settings.interface = requestData.settings.interface;
 
     // Undefined = not part of patch
     // Null = clear the field
-    if (requestData.limit !== undefined)
-      item.limit = requestData.limit ?? undefined;
-    if (requestData.load !== undefined)
-      item.load = requestData.load ?? undefined;
-    if (requestData.repeat !== undefined)
-      item.repeat = requestData.repeat ?? undefined;
+    if (requestData.settings?.limit !== undefined)
+      item.settings.limit = requestData.settings.limit ?? undefined;
+
+    if (requestData.settings?.load !== undefined)
+      item.settings.load = requestData.settings.load ?? undefined;
+
+    if (requestData.settings?.repeat !== undefined)
+      item.settings.repeat = requestData.settings.repeat ?? undefined;
 
     // Undefined = not part of patch
     // Empty array = clear the field
-    if (requestData.srcRemap) item.srcRemap = requestData.srcRemap;
-    if (requestData.dstRemap) item.dstRemap = requestData.dstRemap;
-    if (requestData.portRemap) item.portRemap = requestData.portRemap;
+    if (requestData.settings?.dstRemap)
+      item.settings.dstRemap = requestData.settings.dstRemap;
+
+    if (requestData.settings?.portRemap)
+      item.settings.portRemap = requestData.settings.portRemap;
+
+    // provider specific fields
+    if (requestData?.settings?.provider)
+      item.settings.provider = requestData.settings.provider;
+
+    if (requestData.settings?.provider === "tcpreplay") {
+      if (requestData.settings.srcRemap)
+        (item.settings as ReplaySettingsTcpReplay).srcRemap =
+          requestData.settings.srcRemap;
+    }
 
     return HttpResponse.json(item);
   },

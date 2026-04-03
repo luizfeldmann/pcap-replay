@@ -1,19 +1,35 @@
 # --- Base image ---
-FROM node:24-slim AS base
+FROM node:24-trixie-slim AS base
 
 WORKDIR /app
 
 # Install dependencies & tools
 RUN apt-get update && \
     apt-get install -y \
+    jq \
+    curl \
     tcpdump \
     tcpreplay \
     libcap2-bin \
     python3 \
+    libc6 \
+    libstdc++6 \
     build-essential \
-    && \
-    setcap cap_net_raw,cap_net_admin=eip $(which tcpreplay-edit) && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
+
+# Download release of udp-replay
+RUN set -eu; \
+    URL=$(curl -fsSL https://api.github.com/repos/luizfeldmann/udp-replay/releases/latest \
+           | jq -r '.assets[] | select(.name=="linux-x86_64-udp-replay") | .browser_download_url'); \
+    [ -n "$URL" ]; \
+    curl -fL "$URL" -o "/usr/local/bin/udp-replay"; \
+    chmod +x "/usr/local/bin/udp-replay"
+
+# Smoke-test the udp-replay
+RUN udp-replay --version
+
+# Set capabilities for tcpreplay-edit
+RUN setcap cap_net_raw,cap_net_admin=eip $(which tcpreplay-edit)
 
 # --- Node deps ---
 FROM base AS deps
@@ -33,6 +49,8 @@ RUN npm ci --omit=dev
 
 # Remove build tools to slim image
 RUN apt-get purge -y \
+    jq \
+    curl \
     python3 \
     build-essential \
     && apt-get autoremove -y \

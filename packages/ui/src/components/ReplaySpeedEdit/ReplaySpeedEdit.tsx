@@ -8,15 +8,21 @@ import {
 } from "@mui/material";
 import { Icons } from "../../utils/Icons";
 import { useTranslation } from "react-i18next";
-import { ReplayLoadLimits, type LoadSettings } from "shared";
+import {
+  ReplayLoadLimits,
+  type LoadSettings,
+  type LoadSettingsType,
+} from "shared";
+import { useEffect, useMemo } from "react";
 
 //! Keys of the mode buttons
-type SpeedModes = "none" | LoadSettings["type"];
+type SpeedModes = "none" | LoadSettingsType;
 
 //! Mapping of slider ranges for each mode
-const rangeDefs: {
-  [K in LoadSettings["type"]]: { min: number; max: number; step: number };
-} = {
+const rangeDefs: Record<
+  LoadSettingsType,
+  { min: number; max: number; step: number }
+> = {
   multiplier: {
     min: ReplayLoadLimits.multiplier.min,
     max: ReplayLoadLimits.multiplier.max,
@@ -40,32 +46,52 @@ const roundTo = (x: number, n: number = 2) => {
   return Math.round(x * f) / f;
 };
 
-export const ReplaySpeedEdit = (props: {
+export const ReplaySpeedEdit = ({
+  allowedTypes,
+  value,
+  onChange,
+}: {
+  allowedTypes: LoadSettingsType[];
   value: LoadSettings | null | undefined;
   onChange(value: LoadSettings | null): void;
 }) => {
   const { t } = useTranslation();
 
   // Decide the selected button
-  const selected: SpeedModes = props.value?.type || "none";
+  const selected: SpeedModes = value?.type || "none";
 
-  // Apply the value of each mode
-  const onChangeMultiplier = (value: number) =>
-    props.onChange({ type: "multiplier", speed: roundTo(value) });
+  // Memoize multiple callbacks
+  const cb = useMemo(() => {
+    // Apply the value of each mode
+    const onChangeMultiplier = (value: number) =>
+      onChange({ type: "multiplier", speed: roundTo(value) });
 
-  const onChangeDataRate = (value: number) =>
-    props.onChange({ type: "mbps", dataRate: roundTo(value) });
+    const onChangeDataRate = (value: number) =>
+      onChange({ type: "mbps", dataRate: roundTo(value) });
 
-  const onChangePacketRate = (value: number) =>
-    props.onChange({ type: "pps", packetRate: roundTo(value) });
+    const onChangePacketRate = (value: number) =>
+      onChange({ type: "pps", packetRate: roundTo(value) });
 
-  // Change speed mode from button click
-  const onChangeMode = (mode: SpeedModes) => {
-    if (mode === "none") props.onChange(null);
-    else if (mode === "multiplier") onChangeMultiplier(1);
-    else if (mode === "pps") onChangePacketRate(1);
-    else if (mode === "mbps") onChangeDataRate(1);
-  };
+    // Change speed mode from button click
+    const onChangeMode = (mode: SpeedModes) => {
+      if (mode === "none") onChange(null);
+      else if (mode === "multiplier") onChangeMultiplier(1);
+      else if (mode === "pps") onChangePacketRate(1);
+      else if (mode === "mbps") onChangeDataRate(1);
+    };
+
+    return {
+      onChangeMultiplier,
+      onChangeDataRate,
+      onChangePacketRate,
+      onChangeMode,
+    };
+  }, [onChange]);
+
+  // Reset the mode if changed to a type which is not allowed
+  useEffect(() => {
+    if (value && !allowedTypes.includes(value.type)) cb.onChangeMode("none");
+  }, [allowedTypes, value, cb]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -74,23 +100,29 @@ export const ReplaySpeedEdit = (props: {
         size="small"
         color="primary"
         value={selected}
-        onChange={(_, value) => onChangeMode(value)}
+        onChange={(_, value) => cb.onChangeMode(value)}
       >
         <ToggleButton value={"none"}>
           <Icons.Forbidden />
         </ToggleButton>
-        <ToggleButton value={"multiplier"}>
-          <Icons.SpeedMult sx={{ mr: 1 }} />
-          {t("replays.form.speed.multipliershort")}
-        </ToggleButton>
-        <ToggleButton value={"mbps"}>
-          <Icons.SpeedDataRate sx={{ mr: 1 }} />
-          {t("replays.form.speed.datarateunit")}
-        </ToggleButton>
-        <ToggleButton value={"pps"}>
-          <Icons.SpeedPackets sx={{ mr: 1 }} />
-          {t("replays.form.speed.packetrateshort")}
-        </ToggleButton>
+        {allowedTypes.includes("multiplier") && (
+          <ToggleButton value={"multiplier"}>
+            <Icons.SpeedMult sx={{ mr: 1 }} />
+            {t("replays.form.speed.multipliershort")}
+          </ToggleButton>
+        )}
+        {allowedTypes.includes("mbps") && (
+          <ToggleButton value={"mbps"}>
+            <Icons.SpeedDataRate sx={{ mr: 1 }} />
+            {t("replays.form.speed.datarateunit")}
+          </ToggleButton>
+        )}
+        {allowedTypes.includes("pps") && (
+          <ToggleButton value={"pps"}>
+            <Icons.SpeedPackets sx={{ mr: 1 }} />
+            {t("replays.form.speed.packetrateshort")}
+          </ToggleButton>
+        )}
       </ToggleButtonGroup>
       <Stack
         spacing={2}
@@ -99,14 +131,14 @@ export const ReplaySpeedEdit = (props: {
           alignItems: "center",
         }}
       >
-        {props.value?.type === "multiplier" && (
+        {value?.type === "multiplier" && (
           <Slider
             {...rangeDefs["multiplier"]}
-            value={props.value.speed}
-            onChange={(_, v) => onChangeMultiplier(v)}
+            value={value.speed}
+            onChange={(_, v) => cb.onChangeMultiplier(v)}
           />
         )}
-        {props.value?.type === "multiplier" && (
+        {value?.type === "multiplier" && (
           <TextField
             type="number"
             label={t("replays.form.speed.multiplier")}
@@ -122,18 +154,20 @@ export const ReplaySpeedEdit = (props: {
               },
               htmlInput: rangeDefs["multiplier"],
             }}
-            value={props.value.speed}
-            onChange={(e) => onChangeMultiplier(Number(e.currentTarget.value))}
+            value={value.speed}
+            onChange={(e) =>
+              cb.onChangeMultiplier(Number(e.currentTarget.value))
+            }
           />
         )}
-        {props.value?.type === "mbps" && (
+        {value?.type === "mbps" && (
           <Slider
             {...rangeDefs["mbps"]}
-            value={props.value.dataRate}
-            onChange={(_, v) => onChangeDataRate(v)}
+            value={value.dataRate}
+            onChange={(_, v) => cb.onChangeDataRate(v)}
           />
         )}
-        {props.value?.type === "mbps" && (
+        {value?.type === "mbps" && (
           <TextField
             type="number"
             label={t("replays.form.speed.datarate")}
@@ -149,18 +183,18 @@ export const ReplaySpeedEdit = (props: {
               },
               htmlInput: rangeDefs["mbps"],
             }}
-            value={props.value.dataRate}
-            onChange={(e) => onChangeDataRate(Number(e.currentTarget.value))}
+            value={value.dataRate}
+            onChange={(e) => cb.onChangeDataRate(Number(e.currentTarget.value))}
           />
         )}
-        {props.value?.type === "pps" && (
+        {value?.type === "pps" && (
           <Slider
             {...rangeDefs["pps"]}
-            value={props.value.packetRate}
-            onChange={(_, v) => onChangePacketRate(v)}
+            value={value.packetRate}
+            onChange={(_, v) => cb.onChangePacketRate(v)}
           />
         )}
-        {props.value?.type === "pps" && (
+        {value?.type === "pps" && (
           <TextField
             type="number"
             label={t("replays.form.speed.packetrate")}
@@ -176,8 +210,10 @@ export const ReplaySpeedEdit = (props: {
               },
               htmlInput: rangeDefs["pps"],
             }}
-            value={props.value.packetRate}
-            onChange={(e) => onChangePacketRate(Number(e.currentTarget.value))}
+            value={value.packetRate}
+            onChange={(e) =>
+              cb.onChangePacketRate(Number(e.currentTarget.value))
+            }
           />
         )}
       </Stack>

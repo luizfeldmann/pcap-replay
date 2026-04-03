@@ -8,7 +8,6 @@ export const ReplaysTable = sqliteTable("replays", {
   file: text()
     .notNull()
     .references(() => FilesTable.id, { onDelete: "restrict" }),
-  interface: text().notNull(),
   status: text({
     // prettier-ignore
     enum: [
@@ -23,6 +22,8 @@ export const ReplaysTable = sqliteTable("replays", {
   startTime: integer({ mode: "timestamp_ms" }),
   endTime: integer({ mode: "timestamp_ms" }),
   createdTime: integer({ mode: "timestamp_ms" }).notNull(),
+  provider: text({ enum: ["tcpreplay", "udpreplay"] }).notNull(),
+  interface: text(),
   verbose: integer({ mode: "boolean" }),
   loop: integer({ mode: "boolean" }),
   repeat: integer(),
@@ -35,3 +36,4 @@ export const ReplaysTable = sqliteTable("replays", {
 
 export type ReplayRow = InferSelectModel<typeof ReplaysTable>;
 export type ReplayRowStatus = ReplayRow["status"];
+export type ReplayProviderEnum = ReplayRow["provider"];

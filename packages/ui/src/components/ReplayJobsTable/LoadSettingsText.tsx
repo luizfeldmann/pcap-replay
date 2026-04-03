@@ -2,7 +2,9 @@ import { useTranslation } from "react-i18next";
 import type { LoadSettings } from "shared";
 
 // Text displayed in the load/speed settings cell
-export const LoadSettingsText = (props: { value?: LoadSettings }) => {
+export const LoadSettingsText = (props: {
+  value: LoadSettings | null | undefined;
+}) => {
   const { t } = useTranslation();
 
   let text = "";

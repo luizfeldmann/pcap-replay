@@ -15,6 +15,7 @@ import {
   Box,
   Tooltip,
   TableBody,
+  Chip,
 } from "@mui/material";
 import type {
   AddressRemap,
@@ -35,6 +36,7 @@ import { LengthSettingsText } from "../ReplayJobsTable/LengthSettingsText";
 import { LoadSettingsText } from "../ReplayJobsTable/LoadSettingsText";
 import { AddressRemapCells } from "../ReplayJobsTable/AddressRemapCells";
 import { PortRemapCells } from "../ReplayJobsTable/PortRemapCells";
+import { hasSrcRemap, providerAttribs } from "../../utils/providers";
 
 // Renders creation, start and finish times
 const TimesInfo = (props: {
@@ -72,9 +74,9 @@ const TimesInfo = (props: {
 
 // Settings for repeating, duration and speed
 export const SettingsInfo = (props: {
-  load?: LoadSettings;
-  length?: LengthSettings;
-  repeat?: RepeatSettings;
+  load: LoadSettings | null | undefined;
+  length: LengthSettings | null | undefined;
+  repeat: RepeatSettings | null | undefined;
 }) => {
   const { t } = useTranslation();
 
@@ -209,7 +211,7 @@ export const ReplayJobsCard = (props: {
   // Handle expander icon
   const [expanded, setExpanded] = useState(false);
 
-  // Query dname of the used file
+  // Query the name of the used file
   const fileInfo = useSingleFile({
     id: props.data.fileId,
     refetchOnMount: false,
@@ -231,14 +233,37 @@ export const ReplayJobsCard = (props: {
         }
         subheader={
           <Stack direction="row" spacing={2}>
-            <Stack direction="column">
-              {t("replays.table.interface")}
-              <Typography fontWeight="bold">{props.data.interface}</Typography>
-            </Stack>
+            {providerAttribs[props.data.settings.provider].interface
+              .available && (
+              <Stack direction="column">
+                {t("replays.table.interface")}
+                <Typography fontWeight="bold">
+                  {props.data.settings.interface || t("replays.table.none")}
+                </Typography>
+              </Stack>
+            )}
             <Stack direction="column">
               {t("replays.table.file")}
               <Typography fontWeight="bold">{fileInfo.data?.name}</Typography>
             </Stack>
+            <Chip
+              size="small"
+              sx={{
+                borderRadius: 1,
+              }}
+              label={props.data.settings.provider}
+            />
+            {props.data.settings.verbose && (
+              <Tooltip title={t("replays.form.verbose")}>
+                <Chip
+                  size="small"
+                  sx={{
+                    borderRadius: 1,
+                  }}
+                  icon={<Icons.Verbose />}
+                />
+              </Tooltip>
+            )}
           </Stack>
         }
         action={
@@ -284,19 +309,21 @@ export const ReplayJobsCard = (props: {
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <SettingsInfo
-              load={props.data.load}
-              length={props.data.limit}
-              repeat={props.data.repeat}
+              load={props.data.settings.load}
+              length={props.data.settings.limit}
+              repeat={props.data.settings.repeat}
             />
           </Box>
+          {hasSrcRemap(props.data.settings) && (
+            <Box flexGrow={0}>
+              <SourceRemapTable srcRemap={props.data.settings.srcRemap} />
+            </Box>
+          )}
           <Box flexGrow={0}>
-            <SourceRemapTable srcRemap={props.data.srcRemap} />
+            <DestRemapTable dstRemap={props.data.settings.dstRemap} />
           </Box>
           <Box flexGrow={0}>
-            <DestRemapTable dstRemap={props.data.dstRemap} />
-          </Box>
-          <Box flexGrow={0}>
-            <PortRemapTable portRemap={props.data.portRemap} />
+            <PortRemapTable portRemap={props.data.settings.portRemap} />
           </Box>
         </CardContent>
       </Collapse>

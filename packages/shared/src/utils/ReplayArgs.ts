@@ -1,7 +1,9 @@
 import {
+  type ReplaySettingsCommon,
+  type ReplaySettingsTcpReplay,
+  type ReplaySettingsUdpReplay,
   type AddressRemap,
   type PortRemap,
-  type ReplaySettings,
 } from "../dto/replay/index.js";
 
 const getPortRemap = (portRemap?: PortRemap[]) =>
@@ -25,26 +27,11 @@ const getListArgs = (flag: string, args?: string[]) => {
   return [`--${flag}=${args.join(",")}`];
 };
 
-export const getReplayArgs = (settings: ReplaySettings): string[] => {
+const getCommonReplayArgs = (settings: ReplaySettingsCommon): string[] => {
   const args: string[] = [
-    `--intf1=${settings.interface}`,
     ...getListArgs("portmap", getPortRemap(settings.portRemap)),
-    ...getListArgs("srcipmap", getAddressRemap(settings.srcRemap)),
     ...getListArgs("dstipmap", getAddressRemap(settings.dstRemap)),
   ];
-
-  // Performance settings
-  switch (settings?.load?.type) {
-    case "multiplier":
-      args.push(`--multiplier=${settings.load.speed}`);
-      break;
-    case "mbps":
-      args.push(`--mbps=${settings.load.dataRate}`);
-      break;
-    case "pps":
-      args.push(`--pps=${settings.load.packetRate}`);
-      break;
-  }
 
   // Duration or length limit settings
   switch (settings?.limit?.type) {
@@ -68,6 +55,51 @@ export const getReplayArgs = (settings: ReplaySettings): string[] => {
 
   // Verbosity
   if (settings.verbose) args.push("--verbose");
+
+  return args;
+};
+
+export const getTcpReplayArgs = (
+  settings: ReplaySettingsTcpReplay,
+): string[] => {
+  const args = getCommonReplayArgs(settings);
+
+  // interface name is mandatory
+  args.push(`--intf1=${settings.interface}`);
+
+  // only tcpreplay can rewrite sources, working on L2
+  args.push(...getListArgs("srcipmap", getAddressRemap(settings.srcRemap)));
+
+  // Performance settings
+  switch (settings?.load?.type) {
+    case "multiplier":
+      args.push(`--multiplier=${settings.load.speed}`);
+      break;
+    case "mbps":
+      args.push(`--mbps=${settings.load.dataRate}`);
+      break;
+    case "pps":
+      args.push(`--pps=${settings.load.packetRate}`);
+      break;
+  }
+
+  return args;
+};
+
+export const getUdpReplayArgs = (
+  settings: ReplaySettingsUdpReplay,
+): string[] => {
+  const args = getCommonReplayArgs(settings);
+
+  // interface name is optional
+  if (settings.interface) args.push(`--intf1=${settings.interface}`);
+
+  // Performance settings
+  switch (settings?.load?.type) {
+    case "multiplier":
+      args.push(`--multiplier=${settings.load.speed}`);
+      break;
+  }
 
   return args;
 };

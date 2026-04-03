@@ -2,6 +2,7 @@ import {
   Add,
   AllInclusive,
   Block,
+  Campaign,
   Check,
   Close,
   DataObject,
@@ -93,4 +94,5 @@ export const Icons = {
   StatusError: PriorityHigh,
   StatusFinished: Done,
   WatchLogs: Subject,
+  Verbose: Campaign,
 };

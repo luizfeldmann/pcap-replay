@@ -1,14 +1,11 @@
 import { Alert, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import {
-  ReplayForm,
-  type ReplayFormData,
-} from "../../components/ReplayForm/ReplayForm";
+import { ReplayForm } from "../../components/ReplayForm/ReplayForm";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { routes } from "../../utils/routes";
 import { usePostReplay } from "../../api/replays/usePostReplay";
-import type { ReplayPost } from "shared";
 import { enqueueSnackbar } from "notistack";
+import type { ReplayPost } from "shared";
 
 export const ReplayFormPageCreate = () => {
   const { t } = useTranslation();
@@ -20,17 +17,9 @@ export const ReplayFormPageCreate = () => {
   const file = searchParams.get(routes.replaysCreatePage.searchParams.file);
 
   // Handle submitting of the form
-  const onSubmit = (formData: ReplayFormData) => {
-    // Handle nullable fields
-    const postData: ReplayPost = {
-      ...formData,
-      load: formData.load ?? undefined,
-      limit: formData.limit ?? undefined,
-      repeat: formData.repeat ?? undefined,
-    };
-
+  const onSubmit = (formData: ReplayPost) => {
     // Invoke POST
-    postMutation.mutate(postData, {
+    postMutation.mutate(formData, {
       onSuccess: (_data, variables) => {
         // Show a snackbar on success
         enqueueSnackbar(t("replays.create.success", { name: variables.name }), {
@@ -46,7 +35,11 @@ export const ReplayFormPageCreate = () => {
     <Stack spacing={1} sx={{ display: "flex" }}>
       <Typography variant="h6">{t("replays.create.title")}</Typography>
       <ReplayForm
-        initState={{ name: "", fileId: file || "", interface: "" }}
+        initState={{
+          name: "",
+          fileId: file || "",
+          settings: { provider: "udpreplay" },
+        }}
         labelSubmit={t("replays.form.button.create")}
         onSubmit={onSubmit}
         isLoading={postMutation.isPending}
