@@ -1,5 +1,5 @@
 # --- Base image ---
-FROM node:24-slim AS base
+FROM node:24-trixie-slim AS base
 
 WORKDIR /app
 
@@ -12,6 +12,8 @@ RUN apt-get update && \
     tcpreplay \
     libcap2-bin \
     python3 \
+    libc6 \
+    libstdc++6 \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -22,6 +24,9 @@ RUN set -eu; \
     [ -n "$URL" ]; \
     curl -fL "$URL" -o "/usr/local/bin/udp-replay"; \
     chmod +x "/usr/local/bin/udp-replay"
+
+# Smoke-test the udp-replay
+RUN udp-replay --version
 
 # Set capabilities for tcpreplay-edit
 RUN setcap cap_net_raw,cap_net_admin=eip $(which tcpreplay-edit)
