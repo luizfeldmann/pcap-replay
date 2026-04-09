@@ -11,6 +11,9 @@
     "type": "git",
     "url": "https://github.com/luizfeldmann/pcap-replay"
   },
+  "engines": {
+    "node": "^25"
+  },
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace ui\" \"npm run dev --workspace server\"",
     "build": "npm run build --workspaces",
